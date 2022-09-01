@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Pong.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Pong.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Pt.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Main">
+      <UniqueIdentifier>{984ebeb8-e546-4d38-ad91-7bf458d690ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{eeaecc44-d1be-4164-94ea-06706754dc1c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
