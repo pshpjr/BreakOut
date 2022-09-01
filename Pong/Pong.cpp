@@ -5,6 +5,7 @@
 
 Pong::~Pong()
 {
+	Clear();
 }
 
 void Pong::Init()
