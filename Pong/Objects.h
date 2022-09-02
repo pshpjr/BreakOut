@@ -1,5 +1,7 @@
 #pragma once
-#include "Pt.h"
+#include "pch.h"
+
+#include "Macro.h"
 
 
 class StaticObject {
@@ -22,10 +24,10 @@ class Moveable {
 
 public:
 	Moveable() = default;
-	Moveable(const pt location, const pt vector, const double speed) : _location(location), _vector(vector), _speed(speed) {}
+	Moveable(const pt location, const pt vector, const float speed) : _location(location), _vector(vector), _speed(speed) {}
 
 	void setVector(const pt vector) { _vector = vector; }
-	void setSpeed(const double speed) { _speed = speed; }
+	void setSpeed(const float speed) { _speed = speed; }
 	void setXVectorInverse() { _vector.x *= -1; }
 	void setYVectorInverse() { _vector.y *= -1; }
 	void setVectorInverse() { _vector.x *= -1; _vector.y *= -1; }
@@ -34,10 +36,11 @@ public:
 	virtual void update() {
 		_location += _vector * _speed;
 	}
+
 protected:
 	pt _location{};
 	pt _vector{};
-	double _speed{};
+	float _speed{};
 };
 
 class Block : public StaticObject {
@@ -45,7 +48,7 @@ public:
 	Block() = default;
 	Block(const pt p1, const pt p2) : _start(p1), _size(p2), _life(3) {}
 	Block(const pt p1, const pt p2, const int life) : _start(p1), _size(p2), _life(life) {}
-
+	Block(const pt p1, const pt p2, bool solid) : _start(p1), _size(p2), _isSolid(solid) {}
 	void decreaseLife() { _life -= 1; }
 	int getLife() const { return _life; }
 	bool isDead() const { return _life <= 0; }
@@ -80,13 +83,16 @@ public:
 		}
 
 		glBegin(GL_POLYGON);
-		glVertex2d(_start.x, _start.y);
-		glVertex2d(_start.x + _size.x, _start.y);
-		glVertex2d(_start.x + _size.x, _start.y + _size.y);
-		glVertex2d(_start.x, _start.y + _size.y);
+		glVertex2f(_start.x, _start.y);
+		glVertex2f(_start.x + _size.x, _start.y);
+		glVertex2f(_start.x + _size.x, _start.y + _size.y);
+		glVertex2f(_start.x, _start.y + _size.y);
 		glEnd();
 
 	}
+
+public:
+	bool _isSolid = false;
 
 protected:
 	pt _start{};
@@ -95,22 +101,26 @@ private:
 	int _life{};
 };
 
-class Wall : public Block {
-public:
-	Wall(const pt p1, const pt p2) : Block(p1, p2, 99999999) {}
-};
 
 class Ball : public StaticObject, public Moveable {
 public:
 	Ball() = default;
-	Ball(const pt location, const pt vector, const double speed, const double ballSize) : Moveable(location, vector, speed),_ballsize(ballSize) {}
-
-	double size = _ballsize;
+	Ball(const pt location, const pt vector, const float speed, const float ballSize) :
+		Moveable(location, vector, speed), _radius(ballSize) {};
 
 	bool isPointInBall(const pt& point) const {
-		const double dist = _location.distSquare(point);
-		const double b_square = _ballsize * _ballsize;
-		return  dist <= b_square;
+		return  distance(_location, point) <= _radius;
+	}
+
+	float getRadius() const
+	{
+		return _radius;
+	}
+
+	void move(float dx, float dy)
+	{
+		_location.x += dx;
+		_location.y += dy;
 	}
 
 	void draw() const override
@@ -119,16 +129,16 @@ public:
 
 		glBegin(GL_POLYGON);
 		for (int i = 0; i < 360; i++) {
-			const double angle = i * 3.141592 / 180;
-			const double x = _location.x + _ballsize * cos(angle);
-			const double y = _location.y + _ballsize * sin(angle);
-			glVertex2d(x, y);
+			const float angle = (float)i * 3.14f / 180;
+			const float x = _location.x + _radius * cos(angle);
+			const float y = _location.y + _radius * sin(angle);
+			glVertex2f(x, y);
 		}
 		glEnd();
 	}
 
 private:
-	double _ballsize = 1;
+	float _radius = 2;
 };
 
 class ControlBlock : public Block, public Moveable { //컨트롤 박스는 로케이션이 좌하단.
@@ -151,9 +161,9 @@ public:
 
 	pt calcBallReflectVector(const Ball* ball) const
 	{
-		const double center = _start.x + (_size.x / 2);
-		const double delta = -(center - ball->getLocation().x) / (_size.x / 2);
-		double result = ball->getVector().x > 0 ? delta : -delta;
+		const float center = _start.x + (_size.x / 2);
+		const float delta = -(center - ball->getLocation().x) / (_size.x / 2);
+		float result = ball->getVector().x > 0 ? delta : -delta;
 
 		return { result,ball->getVector().y };
 	}

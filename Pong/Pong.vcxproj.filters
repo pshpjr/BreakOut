@@ -24,8 +24,8 @@
     <ClInclude Include="Objects.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="Pt.h">
-      <Filter>Main</Filter>
+    <ClInclude Include="Macro.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

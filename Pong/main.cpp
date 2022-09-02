@@ -28,7 +28,11 @@ void my_reshape(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
-
+/*
+ * TODO: 키보드 함수 변경
+ * 지금은 딜레이 있으니까 keyboardfunc, keyboardupfunc 사용. 
+ *
+ */
 void MySpecial(int key, int x, int y) {
 
 	switch (key) {
@@ -61,10 +65,9 @@ void Render()
 	Breakout.Render();
 }
 
-void Update(int time)
+void Update()
 {
 	Breakout.Update();
-	glutTimerFunc(10, Update, 10);
 }
 
 void GameInit()
@@ -79,12 +82,11 @@ void GLInit() {
 	glutInitWindowSize(800, 800);
 	glutCreateWindow("Pong Loader");
 	glOrtho(-WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE);
-
-	glutDisplayFunc(Render);
+	glutDisplayFunc(Update);
 	glutMouseFunc(MyMouse);
 	glutMotionFunc(MyMotion);
 	glutSpecialFunc(MySpecial);
-	glutTimerFunc(10, Update, 10);
+	
 }
 
 int main(int argc, char** argv) {

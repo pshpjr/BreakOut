@@ -15,18 +15,18 @@ void Pong::Init()
 	std::uniform_int_distribution<int> dis(1, 100);
 
 	_control_block = new ControlBlock(_MAPSIZE);
-	_b = new Ball({ -2,0 }, { 1,1 }, 1,1);
-	_b->setVector({ 0.35,0.97 });
+	_b = new Ball({ -2,0 }, { 1,1 }, 1,3);
+	_b->setVector(glm::normalize(glm::vec2(0.35, 0.97 )));
 
 	_update_requires.push_back(_control_block);
 	_update_requires.push_back(_b);
 
 	//B->setVector({ dis(gen) / static_cast<double>(100),dis(gen) / static_cast<double>(100) });
 	printf("%f%f", _b->getVector().x, _b->getVector().y);
-	_blocks.push_back(new Wall(pt(-_MAPSIZE, -_MAPSIZE), pt(2, _MAPSIZE * 2)));
-	_blocks.push_back(new Wall(pt(_MAPSIZE, -_MAPSIZE), pt(2, _MAPSIZE * 2)));
-	_blocks.push_back(new Wall(pt(-_MAPSIZE, _MAPSIZE), pt(_MAPSIZE * 2 + 2, 2)));
-	_blocks.push_back(new Wall(pt(-_MAPSIZE, -_MAPSIZE), pt(_MAPSIZE * 2, 2)));
+	_blocks.push_back(new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(3, _MAPSIZE * 2), true));
+	_blocks.push_back(new Block(pt(_MAPSIZE, -_MAPSIZE + 30), pt(3, _MAPSIZE * 2), true));
+	_blocks.push_back(new Block(pt(-_MAPSIZE, _MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true));
+	_blocks.push_back(new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true));
 
 
 
@@ -35,6 +35,8 @@ void Pong::Init()
 			_blocks.push_back(new Block(pt(i, j), pt(10, 5)));
 		}
 	}
+
+
 }
 
 void Pong::Update()
@@ -42,39 +44,63 @@ void Pong::Update()
 	int collision_result;
 	int inverse_vector_info = 0;
 	for (auto& i : _blocks) {
-		if (i->isVisible() == false)
-			continue;
-
-		collision_result = collision_test(i, _b);
-
-		if (collision_result != 0) {
-			i->decreaseLife();
-			if (i->isDead())
-				i->swapVisibility();
-			if (inverse_vector_info == 0)
-				inverse_vector_info = collision_result;
+		if (i->isVisible())
+		{
+			Collision collision = CheckCollision(*_b, *i);
+			if (std::get<0>(collision)) // if collision is true
+			{
+				// destroy block if not solid
+				if (!i->_isSolid)
+					i->swapVisibility();
+				// collision resolution
+				Direction dir = std::get<1>(collision);
+				glm::vec2 diff_vector = std::get<2>(collision);
+				if (dir == LEFT || dir == RIGHT) // horizontal collision
+				{
+					_b->setXVectorInverse(); // reverse horizontal velocity
+					// relocate
+					float penetration = _b->getRadius() - std::abs(diff_vector.x);
+					if (dir == LEFT)
+						_b->move(penetration,0); // move ball to right
+					else
+						_b->move(-penetration, 0); // move ball to left;
+				}
+				else // vertical collision
+				{
+					_b->setYVectorInverse(); // reverse vertical velocity
+					// relocate
+					float penetration = _b->getRadius() - std::abs(diff_vector.y);
+					if (dir == UP)
+						_b->move(0, -penetration); // move ball back up
+					else
+						_b->move(0, penetration); // move ball back down
+				}
+			}
 		}
 	}
-	collision_result = collision_test(_control_block, _b);
 
-	if (collision_result != 0) {
-		if (inverse_vector_info == 0)
-			inverse_vector_info = collision_result;
-		_b->setVector(_control_block->calcBallReflectVector(_b));
+
+	Collision result = CheckCollision(*_b, *_control_block);
+	if (std::get<0>(result))
+	{
+		// check where it hit the board, and change velocity based on where it hit the board
+		float centerBoard = _control_block->getStart().x + _control_block->getSize().x / 2.0f;
+		float distance = _b->getLocation().x + - centerBoard;
+		float percentage = distance / (_control_block->getSize().x / 2.0f);
+		// then move accordingly
+		float strength = 2.0f;
+		glm::vec2 oldVelocity = _b->getVector();
+		pt newVec = {  percentage * 1 ,-oldVelocity.y};
+
+		_b->setVector (glm::normalize(newVec) * glm::length(oldVelocity));
+		_b->setVector(1.0f * abs(_b->getVector()));
 	}
-
-	if (inverse_vector_info & XCOLLSION)
-		_b->setXVectorInverse();
-
-	if (inverse_vector_info & YCOLLSION) {
-		_b->setYVectorInverse();
-	}
-
 
 	for (const auto i : _update_requires) {
 		i->update();
 	}
-	//glutPostRedisplay();
+	
+	Render();
 }
 
 void Pong::Render()
@@ -91,53 +117,64 @@ void Pong::Render()
 		i->draw();
 	}
 
-	Update();
 
 	glutPostRedisplay();
 	glutSwapBuffers();
 }
 
-int Pong::collision_test(const Block* box, const Ball* ball) const
+
+Direction Pong::VectorDirection(glm::vec2 target) const
 {
-	
-	int result = 0;
-	const pt ball_location = ball->getLocation();
-	const pt box_start = box->getStart();
-	const pt box_size = box->getSize();
-	pt closest_point = ball->getLocation();
+	glm::vec2 compass[] = {
+	glm::vec2(0.0f, 1.0f),	// up
+	glm::vec2(1.0f, 0.0f),	// right
+	glm::vec2(0.0f, -1.0f),	// down
+	glm::vec2(-1.0f, 0.0f)	// left
+	};
 
-
-	if (ball_location.x < box_start.x) {
-		closest_point.x = box_start.x;
+	float max = 0.0f;
+	unsigned int best_match = -1;
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		float dot_product = glm::dot(glm::normalize(target), compass[i]);
+		if (dot_product > max)
+		{
+			max = dot_product;
+			best_match = i;
+		}
 	}
-	else if (ball_location.x > box_start.x + box_size.x) {
-		closest_point.x = box_start.x + box_size.x;
-	}
-	if (ball_location.y < box_start.y) {
-		closest_point.y = box_start.y;
-	}
-	else if (ball_location.y > box_start.y + box_size.y) {
-		closest_point.y = box_start.y + box_size.y;
-	}
-	if (ball->isPointInBall(closest_point)) {
-		const double delta_x = closest_point.x - ball_location.x;
-		const double delta_y = closest_point.y - ball_location.y;
-
-
-
-		if (delta_x != 0)
-			result |= XCOLLSION;
-		if (delta_y != 0 && !(result && XCOLLSION))
-			result |= YCOLLSION;
-		//if (deltax == 0 && deltay == 0) {
-		//	중점이 사각형 내부인 경우 
-		//}
-
-	}
-
-	return result;
-	
+	return (Direction)best_match;
 }
+
+Collision Pong::CheckCollision(const Ball& one, const Block& two) const
+{
+	// get center point circle first 
+	glm::vec2 center = one.getLocation();
+	// calculate AABB info (center, half-extents)
+	glm::vec2 aabb_half_extents(two.getSize().x / 2.0f, two.getSize().y / 2.0f);
+	glm::vec2 aabb_center(
+		two.getStart().x + aabb_half_extents.x,
+		two.getStart().y + aabb_half_extents.y
+	);
+	// get difference vector between both centers
+	glm::vec2 difference = center - aabb_center;
+	glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
+	// add clamped value to AABB_center and we get the value of box closest to circle
+	glm::vec2 closest = aabb_center + clamped;
+	// retrieve vector between center circle and closest point AABB and check if length <= radius
+	difference = closest - center;
+	float len = glm::length(difference);
+	if ( len <= one.getRadius())
+		return std::make_tuple(true, VectorDirection(difference), difference);
+	else
+		return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+}
+
+
+
+
+
+
 
 void Pong::Clear()
 {
