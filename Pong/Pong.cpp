@@ -88,17 +88,17 @@ void Pong::Update()
 	Collision result = CheckCollision(*_b, *_control_block);
 	if (std::get<0>(result))
 	{
-		// check where it hit the board, and change velocity based on where it hit the board
+
 		float centerBoard = _control_block->getStart().x + _control_block->getSize().x / 2.0f;
 		float distance = _b->getLocation().x + - centerBoard;
 		float percentage = distance / (_control_block->getSize().x / 2.0f);
-		// then move accordingly
-		float strength = 2.0f;
+
 		glm::vec2 oldVelocity = _b->getVector();
-		pt newVec = {  percentage * 1 ,-oldVelocity.y};
+
+		pt newVec = {   percentage * 1 ,abs(oldVelocity.y)};
 
 		_b->setVector (glm::normalize(newVec) * glm::length(oldVelocity));
-		_b->setVector(1.0f * abs(_b->getVector()));
+
 	}
 
 	ProcessInput(1);

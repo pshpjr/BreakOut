@@ -21,7 +21,7 @@ public:
 
 	Direction VectorDirection(glm::vec2 target) const;
 	Collision CheckCollision(const Ball& one, const Block& two) const;
-
+	void ProcessInput(float dt);
 	void Clear();
 
 public:
@@ -30,6 +30,7 @@ public:
 
 	std::vector<Block*> _blocks;
 	std::vector<Moveable*> _update_requires;
+	int Keys[1024];
 
 private:
 	enum game_state
@@ -51,5 +52,7 @@ private:
 
 	const unsigned char XCOLLSION = 1 << 0;
 	const unsigned char YCOLLSION = 1 << 1;
+
+	int _Map[10][10];
 };
 

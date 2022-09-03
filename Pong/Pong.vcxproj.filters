@@ -36,4 +36,9 @@
       <UniqueIdentifier>{eeaecc44-d1be-4164-94ea-06706754dc1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="todo.txt">
+      <Filter>Utils</Filter>
+    </Text>
+  </ItemGroup>
 </Project>
