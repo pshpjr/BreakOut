@@ -10,3 +10,6 @@ enum Direction {
 };
 
 typedef std::tuple<bool, Direction, glm::vec2> Collision;
+
+const int MAPX = 10;
+const int MAPY = 10;

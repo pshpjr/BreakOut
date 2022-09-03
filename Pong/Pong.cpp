@@ -28,6 +28,11 @@ void Pong::Init()
 	_blocks.push_back(new Block(pt(-_MAPSIZE, _MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true));
 	_blocks.push_back(new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true));
 
+	for (int i = 0; i <4; i++) {
+		for (int j = 0; j < MAPX; j ++) {
+			_Map[i][j] = 3;
+		}
+	}
 
 
 	for (int i = -_MAPSIZE + 40; i <= _MAPSIZE - 40; i += 10) {
@@ -95,6 +100,9 @@ void Pong::Update()
 		_b->setVector (glm::normalize(newVec) * glm::length(oldVelocity));
 		_b->setVector(1.0f * abs(_b->getVector()));
 	}
+
+	ProcessInput(1);
+
 
 	for (const auto i : _update_requires) {
 		i->update();
@@ -170,10 +178,21 @@ Collision Pong::CheckCollision(const Ball& one, const Block& two) const
 		return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
 }
 
-
-
-
-
+void Pong::ProcessInput(float dt)
+{
+	float velocity = 1 * dt;
+	// move playerboard
+	if (this->Keys['d'])
+	{
+		_control_block->setVector({1,0});
+		_control_block->setSpeed(2);
+	}
+	if (this->Keys['a'])
+	{
+		_control_block->setVector({ -1,0 });
+		_control_block->setSpeed(2);
+	}
+}
 
 
 void Pong::Clear()

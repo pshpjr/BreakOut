@@ -28,27 +28,17 @@ void my_reshape(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
-/*
- * TODO: 키보드 함수 변경
- * 지금은 딜레이 있으니까 keyboardfunc, keyboardupfunc 사용. 
- *
- */
-void MySpecial(int key, int x, int y) {
 
-	switch (key) {
-	case GLUT_KEY_RIGHT:
-		Breakout._control_block->setVector(pt(1, 0));
-		Breakout._control_block->setSpeed(2);
-		break;
-	case GLUT_KEY_LEFT:
-		Breakout._control_block->setVector(pt(-1, 0));
-		Breakout._control_block->setSpeed(2);
-		break;
-	default:;
-	}
-
-	glutPostRedisplay();
+void KeyDown(unsigned char key, int x, int y)
+{
+	Breakout.Keys[key] = true;
 }
+
+void KeyUp(unsigned char key, int x, int y)
+{
+	Breakout.Keys[key] = false;
+}
+
 
 void MyMouse(int button, int state, int x, int y) {
 
@@ -85,7 +75,8 @@ void GLInit() {
 	glutDisplayFunc(Update);
 	glutMouseFunc(MyMouse);
 	glutMotionFunc(MyMotion);
-	glutSpecialFunc(MySpecial);
+	glutKeyboardFunc(KeyDown);
+	glutKeyboardUpFunc(KeyUp);
 	
 }
 
