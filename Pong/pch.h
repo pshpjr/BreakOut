@@ -10,4 +10,4 @@
 #include "Pong.h"
 #include "Macro.h"
 #include "Objects.h"
-
+#include "string.h"

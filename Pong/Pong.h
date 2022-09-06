@@ -18,6 +18,9 @@ public:
 	void Init();
 	void Update();
 	void Render();
+	void tick();
+	void Reset();
+	void DrawText(string str, float width, float height);
 
 	Direction VectorDirection(glm::vec2 target) const;
 	Collision CheckCollision(const Ball& one, const Block& two) const;
@@ -29,12 +32,15 @@ public:
 	ControlBlock* _control_block;
 
 	std::vector<Block*> _blocks;
+	Block* _deadline; 
 	std::vector<Moveable*> _update_requires;
+
 	int Keys[1024];
 
 private:
 	enum game_state
 	{
+		GAME_ACTIVE,
 		GAME_LOAD,
 		GAME_MENU,
 		GAME_END
@@ -54,5 +60,7 @@ private:
 	const unsigned char YCOLLSION = 1 << 1;
 
 	int _Map[10][10];
+
+	int _life = 3;
 };
 

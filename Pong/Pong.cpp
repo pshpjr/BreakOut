@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Pong.h"
 
+#include <string>
 
 
 Pong::~Pong()
@@ -10,12 +11,14 @@ Pong::~Pong()
 
 void Pong::Init()
 {
+	_state = GAME_ACTIVE;
+	_life = 3;
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(1, 100);
 
 	_control_block = new ControlBlock(_MAPSIZE);
-	_b = new Ball({ -2,0 }, { 1,1 }, 1,3);
+	_b = new Ball({ -2,0 }, { 1,1 }, 0.7,3);
 	_b->setVector(glm::normalize(glm::vec2(0.35, 0.97 )));
 
 	_update_requires.push_back(_control_block);
@@ -23,10 +26,12 @@ void Pong::Init()
 
 	//B->setVector({ dis(gen) / static_cast<double>(100),dis(gen) / static_cast<double>(100) });
 	printf("%f%f", _b->getVector().x, _b->getVector().y);
-	_blocks.push_back(new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(3, _MAPSIZE * 2), true));
-	_blocks.push_back(new Block(pt(_MAPSIZE, -_MAPSIZE + 30), pt(3, _MAPSIZE * 2), true));
-	_blocks.push_back(new Block(pt(-_MAPSIZE, _MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true));
-	_blocks.push_back(new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true));
+	_blocks.push_back(new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(3, _MAPSIZE * 2), true)); //left
+	_blocks.push_back(new Block(pt(_MAPSIZE, -_MAPSIZE + 30), pt(3, _MAPSIZE * 2), true));//right
+	_blocks.push_back(new Block(pt(-_MAPSIZE, _MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true));//top
+
+
+	_deadline = new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true);//bottom
 
 	for (int i = 0; i <4; i++) {
 		for (int j = 0; j < MAPX; j ++) {
@@ -57,6 +62,7 @@ void Pong::Update()
 				// destroy block if not solid
 				if (!i->_isSolid)
 					i->swapVisibility();
+
 				// collision resolution
 				Direction dir = std::get<1>(collision);
 				glm::vec2 diff_vector = std::get<2>(collision);
@@ -84,6 +90,21 @@ void Pong::Update()
 		}
 	}
 
+	Collision collision = CheckCollision(*_b, *_deadline);
+
+	if (std::get<0>(collision))
+	{
+		_b->setYVectorInverse();
+		if(--_life == 0)
+		{
+			_state = GAME_END;
+			Reset();
+			_state = GAME_ACTIVE;
+		}
+
+
+	}
+
 
 	Collision result = CheckCollision(*_b, *_control_block);
 	if (std::get<0>(result))
@@ -107,8 +128,7 @@ void Pong::Update()
 	for (const auto i : _update_requires) {
 		i->update();
 	}
-	
-	Render();
+
 }
 
 void Pong::Render()
@@ -125,9 +145,33 @@ void Pong::Render()
 		i->draw();
 	}
 
+	DrawText("Life: " + std::to_string(_life), 0, 0);
 
 	glutPostRedisplay();
 	glutSwapBuffers();
+}
+
+void Pong::tick()
+{
+	if (_state == GAME_ACTIVE) {
+		Update();
+		Render();
+	}
+}
+
+void Pong::Reset()
+{
+	Clear();
+	Init();
+}
+
+void Pong::DrawText(string str, float width, float height)
+{
+	glColor3f(0.0f, 0.0f, 0.0f);
+	glRasterPos2f(width, height);
+	for (char c : str) {
+		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c);
+	}
 }
 
 
@@ -197,12 +241,13 @@ void Pong::ProcessInput(float dt)
 
 void Pong::Clear()
 {
-	delete _b;
-	for (const auto i : _update_requires) {
+	for (auto& i : _update_requires) {
 		delete i;
 	}
-	delete _control_block;
+	_update_requires.clear();
 	for (auto& i : _blocks) {
 		delete i;
 	}
+	_blocks.clear();
+	delete _deadline;
 }

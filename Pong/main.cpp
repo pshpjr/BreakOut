@@ -50,14 +50,9 @@ void MyMotion(int x, int y) {
 	glutPostRedisplay();
 }
 
-void Render()
+void Tick()
 {
-	Breakout.Render();
-}
-
-void Update()
-{
-	Breakout.Update();
+	Breakout.tick();
 }
 
 void GameInit()
@@ -72,11 +67,12 @@ void GLInit() {
 	glutInitWindowSize(800, 800);
 	glutCreateWindow("Pong Loader");
 	glOrtho(-WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE);
-	glutDisplayFunc(Update);
+	glutDisplayFunc(Tick);
 	glutMouseFunc(MyMouse);
 	glutMotionFunc(MyMotion);
 	glutKeyboardFunc(KeyDown);
 	glutKeyboardUpFunc(KeyUp);
+	glDisable(GL_LIGHTING);
 	
 }
 

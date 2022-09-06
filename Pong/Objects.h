@@ -7,8 +7,9 @@
 class StaticObject {
 public:
 	StaticObject() = default;
+	virtual ~StaticObject() = default;
 	virtual void draw() const {}
-
+	
 public:
 	void swapVisibility() {
 		this->_visible = !this->_visible;
@@ -24,6 +25,7 @@ class Moveable {
 
 public:
 	Moveable() = default;
+	virtual ~Moveable() = default;
 	Moveable(const pt location, const pt vector, const float speed) : _location(location), _vector(vector), _speed(speed) {}
 
 	void setVector(const pt vector) { _vector = vector; }
@@ -106,7 +108,7 @@ class Ball : public StaticObject, public Moveable {
 public:
 	Ball() = default;
 	Ball(const pt location, const pt vector, const float speed, const float ballSize) :
-		Moveable(location, vector, speed), _radius(ballSize) {};
+		Moveable(location, vector, speed), _radius(ballSize) {}
 
 	bool isPointInBall(const pt& point) const {
 		return  distance(_location, point) <= _radius;
@@ -143,7 +145,7 @@ private:
 
 class ControlBlock : public Block, public Moveable { //컨트롤 박스는 로케이션이 좌하단.
 public:
-	ControlBlock(int32 mapSize) : Block({ -20, -40 }, { 40, 2 }), Moveable({ 0, 0 }, { 0, 0 }, 0), _mapSize(mapSize) {}
+	ControlBlock(int32 mapSize) : Block({ -20, -40 }, { 60, 2 }), Moveable({ 0, 0 }, { 0, 0 }, 0), _mapSize(mapSize) {}
 
 	void update() override
 	{
@@ -153,10 +155,10 @@ public:
 		if (_start.x + _size.x > _mapSize)
 			_start.x = _mapSize - _size.x;
 
-		if (_speed <= 0.1)
+		if (_speed <= 0.1f)
 			_speed = 0;
 		else
-			_speed *= 0.85;
+			_speed *= 0.85f;
 	}
 
 	pt calcBallReflectVector(const Ball* ball) const
