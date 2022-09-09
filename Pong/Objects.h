@@ -36,7 +36,7 @@ public:
 	pt getVector() const { return _vector; }
 	pt getLocation() const { return _location; }
 	virtual void update() {
-		_location += _vector * _speed;
+		_location += _vector * (_speed * 2 );
 	}
 
 protected:
@@ -143,6 +143,8 @@ private:
 	float _radius = 2;
 };
 
+//TODO: mapsize 변수 외부로 빼기
+//클래스 좀 이상함
 class ControlBlock : public Block, public Moveable { //컨트롤 박스는 로케이션이 좌하단.
 public:
 	ControlBlock(int32 mapSize) : Block({ -20, -40 }, { 60, 2 }), Moveable({ 0, 0 }, { 0, 0 }, 0), _mapSize(mapSize) {}
@@ -161,14 +163,6 @@ public:
 			_speed *= 0.85f;
 	}
 
-	pt calcBallReflectVector(const Ball* ball) const
-	{
-		const float center = _start.x + (_size.x / 2);
-		const float delta = -(center - ball->getLocation().x) / (_size.x / 2);
-		float result = ball->getVector().x > 0 ? delta : -delta;
-
-		return { result,ball->getVector().y };
-	}
 private:
 	int32 _mapSize = 0;
 };

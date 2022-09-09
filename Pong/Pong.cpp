@@ -11,123 +11,150 @@ Pong::~Pong()
 
 void Pong::Init()
 {
-	_state = GAME_ACTIVE;
+	//변수 초기화 및 임의의 공 방향 정하기
+	_state = GAME_LOAD;
 	_life = 3;
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(1, 100);
 
-	_control_block = new ControlBlock(_MAPSIZE);
-	_b = new Ball({ -2,0 }, { 1,1 }, 0.7,3);
+	_control_block = new ControlBlock(MAPSIZE);
+	_b = new Ball({ -2,0 }, { 1,1 }, 1,3);
 	_b->setVector(glm::normalize(glm::vec2(0.35, 0.97 )));
+
+
+	//게임판 생성
 
 	_update_requires.push_back(_control_block);
 	_update_requires.push_back(_b);
 
 	//B->setVector({ dis(gen) / static_cast<double>(100),dis(gen) / static_cast<double>(100) });
-	printf("%f%f", _b->getVector().x, _b->getVector().y);
-	_blocks.push_back(new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(3, _MAPSIZE * 2), true)); //left
-	_blocks.push_back(new Block(pt(_MAPSIZE, -_MAPSIZE + 30), pt(3, _MAPSIZE * 2), true));//right
-	_blocks.push_back(new Block(pt(-_MAPSIZE, _MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true));//top
+	_blocks.push_back(new Block(pt(-MAPSIZE, -MAPSIZE + 30), pt(3, MAPSIZE * 2), true)); //left
+	_blocks.push_back(new Block(pt(MAPSIZE, -MAPSIZE + 30), pt(3, MAPSIZE * 2), true));//right
+	_blocks.push_back(new Block(pt(-MAPSIZE, MAPSIZE + 30), pt(MAPSIZE * 2, 3), true));//top
 
 
-	_deadline = new Block(pt(-_MAPSIZE, -_MAPSIZE + 30), pt(_MAPSIZE * 2, 3), true);//bottom
+	_deadline = new Block(pt(-MAPSIZE, -MAPSIZE + 30), pt(MAPSIZE * 2, 3), true);//bottom
 
+	//TODO: 두 개 하나로 통합
 	for (int i = 0; i <4; i++) {
 		for (int j = 0; j < MAPX; j ++) {
-			_Map[i][j] = 3;
+			_map[i][j] = 3;
 		}
 	}
 
-
-	for (int i = -_MAPSIZE + 40; i <= _MAPSIZE - 40; i += 10) {
-		for (int j = 30; j <= _MAPSIZE - 30; j += 5) {
+	for (int i = -MAPSIZE + 40; i <= MAPSIZE - 40; i += 10) {
+		for (int j = 30; j <= MAPSIZE - 30; j += 5) {
 			_blocks.push_back(new Block(pt(i, j), pt(10, 5)));
 		}
 	}
 
+	_state = GAME_ACTIVE;
+}
 
+bool Pong::isDead() const
+{
+	return _life <= 0;
 }
 
 void Pong::Update()
 {
-	int collision_result;
-	int inverse_vector_info = 0;
+	for (const auto i : _update_requires) {
+		i->update();
+	}
+
+	block_collision_test();
+
+	control_block_collision_test();
+
+	ball_out_test();
+
+	ProcessInput(16.6);
+
+
+
+}
+
+void Pong::block_collision_test() const
+{
+	Collision collision(false, UP, { 0,0 });
+
 	for (auto& i : _blocks) {
-		if (i->isVisible())
+		if (i->isVisible() == false)
+			continue;
+
+		collision = CheckCollision(*_b, *i);
+		if (collision.isCollision() == false)
+			continue;
+
+		//아래 코드들은 충돌한 경우 실행
+		if (!i->_isSolid)
+			i->swapVisibility();
+
+		Direction dir = collision.collisionDirection();
+		glm::vec2 diff_vector = collision.diffVector();
+		if (dir == LEFT || dir == RIGHT)
 		{
-			Collision collision = CheckCollision(*_b, *i);
-			if (std::get<0>(collision)) // if collision is true
-			{
-				// destroy block if not solid
-				if (!i->_isSolid)
-					i->swapVisibility();
+			_b->setXVectorInverse();
 
-				// collision resolution
-				Direction dir = std::get<1>(collision);
-				glm::vec2 diff_vector = std::get<2>(collision);
-				if (dir == LEFT || dir == RIGHT) // horizontal collision
-				{
-					_b->setXVectorInverse(); // reverse horizontal velocity
-					// relocate
-					float penetration = _b->getRadius() - std::abs(diff_vector.x);
-					if (dir == LEFT)
-						_b->move(penetration,0); // move ball to right
-					else
-						_b->move(-penetration, 0); // move ball to left;
-				}
-				else // vertical collision
-				{
-					_b->setYVectorInverse(); // reverse vertical velocity
-					// relocate
-					float penetration = _b->getRadius() - std::abs(diff_vector.y);
-					if (dir == UP)
-						_b->move(0, -penetration); // move ball back up
-					else
-						_b->move(0, penetration); // move ball back down
-				}
-			}
+			float penetration = _b->getRadius() - std::abs(diff_vector.x);
+			if (dir == LEFT)
+				_b->move(penetration, 0);
+			else
+				_b->move(-penetration, 0);
 		}
-	}
-
-	Collision collision = CheckCollision(*_b, *_deadline);
-
-	if (std::get<0>(collision))
-	{
-		_b->setYVectorInverse();
-		if(--_life == 0)
+		else
 		{
-			_state = GAME_END;
-			Reset();
-			_state = GAME_ACTIVE;
+			_b->setYVectorInverse();
+
+			float penetration = _b->getRadius() - std::abs(diff_vector.y);
+			if (dir == UP)
+				_b->move(0, -penetration);
+			else
+				_b->move(0, penetration);
+			
 		}
-
-
+		break;
 	}
+}
 
+void Pong::control_block_collision_test() const
+{
 
-	Collision result = CheckCollision(*_b, *_control_block);
-	if (std::get<0>(result))
+	Collision collision = CheckCollision(*_b, *_control_block);
+	if (collision.isCollision() == true)
 	{
-
 		float centerBoard = _control_block->getStart().x + _control_block->getSize().x / 2.0f;
-		float distance = _b->getLocation().x + - centerBoard;
+		float distance = _b->getLocation().x + -centerBoard;
 		float percentage = distance / (_control_block->getSize().x / 2.0f);
 
 		glm::vec2 oldVelocity = _b->getVector();
 
-		pt newVec = {   percentage * 1 ,abs(oldVelocity.y)};
+		pt newVec = { percentage * 1 ,abs(oldVelocity.y) };
 
-		_b->setVector (glm::normalize(newVec) * glm::length(oldVelocity));
-
+		_b->setVector(glm::normalize(newVec) * glm::length(oldVelocity));
 	}
 
-	ProcessInput(1);
+}
 
+void Pong::ball_out_test() 
+{
+	Collision collision = CheckCollision(*_b, *_deadline);
 
-	for (const auto i : _update_requires) {
-		i->update();
+	if (collision.isCollision() == false)
+		return;
+
+	
+	_b->setYVectorInverse();
+	_life--;
+
+	if (isDead())
+	{
+		_state = GAME_END;
+		Reset();
+		_state = GAME_ACTIVE;
 	}
+	
 
 }
 
@@ -147,15 +174,17 @@ void Pong::Render()
 
 	DrawText("Life: " + std::to_string(_life), 0, 0);
 
-	glutPostRedisplay();
+
 	glutSwapBuffers();
+	glutPostRedisplay();
 }
 
-void Pong::tick()
+void Pong::Tick()
 {
 	if (_state == GAME_ACTIVE) {
 		Update();
 		Render();
+		this_thread::sleep_for(16.6ms);
 	}
 }
 
@@ -173,7 +202,6 @@ void Pong::DrawText(string str, float width, float height)
 		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c);
 	}
 }
-
 
 Direction Pong::VectorDirection(glm::vec2 target) const
 {
@@ -217,9 +245,15 @@ Collision Pong::CheckCollision(const Ball& one, const Block& two) const
 	difference = closest - center;
 	float len = glm::length(difference);
 	if ( len <= one.getRadius())
-		return std::make_tuple(true, VectorDirection(difference), difference);
+		return Collision(true, VectorDirection(difference), difference);
 	else
-		return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+		return Collision(false, UP, glm::vec2(0.0f, 0.0f));
+}
+
+
+void Pong::changeState(game_state state)
+{
+	_state = state;
 }
 
 void Pong::ProcessInput(float dt)
@@ -229,12 +263,12 @@ void Pong::ProcessInput(float dt)
 	if (this->Keys['d'])
 	{
 		_control_block->setVector({1,0});
-		_control_block->setSpeed(2);
+		_control_block->setSpeed(1);
 	}
 	if (this->Keys['a'])
 	{
 		_control_block->setVector({ -1,0 });
-		_control_block->setSpeed(2);
+		_control_block->setSpeed(1);
 	}
 }
 

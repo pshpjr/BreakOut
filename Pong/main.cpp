@@ -5,15 +5,16 @@
 
 /*TODO: 좌표 처리 정수로 변환*/
 
-int WINDOWSIZE = 100;
-int MAPSIZE = WINDOWSIZE - 20;
 
-const int32 SCREEN_WIDTH = 800;
-const int32 SCREEN_HEIGHT = 600;
+
+int WINDOWSIZE = 100;
+
+
+const int32 SCREEN_WIDTH = 1920;
+const int32 SCREEN_HEIGHT = 1080;
 
 Pong Breakout(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOWSIZE);
 
-double BALLSIZE = 2.5;
 
 bool DEBUG = TRUE;
 
@@ -29,57 +30,36 @@ void my_reshape(int w, int h) {
 	glLoadIdentity();
 }
 
-void KeyDown(unsigned char key, int x, int y)
-{
-	Breakout.Keys[key] = true;
-}
-
-void KeyUp(unsigned char key, int x, int y)
-{
-	Breakout.Keys[key] = false;
-}
-
 
 void MyMouse(int button, int state, int x, int y) {
-
-	glutPostRedisplay();
 }
 
 void MyMotion(int x, int y) {
-
-	glutPostRedisplay();
-}
-
-void Tick()
-{
-	Breakout.tick();
-}
-
-void GameInit()
-{
-	Breakout.Init();
 }
 
 void GLInit() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(800, 800);
+	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutCreateWindow("Pong Loader");
 	glOrtho(-WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE);
-	glutDisplayFunc(Tick);
-	glutMouseFunc(MyMouse);
-	glutMotionFunc(MyMotion);
-	glutKeyboardFunc(KeyDown);
-	glutKeyboardUpFunc(KeyUp);
+	glutDisplayFunc([]() {
+		Breakout.Tick(); 
+		});
+	glutKeyboardFunc([](unsigned char key, int x, int y) {
+		Breakout.Keys[key] = true;
+		});
+	glutKeyboardUpFunc([](unsigned char key, int x, int y) {
+		Breakout.Keys[key] = false;
+		});
 	glDisable(GL_LIGHTING);
-	
 }
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
-	GameInit();
 	GLInit();
+	Breakout.changeState(Pong::GAME_ACTIVE);
 
 	glutMainLoop();
 	return 0;
