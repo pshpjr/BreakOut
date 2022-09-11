@@ -58,6 +58,18 @@ public:
 		WINDOWSIZE = windowSize;
 	}
 
+	Pong(int32 width, int32 height, int32 x, int32 y,int32 windowSize) : Pong(width, height,windowSize)
+	{
+		_viewportX = x;
+		_viewportY = y;
+	}
+	Pong(int32 width, int32 height, int32 x, int32 y, int32 windowSize, char keyL, char keyR) : Pong(width, height, windowSize)
+	{
+		_viewportX = x;
+		_viewportY = y;
+		_keyL = keyL;
+		_keyR = keyR;
+	}
 	Pong(int32 width, int32 height, int32 windowSize, float delta): Pong(width, height, windowSize)
 	{
 		_deltaTime = delta;
@@ -91,20 +103,21 @@ private:
 
 
 public:
-	Ball* _b;
-	ControlBlock* _control_block;
+	Ball* _b;// 플레이어의 공
+	ControlBlock* _control_block; // 공 튀기는 막대
 
-	std::vector<Block*> _blocks;
-	Block* _deadline; 
-	std::vector<Moveable*> _update_requires;
+	std::vector<Block*> _blocks; //벽돌과 맵 외부 벽
+	Block* _deadline; //공이 벗어나는걸 판정하기 위한 선
+	std::vector<Moveable*> _update_requires; // 위치가 변하는 애들을 한 번에 갱신하기 위해
 
-	int Keys[1024];
+	bool Keys[256]; //키보드 입력
 
 
 private:
 	game_state _state;
 	int32 _width;
 	int32 _height;
+	int32 _viewportX = 0, _viewportY = 0;
 
 	int WINDOWSIZE = 100;
 	int MAPSIZE = WINDOWSIZE - 20;
@@ -116,5 +129,7 @@ private:
 	int _map[10][10];
 
 	int _life = 3;
+
+	char _keyL, _keyR;
 };
 

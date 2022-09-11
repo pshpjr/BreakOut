@@ -14,21 +14,21 @@ void Pong::Init()
 	//변수 초기화 및 임의의 공 방향 정하기
 	_state = GAME_LOAD;
 	_life = 3;
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<int> dis(1, 100);
-
+	//std::random_device rd;
+	//std::mt19937 gen(rd());
+	//std::uniform_int_distribution<int> dis(1, 100);
+	//_b->setVector({ dis(gen) / static_cast<double>(100),dis(gen) / static_cast<double>(100) });
 	_control_block = new ControlBlock(MAPSIZE);
 	_b = new Ball({ -2,0 }, { 1,1 }, 1,3);
 	_b->setVector(glm::normalize(glm::vec2(0.35, 0.97 )));
 
-
+	memset(Keys, 0, sizeof(Keys));
 	//게임판 생성
 
 	_update_requires.push_back(_control_block);
 	_update_requires.push_back(_b);
 
-	//B->setVector({ dis(gen) / static_cast<double>(100),dis(gen) / static_cast<double>(100) });
+	
 	_blocks.push_back(new Block(pt(-MAPSIZE, -MAPSIZE + 30), pt(3, MAPSIZE * 2), true)); //left
 	_blocks.push_back(new Block(pt(MAPSIZE, -MAPSIZE + 30), pt(3, MAPSIZE * 2), true));//right
 	_blocks.push_back(new Block(pt(-MAPSIZE, MAPSIZE + 30), pt(MAPSIZE * 2, 3), true));//top
@@ -68,9 +68,6 @@ void Pong::Update()
 	control_block_collision_test();
 
 	ball_out_test();
-
-	ProcessInput(16.6);
-
 
 
 }
@@ -160,7 +157,8 @@ void Pong::ball_out_test()
 
 void Pong::Render()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(_viewportX, _viewportY, _width, _height);
+
 	glClearColor(1, 1, 1, 1);
 
 	glColor3f(1.0f, 0.0f, 1.0f);
@@ -175,17 +173,18 @@ void Pong::Render()
 	DrawText("Life: " + std::to_string(_life), 0, 0);
 
 
-	glutSwapBuffers();
-	glutPostRedisplay();
+
 }
 
 void Pong::Tick()
 {
+	ProcessInput(16.6);
 	if (_state == GAME_ACTIVE) {
 		Update();
 		Render();
-		this_thread::sleep_for(16.6ms);
+		
 	}
+
 }
 
 void Pong::Reset()
@@ -260,12 +259,12 @@ void Pong::ProcessInput(float dt)
 {
 	float velocity = 1 * dt;
 	// move playerboard
-	if (this->Keys['d'])
+	if (this->Keys[_keyR])
 	{
 		_control_block->setVector({1,0});
 		_control_block->setSpeed(1);
 	}
-	if (this->Keys['a'])
+	if (this->Keys[_keyL])
 	{
 		_control_block->setVector({ -1,0 });
 		_control_block->setSpeed(1);

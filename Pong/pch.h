@@ -11,3 +11,4 @@
 #include "Macro.h"
 #include "Objects.h"
 #include "string.h"
+#include "GameManager.h"

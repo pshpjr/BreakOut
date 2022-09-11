@@ -13,7 +13,8 @@ int WINDOWSIZE = 100;
 const int32 SCREEN_WIDTH = 1920;
 const int32 SCREEN_HEIGHT = 1080;
 
-Pong Breakout(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOWSIZE);
+GameManager GM;
+
 
 
 bool DEBUG = TRUE;
@@ -45,21 +46,35 @@ void GLInit() {
 	glutCreateWindow("Pong Loader");
 	glOrtho(-WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE);
 	glutDisplayFunc([]() {
-		Breakout.Tick(); 
+			GM.Tick();
 		});
 	glutKeyboardFunc([](unsigned char key, int x, int y) {
-		Breakout.Keys[key] = true;
+		for(auto& i : GM._pongs)
+		{
+			i.Keys[key] = true;
+		}
 		});
 	glutKeyboardUpFunc([](unsigned char key, int x, int y) {
-		Breakout.Keys[key] = false;
+		for (auto& i : GM._pongs)
+		{
+			i.Keys[key] = false;
+		}
 		});
+
 	glDisable(GL_LIGHTING);
 }
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	GLInit();
-	Breakout.changeState(Pong::GAME_ACTIVE);
+
+	GM.AddPong(SCREEN_WIDTH / 2, SCREEN_HEIGHT, 0, 0, WINDOWSIZE,'a','d');
+	GM.AddPong(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH / 2, 0, WINDOWSIZE,'j','l');
+	for (auto& i : GM._pongs)
+	{
+		i.changeState(Pong::GAME_ACTIVE);
+	}
+
 
 	glutMainLoop();
 	return 0;
