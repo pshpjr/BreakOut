@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="pch.cpp">
@@ -170,6 +171,7 @@
     <ClCompile Include="Pong.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="pch.h" />
