@@ -29,9 +29,9 @@ void Pong::Init()
 	_update_requires.push_back(_b);
 
 	
-	_blocks.push_back(new Block(pt(-MAPSIZE, -MAPSIZE + 30), pt(3, MAPSIZE * 2), true)); //left
-	_blocks.push_back(new Block(pt(MAPSIZE, -MAPSIZE + 30), pt(3, MAPSIZE * 2), true));//right
-	_blocks.push_back(new Block(pt(-MAPSIZE, MAPSIZE + 30), pt(MAPSIZE * 2, 3), true));//top
+	_blocks.push_back(new Block(pt(-MAPSIZE, -MAPSIZE + 10), pt(3, MAPSIZE * 2), true)); //left
+	_blocks.push_back(new Block(pt(MAPSIZE, -MAPSIZE + 10), pt(3, MAPSIZE * 2), true));//right
+	_blocks.push_back(new Block(pt(-MAPSIZE, MAPSIZE + 10), pt(MAPSIZE * 2, 3), true));//top
 
 
 	_deadline = new Block(pt(-MAPSIZE, -MAPSIZE + 30), pt(MAPSIZE * 2, 3), true);//bottom

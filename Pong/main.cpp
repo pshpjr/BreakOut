@@ -10,8 +10,8 @@
 int WINDOWSIZE = 100;
 
 
-const int32 SCREEN_WIDTH = 1920;
-const int32 SCREEN_HEIGHT = 1080;
+int32 SCREEN_WIDTH = 800;
+int32 SCREEN_HEIGHT = 600;
 
 GameManager GM;
 
@@ -38,10 +38,28 @@ void MyMouse(int button, int state, int x, int y) {
 void MyMotion(int x, int y) {
 }
 
+void GetMonitorResolution(OUT int& width, OUT int& height)
+{
+#ifdef _WIN32
+	MONITORINFO target;
+	target.cbSize = sizeof(target);
+	HMONITOR Hmon = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
+	GetMonitorInfo(Hmon, &target);
+
+	width = target.rcMonitor.right;
+	height = target.rcMonitor.bottom;
+#elif __linux__
+
+#endif
+
+}
+
 void GLInit() {
+	GetMonitorResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowPosition(100, 100);
+	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutCreateWindow("Pong Loader");
 	glOrtho(-WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE);
