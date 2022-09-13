@@ -38,24 +38,9 @@ void MyMouse(int button, int state, int x, int y) {
 void MyMotion(int x, int y) {
 }
 
-void GetMonitorResolution(OUT int& width, OUT int& height)
-{
-#ifdef _WIN32
-	MONITORINFO target;
-	target.cbSize = sizeof(target);
-	HMONITOR Hmon = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTOPRIMARY);
-	GetMonitorInfo(Hmon, &target);
-
-	width = target.rcMonitor.right;
-	height = target.rcMonitor.bottom;
-#elif __linux__
-
-#endif
-
-}
-
 void GLInit() {
-	GetMonitorResolution(SCREEN_WIDTH, SCREEN_HEIGHT);
+	SCREEN_HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
+	SCREEN_WIDTH = glutGet(GLUT_SCREEN_WIDTH);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
