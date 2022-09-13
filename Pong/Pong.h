@@ -86,7 +86,7 @@ public:
 	void Clear();
 
 
-	void DrawText(string str, float width, float height);
+	void DrawText(string str, float width, float height, float R = 0, float G = 0, float B = 0);
 
 
 
@@ -123,8 +123,12 @@ private:
 	int MAPSIZE = WINDOWSIZE - 20;
 	float BALLSIZE = 2.5;
 
+	const int WALLTHICKNESS = 3;
+	int BLOCKWIDTH = 16;
+	int BLOCKHEIGHT = 8;
 	float _deltaTime = 16.6;//60fps
 	
+	bool _isMyPlay = true;
 
 	int _map[10][10];
 

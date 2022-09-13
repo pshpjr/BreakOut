@@ -91,6 +91,14 @@ public:
 		glVertex2f(_start.x, _start.y + _size.y);
 		glEnd();
 
+		glColor3f(0, 0, 0);
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(_start.x, _start.y);
+		glVertex2f(_start.x + _size.x, _start.y);
+		glVertex2f(_start.x + _size.x, _start.y + _size.y);
+		glVertex2f(_start.x, _start.y + _size.y);
+		glEnd();
+
 	}
 
 public:

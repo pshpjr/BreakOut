@@ -29,9 +29,9 @@ void Pong::Init()
 	_update_requires.push_back(_b);
 
 	
-	_blocks.push_back(new Block(pt(-MAPSIZE, -MAPSIZE + 10), pt(3, MAPSIZE * 2), true)); //left
-	_blocks.push_back(new Block(pt(MAPSIZE, -MAPSIZE + 10), pt(3, MAPSIZE * 2), true));//right
-	_blocks.push_back(new Block(pt(-MAPSIZE, MAPSIZE + 10), pt(MAPSIZE * 2, 3), true));//top
+	_blocks.push_back(new Block(pt(-MAPSIZE, -MAPSIZE + 10), pt(WALLTHICKNESS, MAPSIZE * 2), true)); //left
+	_blocks.push_back(new Block(pt(MAPSIZE, -MAPSIZE + 10), pt(WALLTHICKNESS, MAPSIZE * 2), true));//right
+	_blocks.push_back(new Block(pt(-MAPSIZE, MAPSIZE + 10), pt(MAPSIZE * 2 + WALLTHICKNESS, WALLTHICKNESS), true));//top
 
 
 	_deadline = new Block(pt(-MAPSIZE, -MAPSIZE + 30), pt(MAPSIZE * 2, 3), true);//bottom
@@ -43,9 +43,9 @@ void Pong::Init()
 		}
 	}
 
-	for (int i = -MAPSIZE + 40; i <= MAPSIZE - 40; i += 10) {
-		for (int j = 30; j <= MAPSIZE - 30; j += 5) {
-			_blocks.push_back(new Block(pt(i, j), pt(10, 5)));
+	for (int i = -MAPSIZE + 20; i <= MAPSIZE - 20; i += BLOCKWIDTH) {
+		for (int j = 20; j <= MAPSIZE - 20; j += BLOCKHEIGHT) {
+			_blocks.push_back(new Block(pt(i, j), pt(BLOCKWIDTH, BLOCKHEIGHT)));
 		}
 	}
 
@@ -170,9 +170,8 @@ void Pong::Render()
 		i->draw();
 	}
 
-	DrawText("Life: " + std::to_string(_life), 0, 0);
-
-
+	if(_isMyPlay)
+		DrawText("Life: " + std::to_string(_life), 0, WINDOWSIZE * 0.8);
 
 }
 
@@ -193,12 +192,12 @@ void Pong::Reset()
 	Init();
 }
 
-void Pong::DrawText(string str, float width, float height)
+void Pong::DrawText(string str, float width, float height,float R, float G, float B)
 {
-	glColor3f(0.0f, 0.0f, 0.0f);
+	glColor3f(R, G, B);
 	glRasterPos2f(width, height);
 	for (char c : str) {
-		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c);
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
 	}
 }
 
