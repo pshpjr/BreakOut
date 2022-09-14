@@ -37,7 +37,8 @@ public:
 		GAME_ACTIVE,
 		GAME_LOAD,
 		GAME_MENU,
-		GAME_END
+		GAME_END,
+		GAME_DEAD
 	};
 
 private:
@@ -96,6 +97,8 @@ public:
 	std::vector<Block*> _blocks; //벽돌과 맵 외부 벽
 	Block* _deadline; //공이 벗어나는걸 판정하기 위한 선
 	std::vector<Moveable*> _update_requires; // 위치가 변하는 애들을 한 번에 갱신하기 위해
+
+	Block* _deadBlind;
 
 	bool Keys[256]; //키보드 입력
 

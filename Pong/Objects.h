@@ -106,6 +106,30 @@ public:
 
 	}
 
+	void draw(float R, float G, float B) const
+	{
+		if (!isVisible())
+			return;
+
+		glColor3f(R, G, B);
+
+		glBegin(GL_POLYGON);
+		glVertex2f(_start.x, _start.y);
+		glVertex2f(_start.x + _size.x, _start.y);
+		glVertex2f(_start.x + _size.x, _start.y + _size.y);
+		glVertex2f(_start.x, _start.y + _size.y);
+		glEnd();
+
+		glColor3f(0, 0, 0);
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(_start.x, _start.y);
+		glVertex2f(_start.x + _size.x, _start.y);
+		glVertex2f(_start.x + _size.x, _start.y + _size.y);
+		glVertex2f(_start.x, _start.y + _size.y);
+		glEnd();
+
+	}
+
 public:
 	bool _isSolid = false;
 

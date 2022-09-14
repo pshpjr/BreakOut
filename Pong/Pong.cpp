@@ -49,7 +49,7 @@ void Pong::Init()
 	_update_requires.push_back(_control_block);
 	_update_requires.push_back(_b);
 
-
+	_deadBlind = new Block({ _viewportX,_viewportY }, { _width,_height });
 
 	_blocks.push_back(new Block(pt(MAPLEFT-WALLTHICKNESS, MAPBOTTOM), pt(WALLTHICKNESS, mapHeight), true)); //left
 	_blocks.push_back(new Block(pt(MAPRIGHT, MAPBOTTOM), pt(WALLTHICKNESS, mapHeight), true));//right
@@ -192,6 +192,9 @@ void Pong::ball_out_test()
 	//	_state = GAME_ACTIVE;
 	//}
 
+	if(isDead())
+		_state = GAME_DEAD;
+
 
 	
 
@@ -206,6 +209,14 @@ void Pong::Render()
 	glClearColor(1, 1, 1, 1);
 
 	glColor3f(1.0f, 0.0f, 1.0f);
+
+	if(_state == GAME_DEAD)
+	{
+		_deadBlind->draw(0.25f, 0.25f, 0.25f);
+		return;
+	}
+
+
 
 	_b->draw();
 	_control_block->draw();
@@ -223,11 +234,10 @@ void Pong::Render()
 void Pong::Tick()
 {
 	ProcessInput(16.6);
-	if (_state == GAME_ACTIVE) {
+	if (_state == GAME_ACTIVE)
 		Update();
-		Render();
-	}
 
+	Render();
 }
 
 void Pong::Reset()

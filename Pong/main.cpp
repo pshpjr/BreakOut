@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 	{
 		for (int j = 0; j < 7; j++)
 		{
-			GM.AddPong(mWidth, mHeight, j * mWidth + width*2, i * mHeight);
+			GM.AddPong(mWidth, mHeight, j * mWidth + width*2, i * mHeight,'j','l');
 		}
 	}
 
