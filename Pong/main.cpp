@@ -15,9 +15,7 @@ int32 SCREEN_HEIGHT = 600;
 
 GameManager GM;
 
-
-
-bool DEBUG = TRUE;
+bool noGUI = false;
 
 //박스는 항상 좌하단 좌표를 start로 넣을 것
 
@@ -31,11 +29,37 @@ void my_reshape(int w, int h) {
 	glLoadIdentity();
 }
 
+void GameInit()
+{
+	int width = SCREEN_WIDTH / 3;
+	int mWidth = width / 7;
+	int mHeight = SCREEN_HEIGHT / 7;
 
-void MyMouse(int button, int state, int x, int y) {
-}
 
-void MyMotion(int x, int y) {
+	GM.AddPong(width, SCREEN_HEIGHT, width, 0);
+	GM._pongs[0]._isMyPlay = true;
+
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			GM.AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
+		}
+	}
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			GM.AddPong(mWidth, mHeight, j * mWidth + width * 2, i * mHeight, 'j', 'l');
+		}
+	}
+
+
+
+	for (auto& i : GM._pongs)
+	{
+		i.changeState(Pong::GAME_ACTIVE);
+	}
 }
 
 void GLInit() {
@@ -48,61 +72,21 @@ void GLInit() {
 	glutCreateWindow("Pong Loader");
 	glutFullScreen();
 	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
-	glutDisplayFunc([]() {
-			GM.Tick();
-		});
-	glutKeyboardFunc([](unsigned char key, int x, int y) {
-		for(auto& i : GM._pongs)
-		{
-			i.Keys[key] = true;
-		}
-		});
-	glutKeyboardUpFunc([](unsigned char key, int x, int y) {
-		for (auto& i : GM._pongs)
-		{
-			i.Keys[key] = false;
-		}
-		});
 
 	glDisable(GL_LIGHTING);
 }
 
 int main(int argc, char** argv) {
-	glutInit(&argc, argv);
-	GLInit();
-
-	int width = SCREEN_WIDTH / 3;
-	int mWidth = width / 7;
-	int mHeight = SCREEN_HEIGHT / 7;
-
-
-	GM.AddPong(width, SCREEN_HEIGHT, width, 0);
-	GM._pongs[0]._isMyPlay = true;
-
-	for(int i = 0; i <7;i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			GM.AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
-		}
+	if (noGUI == false) {
+		glutInit(&argc, argv);
+		GLInit();
 	}
-	for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			GM.AddPong(mWidth, mHeight, j * mWidth + width*2, i * mHeight,'j','l');
-		}
-	}
+	GameInit();
 
+	GM.noGUI(noGUI);
 
+	GM.Start();
 
-	for (auto& i : GM._pongs)
-	{
-		i.changeState(Pong::GAME_ACTIVE);
-	}
-
-
-	glutMainLoop();
 	return 0;
 }
 

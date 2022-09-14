@@ -103,6 +103,8 @@ public:
 	bool Keys[256]; //키보드 입력
 
 	bool _isMyPlay = false;
+
+	bool noGUI = false;
 private:
 	game_state _state;
 	int32 _width;
@@ -128,5 +130,6 @@ private:
 	int _life = 3;
 	int _mapwidth;
 	char _keyL = 'a', _keyR = 'd';
+
 };
 
