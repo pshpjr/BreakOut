@@ -10,8 +10,8 @@
 int WINDOWSIZE = 100;
 
 
-const int32 SCREEN_WIDTH = 1920;
-const int32 SCREEN_HEIGHT = 1080;
+int32 SCREEN_WIDTH = 800;
+int32 SCREEN_HEIGHT = 600;
 
 GameManager GM;
 
@@ -39,12 +39,15 @@ void MyMotion(int x, int y) {
 }
 
 void GLInit() {
+	SCREEN_HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
+	SCREEN_WIDTH = glutGet(GLUT_SCREEN_WIDTH);
+
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutCreateWindow("Pong Loader");
-	glOrtho(-WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE, -WINDOWSIZE, WINDOWSIZE);
+	glutFullScreen();
+	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
 	glutDisplayFunc([]() {
 			GM.Tick();
 		});
@@ -68,8 +71,31 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	GLInit();
 
-	GM.AddPong(SCREEN_WIDTH / 2, SCREEN_HEIGHT, 0, 0, WINDOWSIZE,'a','d');
-	GM.AddPong(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH / 2, 0, WINDOWSIZE,'j','l');
+	int width = SCREEN_WIDTH / 3;
+	int mWidth = width / 7;
+	int mHeight = SCREEN_HEIGHT / 7;
+
+
+	GM.AddPong(width, SCREEN_HEIGHT, width, 0);
+	GM._pongs[0]._isMyPlay = true;
+
+	for(int i = 0; i <7;i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			GM.AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
+		}
+	}
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			GM.AddPong(mWidth, mHeight, j * mWidth + width*2, i * mHeight,'j','l');
+		}
+	}
+
+
+
 	for (auto& i : GM._pongs)
 	{
 		i.changeState(Pong::GAME_ACTIVE);

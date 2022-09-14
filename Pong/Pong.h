@@ -37,42 +37,30 @@ public:
 		GAME_ACTIVE,
 		GAME_LOAD,
 		GAME_MENU,
-		GAME_END
+		GAME_END,
+		GAME_DEAD
 	};
 
 private:
-	Pong() { Init(); }
 
 public:
 
-	Pong(int32 width, int32 height) :Pong()
-	{
-		_state = GAME_LOAD;
-		_width = width; 
-		_height = height;
-	}
 
-	//나중에 삭제
-	Pong(int32 width, int32 height,int32 windowSize): Pong(width, height)
+	Pong(int32 width, int32 height, int32 x, int32 y) :
+		_state(GAME_LOAD), _width(width), _height(height), _viewportX(x), _viewportY(y),
+		MAPLEFT(x + width * 0.1f), MAPRIGHT(x + width - width * 0.1f), MAPBOTTOM(y + height * 0.2), MAPTOP(y + height - height * 0.24f)
 	{
-		WINDOWSIZE = windowSize;
+		int mapWidth = MAPRIGHT - MAPLEFT;
+		_mapwidth = mapWidth;
+		float blockGap = mapWidth * 0.1f;
+		BLOCKWIDTH = (mapWidth - blockGap * 2.0f) / 10;
+		BLOCKHEIGHT = BLOCKWIDTH / 2;
+		Init();
 	}
-
-	Pong(int32 width, int32 height, int32 x, int32 y,int32 windowSize) : Pong(width, height,windowSize)
+	Pong(int32 width, int32 height, int32 x, int32 y, char keyL, char keyR) : Pong(width, height,x,y)
 	{
-		_viewportX = x;
-		_viewportY = y;
-	}
-	Pong(int32 width, int32 height, int32 x, int32 y, int32 windowSize, char keyL, char keyR) : Pong(width, height, windowSize)
-	{
-		_viewportX = x;
-		_viewportY = y;
 		_keyL = keyL;
 		_keyR = keyR;
-	}
-	Pong(int32 width, int32 height, int32 windowSize, float delta): Pong(width, height, windowSize)
-	{
-		_deltaTime = delta;
 	}
 
 	~Pong();
@@ -86,7 +74,7 @@ public:
 	void Clear();
 
 
-	void DrawText(string str, float width, float height);
+	void drawText(string str, float width, float height, float R = 0, float G = 0, float B = 0);
 
 
 
@@ -100,7 +88,7 @@ private:
 	void block_collision_test() const;
 	void ball_out_test();
 	void control_block_collision_test() const;
-
+	void control_block_out_test_and_modify() const;
 
 public:
 	Ball* _b;// 플레이어의 공
@@ -110,26 +98,35 @@ public:
 	Block* _deadline; //공이 벗어나는걸 판정하기 위한 선
 	std::vector<Moveable*> _update_requires; // 위치가 변하는 애들을 한 번에 갱신하기 위해
 
+	Block* _deadBlind;
+
 	bool Keys[256]; //키보드 입력
 
-
+	bool _isMyPlay = false;
 private:
 	game_state _state;
 	int32 _width;
 	int32 _height;
 	int32 _viewportX = 0, _viewportY = 0;
 
-	int WINDOWSIZE = 100;
-	int MAPSIZE = WINDOWSIZE - 20;
-	float BALLSIZE = 2.5;
+	const float MAPLEFT, MAPRIGHT,MAPBOTTOM,MAPTOP;
+	float BALLSIZE = 10;
 
+	int WALLTHICKNESS = 15;
+	int BLOCKWIDTH = 100;
+	int BLOCKHEIGHT = 50;
+	float BALLSPEED = 4;
+	int CONTROLBLOCKSPEED = 8;
 	float _deltaTime = 16.6;//60fps
-	
 
-	int _map[10][10];
+
+	const int MAPROW = 10;
+	const int MAPCOL = 5;
+
+	int _map[10][5];
 
 	int _life = 3;
-
-	char _keyL, _keyR;
+	int _mapwidth;
+	char _keyL = 'a', _keyR = 'd';
 };
 

@@ -14,40 +14,70 @@ void Pong::Init()
 	//변수 초기화 및 임의의 공 방향 정하기
 	_state = GAME_LOAD;
 	_life = 3;
+
+	float mapwidth = MAPRIGHT - MAPLEFT;
+	float mapHeight = MAPTOP - MAPBOTTOM;
+	float ratio = mapwidth / 512.0f;
+	BALLSIZE *= ratio;
+	BALLSPEED *= ratio;
+	WALLTHICKNESS *= ratio;
+
 	//std::random_device rd;
 	//std::mt19937 gen(rd());
 	//std::uniform_int_distribution<int> dis(1, 100);
 	//_b->setVector({ dis(gen) / static_cast<double>(100),dis(gen) / static_cast<double>(100) });
-	_control_block = new ControlBlock(MAPSIZE);
-	_b = new Ball({ -2,0 }, { 1,1 }, 1,3);
+	_control_block = new ControlBlock();
+
+
+	_control_block->setRatio(ratio);
+
+	pt controlSize = { _width * 0.3,3 };
+	pt controlStart = { _viewportX + _width / 2 - controlSize.x/2, MAPBOTTOM + _height*0.1 };
+
+	_control_block->setStart(controlStart);
+	_control_block->setSize(controlSize);
+
+
+	pt ballLocation = { mapwidth / 2 + MAPLEFT,mapHeight * 0.3+ MAPBOTTOM };
+
+	_b = new Ball(ballLocation, { 1,1 }, BALLSPEED,BALLSIZE);
 	_b->setVector(glm::normalize(glm::vec2(0.35, 0.97 )));
 
-	memset(Keys, 0, sizeof(Keys));
+	std::memset(Keys, 0, sizeof(Keys));
 	//게임판 생성
 
 	_update_requires.push_back(_control_block);
 	_update_requires.push_back(_b);
 
-	
-	_blocks.push_back(new Block(pt(-MAPSIZE, -MAPSIZE + 30), pt(3, MAPSIZE * 2), true)); //left
-	_blocks.push_back(new Block(pt(MAPSIZE, -MAPSIZE + 30), pt(3, MAPSIZE * 2), true));//right
-	_blocks.push_back(new Block(pt(-MAPSIZE, MAPSIZE + 30), pt(MAPSIZE * 2, 3), true));//top
+	_deadBlind = new Block({ _viewportX,_viewportY }, { _width,_height });
+
+	_blocks.push_back(new Block(pt(MAPLEFT-WALLTHICKNESS, MAPBOTTOM), pt(WALLTHICKNESS, mapHeight), true)); //left
+	_blocks.push_back(new Block(pt(MAPRIGHT, MAPBOTTOM), pt(WALLTHICKNESS, mapHeight), true));//right
+	_blocks.push_back(new Block(pt(MAPLEFT-WALLTHICKNESS, MAPTOP), pt(mapwidth + WALLTHICKNESS*2, WALLTHICKNESS), true));//top
 
 
-	_deadline = new Block(pt(-MAPSIZE, -MAPSIZE + 30), pt(MAPSIZE * 2, 3), true);//bottom
+	_deadline = new Block(pt(MAPLEFT, MAPBOTTOM), pt(mapwidth, WALLTHICKNESS), true);//bottom
 
 	//TODO: 두 개 하나로 통합
-	for (int i = 0; i <4; i++) {
-		for (int j = 0; j < MAPX; j ++) {
+	for (int i = 0; i <MAPROW; i++) {
+		for (int j = 0; j < MAPCOL; j ++) {
 			_map[i][j] = 3;
 		}
 	}
 
-	for (int i = -MAPSIZE + 40; i <= MAPSIZE - 40; i += 10) {
-		for (int j = 30; j <= MAPSIZE - 30; j += 5) {
-			_blocks.push_back(new Block(pt(i, j), pt(10, 5)));
+	float blockGap = mapwidth * 0.1f;
+	int start = MAPLEFT + blockGap;
+
+	int startH = MAPBOTTOM + mapHeight * 0.6f;
+
+
+	for (int i = 0; i < MAPROW; i++) {
+		for (int j = 0; j < MAPCOL; j++) {
+			_blocks.push_back(new Block(pt(start + i*BLOCKWIDTH, startH+j*BLOCKHEIGHT), pt(BLOCKWIDTH, BLOCKHEIGHT)));
 		}
 	}
+
+
 
 	_state = GAME_ACTIVE;
 }
@@ -62,13 +92,13 @@ void Pong::Update()
 	for (const auto i : _update_requires) {
 		i->update();
 	}
-
 	block_collision_test();
 
 	control_block_collision_test();
 
 	ball_out_test();
 
+	control_block_out_test_and_modify();
 
 }
 
@@ -133,6 +163,16 @@ void Pong::control_block_collision_test() const
 	}
 
 }
+void Pong::control_block_out_test_and_modify() const
+{
+	pt cbLocation = _control_block->getStart();
+	pt cbSize = _control_block->getSize();
+	if (cbLocation.x < MAPLEFT)
+		_control_block->setStart({ MAPLEFT,cbLocation.y });
+	if (cbLocation.x + cbSize.x > MAPRIGHT)
+		_control_block->setStart({ MAPRIGHT - _control_block->getSize().x,cbLocation.y });
+
+}
 
 void Pong::ball_out_test() 
 {
@@ -140,17 +180,22 @@ void Pong::ball_out_test()
 
 	if (collision.isCollision() == false)
 		return;
-
+	glm::vec2 oldVelocity = _b->getVector();
 	
-	_b->setYVectorInverse();
+	_b->setVector({ oldVelocity.x, abs(oldVelocity.y) });
 	_life--;
 
-	if (isDead())
-	{
-		_state = GAME_END;
-		Reset();
-		_state = GAME_ACTIVE;
-	}
+	//if (isDead())
+	//{
+	//	_state = GAME_END;
+	//	Reset();
+	//	_state = GAME_ACTIVE;
+	//}
+
+	if(isDead())
+		_state = GAME_DEAD;
+
+
 	
 
 }
@@ -158,10 +203,20 @@ void Pong::ball_out_test()
 void Pong::Render()
 {
 	glViewport(_viewportX, _viewportY, _width, _height);
+	glLoadIdentity();
 
+	glOrtho(_viewportX, _viewportX+_width, _viewportY, _viewportY+_height, -2, 2);
 	glClearColor(1, 1, 1, 1);
 
 	glColor3f(1.0f, 0.0f, 1.0f);
+
+	if(_state == GAME_DEAD)
+	{
+		_deadBlind->draw(0.25f, 0.25f, 0.25f);
+		return;
+	}
+
+
 
 	_b->draw();
 	_control_block->draw();
@@ -170,21 +225,19 @@ void Pong::Render()
 		i->draw();
 	}
 
-	DrawText("Life: " + std::to_string(_life), 0, 0);
-
-
-
+	if (_isMyPlay) {
+		Pong::drawText("Life: " + std::to_string(_life), _viewportX + _width * 0.35, _viewportY + _height * 0.8);
+		Pong::drawText(std::to_string(13) + "/99" , _viewportX + _width * 0.7, _viewportY + _height * 0.8);
+	}
 }
 
 void Pong::Tick()
 {
 	ProcessInput(16.6);
-	if (_state == GAME_ACTIVE) {
+	if (_state == GAME_ACTIVE)
 		Update();
-		Render();
-		
-	}
 
+	Render();
 }
 
 void Pong::Reset()
@@ -193,12 +246,12 @@ void Pong::Reset()
 	Init();
 }
 
-void Pong::DrawText(string str, float width, float height)
+void Pong::drawText(string str, float width, float height,float R, float G, float B)
 {
-	glColor3f(0.0f, 0.0f, 0.0f);
+	glColor3f(R, G, B);
 	glRasterPos2f(width, height);
 	for (char c : str) {
-		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c);
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
 	}
 }
 
@@ -262,13 +315,15 @@ void Pong::ProcessInput(float dt)
 	if (this->Keys[_keyR])
 	{
 		_control_block->setVector({1,0});
-		_control_block->setSpeed(1);
+		_control_block->setSpeed(CONTROLBLOCKSPEED);
 	}
 	if (this->Keys[_keyL])
 	{
 		_control_block->setVector({ -1,0 });
-		_control_block->setSpeed(1);
+		_control_block->setSpeed(CONTROLBLOCKSPEED);
 	}
+	if (this->Keys[27])
+		exit(0);
 }
 
 
@@ -283,4 +338,7 @@ void Pong::Clear()
 	}
 	_blocks.clear();
 	delete _deadline;
+
+	BALLSIZE = 10;
+	BALLSPEED = 4;
 }

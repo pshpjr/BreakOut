@@ -7,6 +7,3 @@ enum Direction {
 	LEFT
 };
 using pt = glm::vec2;
-
-const int MAPX = 10;
-const int MAPY = 10;
