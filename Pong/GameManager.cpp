@@ -3,12 +3,12 @@
 
 GameManager::GameManager()
 {
-	_pongs.reserve(4);
+	_pongs.reserve(99);
 }
 
-void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y, int32 windowSize)
+void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y)
 {
-	_pongs.emplace_back(width, height, x, y, windowSize);
+	_pongs.emplace_back(width, height, x, y);
 }
 
 void GameManager::Tick()
@@ -23,7 +23,7 @@ void GameManager::Tick()
 	this_thread::sleep_for(16.6ms);
 }
 
-void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y, int32 windowSize, char L, char R)
+void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y,char L, char R)
 {
-	_pongs.emplace_back(width,height,x,y,windowSize,L,R);
+	_pongs.emplace_back(width,height,x,y,L,R);
 }

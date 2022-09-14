@@ -35,27 +35,32 @@ public:
 	void setVectorInverse() { _vector.x *= -1; _vector.y *= -1; }
 	pt getVector() const { return _vector; }
 	pt getLocation() const { return _location; }
+	void setRatio(float r) { _ratio = r; }
 	virtual void update() {
-		_location += _vector * (_speed * 2 );
+		_location += _vector * _speed;
 	}
 
 protected:
 	pt _location{};
 	pt _vector{};
 	float _speed{};
+	float _ratio = 1;
 };
+
 
 class Block : public StaticObject {
 public:
-	Block() = default;
+	Block() :_life(3){};
 	Block(const pt p1, const pt p2) : _start(p1), _size(p2), _life(3) {}
 	Block(const pt p1, const pt p2, const int life) : _start(p1), _size(p2), _life(life) {}
-	Block(const pt p1, const pt p2, bool solid) : _start(p1), _size(p2), _isSolid(solid) {}
+	Block(const pt p1, const pt p2, bool solid) : _isSolid(solid), _start(p1), _size(p2) {}
 	void decreaseLife() { _life -= 1; }
 	int getLife() const { return _life; }
 	bool isDead() const { return _life <= 0; }
 	pt getStart() const { return _start; }
 	pt getSize() const { return _size; }
+	void setStart(const pt& start) { _start = start; }
+	void setSize(const pt& size) { _size = size; }
 
 	void draw() const override
 	{
@@ -153,17 +158,13 @@ private:
 
 //TODO: mapsize 변수 외부로 빼기
 //클래스 좀 이상함
-class ControlBlock : public Block, public Moveable { //컨트롤 박스는 로케이션이 좌하단.
+class ControlBlock : public Block, public Moveable { //컨트롤 박스는 로케이션이 좌하단. 위치는 start 사용
 public:
-	ControlBlock(int32 mapSize) : Block({ -20, -40 }, { 60, 2 }), Moveable({ 0, 0 }, { 0, 0 }, 0), _mapSize(mapSize) {}
-
+	ControlBlock() :Block({},{},true), Moveable({0, 0}, {0, 0}, 0) {}
+	
 	void update() override
 	{
-		_start += _vector * _speed;
-		if (_start.x < -_mapSize)
-			_start.x = -_mapSize;
-		if (_start.x + _size.x > _mapSize)
-			_start.x = _mapSize - _size.x;
+		_start += _vector * _speed * _ratio;
 
 		if (_speed <= 0.1f)
 			_speed = 0;
@@ -172,5 +173,4 @@ public:
 	}
 
 private:
-	int32 _mapSize = 0;
 };
