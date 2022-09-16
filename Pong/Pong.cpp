@@ -4,6 +4,7 @@
 #include <string>
 
 
+
 Pong::~Pong()
 {
 	Clear();
@@ -237,6 +238,8 @@ void Pong::Tick()
 	if (_state == GAME_ACTIVE)
 		Update();
 
+	if (noGUI)
+		return;
 	Render();
 }
 
@@ -308,23 +311,37 @@ void Pong::changeState(game_state state)
 	_state = state;
 }
 
+
+bool isKeyPressing(char c)
+{
+#ifdef WIN32
+	SHORT keyState = GetAsyncKeyState(toupper(c));
+	if ((keyState & 0x8001) || (keyState & 0x8000) )
+		return true;
+	return false;
+#elif
+#endif
+
+}
+
 void Pong::ProcessInput(float dt)
 {
 	float velocity = 1 * dt;
 	// move playerboard
-	if (this->Keys[_keyR])
+	if (isKeyPressing(_keyR))
 	{
-		_control_block->setVector({1,0});
+		_control_block->setVector({ 1,0 });
 		_control_block->setSpeed(CONTROLBLOCKSPEED);
 	}
-	if (this->Keys[_keyL])
+	if (isKeyPressing(_keyL))
 	{
 		_control_block->setVector({ -1,0 });
 		_control_block->setSpeed(CONTROLBLOCKSPEED);
 	}
-	if (this->Keys[27])
+	if (isKeyPressing(VK_ESCAPE))
 		exit(0);
 }
+
 
 
 void Pong::Clear()
