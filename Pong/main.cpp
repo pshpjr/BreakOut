@@ -1,4 +1,6 @@
 #include "pch.h"
+
+
 #include "functional"
 
 
@@ -39,20 +41,20 @@ void GameInit()
 	GM.AddPong(width, SCREEN_HEIGHT, width, 0);
 	GM._pongs[0]._isMyPlay = true;
 
-	for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			GM.AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
-		}
-	}
-	for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			GM.AddPong(mWidth, mHeight, j * mWidth + width * 2, i * mHeight, 'j', 'l');
-		}
-	}
+	//for (int i = 0; i < 7; i++)
+	//{
+	//	for (int j = 0; j < 7; j++)
+	//	{
+	//		GM.AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
+	//	}
+	//}
+	//for (int i = 0; i < 7; i++)
+	//{
+	//	for (int j = 0; j < 7; j++)
+	//	{
+	//		GM.AddPong(mWidth, mHeight, j * mWidth + width * 2, i * mHeight, 'j', 'l');
+	//	}
+	//}
 
 
 
@@ -76,12 +78,19 @@ void GLInit() {
 	glDisable(GL_LIGHTING);
 }
 
+
+
 int main(int argc, char** argv) {
 	if (noGUI == false) {
 		glutInit(&argc, argv);
 		GLInit();
 	}
 	GameInit();
+
+
+	cout << "Connected to Server!" << endl;
+
+
 
 	GM.noGUI(noGUI);
 
