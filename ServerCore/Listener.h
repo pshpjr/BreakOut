@@ -8,6 +8,9 @@
  */
 
 class AcceptEvent;
+class ServerService;
+
+class AcceptEvent;
 //안내원 역할
 class Listener :public IocpObject
 {
@@ -17,7 +20,7 @@ public:
 
 public:
 /*외부에서 사용*/
-	bool StartAccept(NetAddress netAddress);
+	bool StartAccept(ServerServiceRef service);
 	void CloseSocket();
 
 public:
@@ -33,5 +36,7 @@ private:
 protected:
 	SOCKET _socket = INVALID_SOCKET; //리스너 소켓
 	vector<AcceptEvent*> _acceptEvents;
+	//상호 참조 조심
+	ServerServiceRef _service;
 };
 
