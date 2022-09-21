@@ -34,7 +34,7 @@ private:
 	void ProcessAccept(AcceptEvent* acceptEvent);//register 한게 완료되어서 진행할 수 있을 때
 
 protected:
-	SOCKET _socket = INVALID_SOCKET; //리스너 소켓
+	SOCKET _socket = INVALID_SOCKET;//리슨소켓
 	vector<AcceptEvent*> _acceptEvents;
 	//상호 참조 조심
 	ServerServiceRef _service;

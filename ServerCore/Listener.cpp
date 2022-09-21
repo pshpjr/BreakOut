@@ -41,9 +41,9 @@ bool Listener::StartAccept(ServerServiceRef service)
 	if (SocketUtils::Listen(_socket) == false)
 		return false;
 
-	//한 번만 이벤트 걸면 동접 문제가 생길 수 있음. 일단 패스
 
-	const int32 acceptCount = _service->GetMaxSessionCount();
+
+	const int32 acceptCount = _service->GetMaxSessionCount()/2;
 	for (int i = 0; i < acceptCount; ++i)
 	{
 		AcceptEvent* acceptEvent = xnew<AcceptEvent>();
@@ -112,12 +112,14 @@ void Listener::ProcessAccept(AcceptEvent* acceptEvent)
 
 	SOCKADDR_IN sockAddress;
 	int32 sizeofSockAddr = sizeof(sockAddress);
-	//getpeername : 상대의 주소를 가지고 옴. 
+	//getpeername : 상대의 주소(클라 주소)를 sockAddr에 넣음
 	if (SOCKET_ERROR == ::getpeername(session->GetSocket(), OUT reinterpret_cast<SOCKADDR*>(&sockAddress), &sizeofSockAddr))
 	{
+		//이 클라 관련 작업하다 에러나도 Accept는 걸어줘야 이 이벤트에서 계속 accept 처리 가능
 		RegisterAccept(acceptEvent);
 		return;
 	}
+
 
 	session->SetNetAddress(NetAddress(sockAddress));
 
