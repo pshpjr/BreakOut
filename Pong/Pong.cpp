@@ -211,12 +211,6 @@ void Pong::Render()
 		_deadBlind->draw(0.25f, 0.25f, 0.25f);
 		return;
 	}
-	else if(_state == WIN)
-	{
-		//TODO: 텍스트 출력
-		_deadBlind->draw(0.7f, 0.7f, 0.7f);
-		return;
-	}
 
 	_b->draw();
 	_control_block->draw();
