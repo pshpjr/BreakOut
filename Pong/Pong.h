@@ -64,7 +64,7 @@ public:
 	~Pong();
 
 	void Init();
-	void Update();
+	void Update();//ì„œë²„
 	void Render();
 	void Tick();
 	void Reset();
@@ -85,12 +85,12 @@ private:
 	void control_block_out_test_and_modify() const;
 
 public:
-	Ball* _b;// ÇÃ·¹ÀÌ¾îÀÇ °ø
-	ControlBlock* _control_block; // °ø Æ¢±â´Â ¸·´ë
+	Ball* _b;// í”Œë ˆì´ì–´ì˜ ê³µ
+	ControlBlock* _control_block; // ê³µ íŠ€ê¸°ëŠ” ë§‰ëŒ€
 
-	std::vector<Block*> _blocks; //º®µ¹°ú ¸Ê ¿ÜºÎ º®
-	Block* _deadline; //°øÀÌ ¹ş¾î³ª´Â°É ÆÇÁ¤ÇÏ±â À§ÇÑ ¼±
-	std::vector<Moveable*> _update_requires; // À§Ä¡°¡ º¯ÇÏ´Â ¾ÖµéÀ» ÇÑ ¹ø¿¡ °»½ÅÇÏ±â À§ÇØ
+	std::vector<Block*> _blocks; //ë²½ëŒê³¼ ë§µ ì™¸ë¶€ ë²½
+	Block* _deadline; //ê³µì´ ë²—ì–´ë‚˜ëŠ”ê±¸ íŒì •í•˜ê¸° ìœ„í•œ ì„ 
+	std::vector<Moveable*> _update_requires; // ìœ„ì¹˜ê°€ ë³€í•˜ëŠ” ì• ë“¤ì„ í•œ ë²ˆì— ê°±ì‹ í•˜ê¸° ìœ„í•´
 
 	Block* _deadBlind;
 
