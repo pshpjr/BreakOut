@@ -1,5 +1,9 @@
 #pragma once
-#include "Objects.h"
+#include "Macro.h"
+class Moveable;
+class ControlBlock;
+class Ball;
+class Block;
 
 class Collision
 {
@@ -32,22 +36,16 @@ private:
 class Pong
 {
 public:
-	enum game_state
+	enum PlayerState
 	{
-		GAME_ACTIVE,
-		GAME_LOAD,
-		GAME_MENU,
-		GAME_END,
-		GAME_DEAD
+		DEAD,
+		ALIVE,
+		WIN
 	};
-
-private:
-
-public:
 
 
 	Pong(int32 width, int32 height, int32 x, int32 y) :
-		_state(GAME_LOAD), _width(width), _height(height), _viewportX(x), _viewportY(y),
+		_state(ALIVE), _width(width), _height(height), _viewportX(x), _viewportY(y),
 		MAPLEFT(x + width * 0.1f), MAPRIGHT(x + width - width * 0.1f), MAPBOTTOM(y + height * 0.2), MAPTOP(y + height - height * 0.24f)
 	{
 		int mapWidth = MAPRIGHT - MAPLEFT;
@@ -70,15 +68,11 @@ public:
 	void Render();
 	void Tick();
 	void Reset();
-	void ProcessInput(float dt);
+
 	void Clear();
 
-
-	void drawText(string str, float width, float height, float R = 0, float G = 0, float B = 0);
-
-
-
-	void changeState(game_state state);
+	
+	void changeState(PlayerState state);
 	bool isDead() const;
 
 private:
@@ -100,13 +94,13 @@ public:
 
 	Block* _deadBlind;
 
-	bool Keys[256]; //키보드 입력
+
 
 	bool _isMyPlay = false;
 
 	bool noGUI = false;
 private:
-	game_state _state;
+	PlayerState _state;
 	int32 _width;
 	int32 _height;
 	int32 _viewportX = 0, _viewportY = 0;
@@ -118,7 +112,7 @@ private:
 	int BLOCKWIDTH = 100;
 	int BLOCKHEIGHT = 50;
 	float BALLSPEED = 4;
-	int CONTROLBLOCKSPEED = 8;
+
 	float _deltaTime = 16.6;//60fps
 
 
@@ -129,7 +123,8 @@ private:
 
 	int _life = 3;
 	int _mapwidth;
-	char _keyL = 'a', _keyR = 'd';
 
+	//TEMP
+	char _keyL = 'a', _keyR = 'd';
 };
 

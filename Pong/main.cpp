@@ -1,13 +1,14 @@
 #include "pch.h"
-
-
 #include "functional"
 
 
 
 /*TODO: 좌표 처리 정수로 변환*/
 
-
+void hideCMD()
+{
+	HWND hWnd = GetForegroundWindow();	ShowWindow(hWnd, SW_HIDE);
+}
 
 int WINDOWSIZE = 100;
 
@@ -15,7 +16,7 @@ int WINDOWSIZE = 100;
 int32 SCREEN_WIDTH = 800;
 int32 SCREEN_HEIGHT = 600;
 
-GameManager GM;
+GMPtr GM;
 
 bool noGUI = false;
 
@@ -33,35 +34,9 @@ void my_reshape(int w, int h) {
 
 void GameInit()
 {
-	int width = SCREEN_WIDTH / 3;
-	int mWidth = width / 7;
-	int mHeight = SCREEN_HEIGHT / 7;
+	GM = make_shared<GameManager>(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-
-	GM.AddPong(width, SCREEN_HEIGHT, width, 0);
-	GM._pongs[0]._isMyPlay = true;
-
-	//for (int i = 0; i < 7; i++)
-	//{
-	//	for (int j = 0; j < 7; j++)
-	//	{
-	//		GM.AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
-	//	}
-	//}
-	//for (int i = 0; i < 7; i++)
-	//{
-	//	for (int j = 0; j < 7; j++)
-	//	{
-	//		GM.AddPong(mWidth, mHeight, j * mWidth + width * 2, i * mHeight, 'j', 'l');
-	//	}
-	//}
-
-
-
-	for (auto& i : GM._pongs)
-	{
-		i.changeState(Pong::GAME_ACTIVE);
-	}
+	GM->noGUI(noGUI);
 }
 
 void GLInit() {
@@ -71,16 +46,24 @@ void GLInit() {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	glutCreateWindow("Pong Loader");
-	glutFullScreen();
-	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
+	glutInitWindowPosition(0, 0);
 
+	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
+	string s = SCREEN_WIDTH + "x" + SCREEN_HEIGHT;
+	glutGameModeString(s.c_str());
+	if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
+		glutEnterGameMode();
 	glDisable(GL_LIGHTING);
+
+	glutCreateWindow("Pong Loader");
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutFullScreen();
 }
 
 
 
 int main(int argc, char** argv) {
+	hideCMD();
 	if (noGUI == false) {
 		glutInit(&argc, argv);
 		GLInit();
@@ -88,13 +71,9 @@ int main(int argc, char** argv) {
 	GameInit();
 
 
-	cout << "Connected to Server!" << endl;
 
 
-
-	GM.noGUI(noGUI);
-
-	GM.Start();
+	GM->Start();
 
 	return 0;
 }

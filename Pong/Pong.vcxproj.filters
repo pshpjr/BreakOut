@@ -16,6 +16,7 @@
     <ClCompile Include="GameManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="UiState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -33,6 +34,7 @@
     <ClInclude Include="GameManager.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="UiState.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Main">

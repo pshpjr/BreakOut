@@ -169,6 +169,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Pong.cpp" />
+    <ClCompile Include="UiState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameManager.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Objects.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Pong.h" />
+    <ClInclude Include="UiState.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />

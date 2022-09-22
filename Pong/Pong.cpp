@@ -13,7 +13,7 @@ Pong::~Pong()
 void Pong::Init()
 {
 	//변수 초기화 및 임의의 공 방향 정하기
-	_state = GAME_LOAD;
+	_state = ALIVE;
 	_life = 3;
 
 	float mapwidth = MAPRIGHT - MAPLEFT;
@@ -39,14 +39,14 @@ void Pong::Init()
 	_control_block->setSize(controlSize);
 
 
+
 	pt ballLocation = { mapwidth / 2 + MAPLEFT,mapHeight * 0.3+ MAPBOTTOM };
 
 	_b = new Ball(ballLocation, { 1,1 }, BALLSPEED,BALLSIZE);
 	_b->setVector(glm::normalize(glm::vec2(0.35, 0.97 )));
 
-	std::memset(Keys, 0, sizeof(Keys));
-	//게임판 생성
 
+	//게임판 생성
 	_update_requires.push_back(_control_block);
 	_update_requires.push_back(_b);
 
@@ -78,9 +78,6 @@ void Pong::Init()
 		}
 	}
 
-
-
-	_state = GAME_ACTIVE;
 }
 
 bool Pong::isDead() const
@@ -188,17 +185,14 @@ void Pong::ball_out_test()
 
 	//if (isDead())
 	//{
-	//	_state = GAME_END;
+	//	_state = WIN;
 	//	Reset();
-	//	_state = GAME_ACTIVE;
+	//	_state = PLAYING;
 	//}
 
 	if(isDead())
-		_state = GAME_DEAD;
-
-
+		_state = DEAD;
 	
-
 }
 
 void Pong::Render()
@@ -211,13 +205,18 @@ void Pong::Render()
 
 	glColor3f(1.0f, 0.0f, 1.0f);
 
-	if(_state == GAME_DEAD)
+
+	if(_state == DEAD)
 	{
 		_deadBlind->draw(0.25f, 0.25f, 0.25f);
 		return;
 	}
-
-
+	else if(_state == WIN)
+	{
+		//TODO: 텍스트 출력
+		_deadBlind->draw(0.7f, 0.7f, 0.7f);
+		return;
+	}
 
 	_b->draw();
 	_control_block->draw();
@@ -227,15 +226,15 @@ void Pong::Render()
 	}
 
 	if (_isMyPlay) {
-		Pong::drawText("Life: " + std::to_string(_life), _viewportX + _width * 0.35, _viewportY + _height * 0.8);
-		Pong::drawText(std::to_string(13) + "/99" , _viewportX + _width * 0.7, _viewportY + _height * 0.8);
+		drawText("Life: " + std::to_string(_life), _viewportX + _width * 0.35, _viewportY + _height * 0.8);
+		drawText(std::to_string(13) + "/99" , _viewportX + _width * 0.7, _viewportY + _height * 0.8);
+
 	}
 }
 
 void Pong::Tick()
 {
-	ProcessInput(16.6);
-	if (_state == GAME_ACTIVE)
+	if (_state == ALIVE)
 		Update();
 
 	if (noGUI)
@@ -249,14 +248,7 @@ void Pong::Reset()
 	Init();
 }
 
-void Pong::drawText(string str, float width, float height,float R, float G, float B)
-{
-	glColor3f(R, G, B);
-	glRasterPos2f(width, height);
-	for (char c : str) {
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
-	}
-}
+
 
 Direction Pong::VectorDirection(glm::vec2 target) const
 {
@@ -306,40 +298,9 @@ Collision Pong::CheckCollision(const Ball& one, const Block& two) const
 }
 
 
-void Pong::changeState(game_state state)
+void Pong::changeState(PlayerState state)
 {
 	_state = state;
-}
-
-
-bool isKeyPressing(char c)
-{
-#ifdef WIN32
-	SHORT keyState = GetAsyncKeyState(toupper(c));
-	if ((keyState & 0x8001) || (keyState & 0x8000) )
-		return true;
-	return false;
-#elif
-#endif
-
-}
-
-void Pong::ProcessInput(float dt)
-{
-	float velocity = 1 * dt;
-	// move playerboard
-	if (isKeyPressing(_keyR))
-	{
-		_control_block->setVector({ 1,0 });
-		_control_block->setSpeed(CONTROLBLOCKSPEED);
-	}
-	if (isKeyPressing(_keyL))
-	{
-		_control_block->setVector({ -1,0 });
-		_control_block->setSpeed(CONTROLBLOCKSPEED);
-	}
-	if (isKeyPressing(VK_ESCAPE))
-		exit(0);
 }
 
 

@@ -4,79 +4,122 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
-void Init()
+bool GameManager::Init()
 {
-	WSAData wsaData;
-	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-		return;
+	_state = Lobby::instance();
+	//WSAData wsaData;
+	//if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+	//	return;
 
-	SOCKET clientSocket = ::socket(AF_INET, SOCK_STREAM, 0);
-	if (clientSocket == INVALID_SOCKET)
-		return;
+	//SOCKET clientSocket = ::socket(AF_INET, SOCK_STREAM, 0);
+	//if (clientSocket == INVALID_SOCKET)
+	//	return;
 
-	u_long on =1;
-	if (::ioctlsocket(clientSocket, FIONBIO, &on) == INVALID_SOCKET)
-		return;
+	//u_long on =1;
+	//if (::ioctlsocket(clientSocket, FIONBIO, &on) == INVALID_SOCKET)
+	//	return;
 
-	SOCKADDR_IN serverAddr;
-	::memset(&serverAddr, 0, sizeof(serverAddr));
-	serverAddr.sin_family = AF_INET;
-	::inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
-	serverAddr.sin_port = ::htons(7777);
+	//SOCKADDR_IN serverAddr;
+	//::memset(&serverAddr, 0, sizeof(serverAddr));
+	//serverAddr.sin_family = AF_INET;
+	//::inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
+	//serverAddr.sin_port = ::htons(7777);
 
-	// Connect
-	while (true)
+
+
+	//// Connect
+	//while (true)
+	//{
+	//	if (::connect(clientSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
+	//	{
+	//		// 원래 블록했어야 했는데... 너가 논블로킹으로 하라며?
+	//		if (::WSAGetLastError() == WSAEWOULDBLOCK)
+	//			continue;
+	//		// 이미 연결된 상태라면 break
+	//		if (::WSAGetLastError() == WSAEISCONN)
+	//			break;
+	//		// Error
+	//		break;
+	//	}
+	//}
+	return true;
+}
+
+void GameManager::ProcessInput(float dt)
+{
+	float velocity = 1 * dt;
+	// move playerboard
+	_state->HandleInput(this);
+	
+	if (isKeyPressing(VK_ESCAPE))
+		exit(0);
+}
+
+
+
+GameManager::GameManager(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT)
+{
+	_pongs.reserve(99);
+	Init();
+	int width = SCREEN_WIDTH / 3;
+	_width = width;
+	_height = SCREEN_HEIGHT;
+	int mWidth = width / 7;
+	int mHeight = SCREEN_HEIGHT / 7;
+
+
+	AddPong(width, SCREEN_HEIGHT, width, 0);
+	_mainPlay = _pongs[0];
+	_mainPlay->_isMyPlay = true;
+
+	for (int i = 0; i < 7; i++)
 	{
-		if (::connect(clientSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
+		for (int j = 0; j < 7; j++)
 		{
-			// 원래 블록했어야 했는데... 너가 논블로킹으로 하라며?
-			if (::WSAGetLastError() == WSAEWOULDBLOCK)
-				continue;
-			// 이미 연결된 상태라면 break
-			if (::WSAGetLastError() == WSAEISCONN)
-				break;
-			// Error
-			break;
+			AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
+		}
+	}
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			AddPong(mWidth, mHeight, j * mWidth + width * 2, i * mHeight, 'j', 'l');
 		}
 	}
 }
 
-
-GameManager::GameManager()
-{
-	_pongs.reserve(99);
-
-}
-
-
-
 void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y)
 {
-	_pongs.emplace_back(width, height, x, y);
+	_pongs.push_back(make_shared<Pong>(width, height, x, y));
 }
 
 void GameManager::Tick()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	if (_noGUI) {
 		cout << "ticked" << endl;
 
 		for (auto& i : _pongs) {
-			i.Tick();
+			i->Tick();
 		}
 		return;
 	}
 
-	for (auto& i : _pongs) {
-		i.Tick();
-	}
+	ProcessInput(10);
+	_state->HandleInput(this);
+	_state->Render(this);
+
+
+
 	glutSwapBuffers();
 	glutPostRedisplay();
 }
 
 void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y,char L, char R)
 {
-	_pongs.emplace_back(width,height,x,y,L,R);
+	_pongs.push_back(make_shared<Pong>(width, height, x, y, L, R));
+	
 }
 
 void GameManager::Start()
@@ -92,6 +135,6 @@ void GameManager::noGUI(bool value)
 {
 	_noGUI = value;
 	for (auto& i : _pongs) {
-		i.noGUI = value;
+		i->noGUI = value;
 	}
 }
