@@ -7,7 +7,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Pong.cpp">
+    <ClCompile Include="Breakout.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Objects.cpp">
@@ -16,13 +16,15 @@
     <ClCompile Include="GameManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="UiState.cpp" />
+    <ClCompile Include="UiState.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Pong.h">
+    <ClInclude Include="Breakout.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="Objects.h">
@@ -34,7 +36,9 @@
     <ClInclude Include="GameManager.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="UiState.h" />
+    <ClInclude Include="UiState.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Main">

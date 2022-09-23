@@ -26,6 +26,7 @@ void Lobby::HandleInput(GameManager* GM)
 {
 	if (isKeyPressing(VK_SPACE))
 	{
+		cout << "matching Start" << endl;
 		GM->ChangeState(Matching::instance());
 	}
 }
@@ -50,7 +51,7 @@ void Matching::Render(GameManager* GM)
 		break;
 	}
 	_count++;
-	clamp(OUT _count, 0, 30);
+	wrap(OUT _count, 0, 30);
 	drawText("Matching... " +s, GM->_width + GM->_width / 3, GM->_height * 0.2);
 	drawText("(press S to stop)", GM->_width + GM->_width / 3, GM->_height * 0.2-24);
 }
@@ -64,6 +65,7 @@ void Matching::HandleInput(GameManager* GM)
 
 	if(isKeyPressing('M'))
 	{
+		cout << "match Ready" << endl;
 		GM->ChangeState(GameReady::instance());
 	}
 }
@@ -86,7 +88,7 @@ void GameReady::Render(GameManager* GM)
 		break;
 	}
 	_count++;
-	clamp(OUT _count, 0, 30);
+	wrap(OUT _count, 0, 30);
 	drawText("Waiting... " + s, GM->_width + GM->_width / 3, GM->_height * 0.2);
 
 	for (auto& i : GM->_pongs)
@@ -98,18 +100,36 @@ void GameReady::Render(GameManager* GM)
 
 void GameReady::HandleInput(GameManager* GM)
 {
-	if (isKeyPressing('G'))
+	if (isKeyPressing(VK_SPACE))
 	{
+		cout << "GameStart" << endl;
 		GM->ChangeState(Playing::instance());
 	}
 }
 
 void Playing::Render(GameManager* GM)
 {
-	for (auto &i : GM->_pongs)
-	{
-		i->Tick();
+	if (_count == 2) {
+		for (int j = 0; j < 3; j++)
+		{
+			for (auto& i : GM->_pongs)
+			{
+				if (i == GM->_mainPlay)
+					continue;
+				i->Update();
+			}
+		}
 	}
+
+	GM->_mainPlay->Update();
+
+	for (auto& i : GM->_pongs)
+	{
+		i->Render();
+	}
+
+	_count++;
+	wrap(_count, 0, 3);
 }
 
 void Playing::HandleInput(GameManager* GM)
@@ -132,6 +152,7 @@ void Playing::HandleInput(GameManager* GM)
 	}
 	if (isKeyPressing('V'))
 	{
+		cout << "Win!!" << endl;
 		GM->ChangeState(Win::instance());
 	}
 }
@@ -140,7 +161,8 @@ void Win::Render(GameManager* GM)
 {
 	UIState::Render(GM);
 	drawText("You are Winner!!", GM->_width + GM->_width / 3, GM->_height * 0.2);
-	drawText("(Press the L to go to lobby.)", GM->_width + GM->_width / 3, GM->_height * 0.2 - 24);
+	drawText("(Press the Space to go to lobby.)", GM->_width + GM->_width / 3, GM->_height * 0.2 - 24);
+	
 
 	for (auto& i : GM->_pongs)
 	{
@@ -150,12 +172,14 @@ void Win::Render(GameManager* GM)
 
 void Win::HandleInput(GameManager* GM)
 {
-	if (isKeyPressing('L'))
+	if (isKeyPressing(VK_SPACE))
 	{
 		for (auto i : GM->_pongs)
 		{
 			i->Reset();
 		}
+		cout << "Goto Lobby" << endl;
 		GM->ChangeState(Lobby::instance());
+		Sleep(300);
 	}
 }

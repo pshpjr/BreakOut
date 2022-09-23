@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include "Macro.h"
 class Moveable;
 class ControlBlock;
@@ -8,7 +9,7 @@ class Block;
 class Collision
 {
 public:
-	Collision(bool result, Direction vectorDirection, glm::vec2 resultVec) : _cResult(result),_d(vectorDirection),_diffVec(resultVec){
+	Collision(bool result, Direction vectorDirection, glm::vec2 resultVec) : _cResult(result), _d(vectorDirection), _diffVec(resultVec) {
 	}
 
 	bool isCollision() const
@@ -30,10 +31,10 @@ private:
 	bool _cResult;
 	Direction _d;
 	glm::vec2 _diffVec;
-	
+
 };
 
-class Pong
+class Breakout
 {
 public:
 	enum PlayerState
@@ -44,7 +45,7 @@ public:
 	};
 
 
-	Pong(int32 width, int32 height, int32 x, int32 y) :
+	Breakout(int32 width, int32 height, int32 x, int32 y) :
 		_state(ALIVE), _width(width), _height(height), _viewportX(x), _viewportY(y),
 		MAPLEFT(x + width * 0.1f), MAPRIGHT(x + width - width * 0.1f), MAPBOTTOM(y + height * 0.2), MAPTOP(y + height - height * 0.24f)
 	{
@@ -55,23 +56,23 @@ public:
 		BLOCKHEIGHT = BLOCKWIDTH / 2;
 		Init();
 	}
-	Pong(int32 width, int32 height, int32 x, int32 y, char keyL, char keyR) : Pong(width, height,x,y)
+	Breakout(int32 width, int32 height, int32 x, int32 y, char keyL, char keyR) : Breakout(width, height, x, y)
 	{
 		_keyL = keyL;
 		_keyR = keyR;
 	}
 
-	~Pong();
+	~Breakout();
 
 	void Init();
-	void Update();//ì„œë²„
+	void Update();//¼­¹ö
 	void Render();
 	void Tick();
 	void Reset();
 
 	void Clear();
 
-	
+
 	void changeState(PlayerState state);
 	bool isDead() const;
 
@@ -85,12 +86,12 @@ private:
 	void control_block_out_test_and_modify() const;
 
 public:
-	Ball* _b;// í”Œë ˆì´ì–´ì˜ ê³µ
-	ControlBlock* _control_block; // ê³µ íŠ€ê¸°ëŠ” ë§‰ëŒ€
+	Ball* _b;// ÇÃ·¹ÀÌ¾îÀÇ °ø
+	ControlBlock* _control_block; // °ø Æ¢±â´Â ¸·´ë
 
-	std::vector<Block*> _blocks; //ë²½ëŒê³¼ ë§µ ì™¸ë¶€ ë²½
-	Block* _deadline; //ê³µì´ ë²—ì–´ë‚˜ëŠ”ê±¸ íŒì •í•˜ê¸° ìœ„í•œ ì„ 
-	std::vector<Moveable*> _update_requires; // ìœ„ì¹˜ê°€ ë³€í•˜ëŠ” ì• ë“¤ì„ í•œ ë²ˆì— ê°±ì‹ í•˜ê¸° ìœ„í•´
+	std::vector<Block*> _blocks; //º®µ¹°ú ¸Ê ¿ÜºÎ º®
+	Block* _deadline; //°øÀÌ ¹ş¾î³ª´Â°É ÆÇÁ¤ÇÏ±â À§ÇÑ ¼±
+	std::vector<Moveable*> _update_requires; // À§Ä¡°¡ º¯ÇÏ´Â ¾ÖµéÀ» ÇÑ ¹ø¿¡ °»½ÅÇÏ±â À§ÇØ
 
 	Block* _deadBlind;
 
@@ -105,7 +106,7 @@ private:
 	int32 _height;
 	int32 _viewportX = 0, _viewportY = 0;
 
-	const float MAPLEFT, MAPRIGHT,MAPBOTTOM,MAPTOP;
+	const float MAPLEFT, MAPRIGHT, MAPBOTTOM, MAPTOP;
 	float BALLSIZE = 10;
 
 	int WALLTHICKNESS = 15;
@@ -127,4 +128,6 @@ private:
 	//TEMP
 	char _keyL = 'a', _keyR = 'd';
 };
+
+
 

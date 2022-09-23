@@ -24,6 +24,10 @@ public:
 	char _keyL = 'a', _keyR = 'd';
 	int32 _width = 0, _height = 0; 
 	int CONTROLBLOCKSPEED = 8;
+
+	//서버 데이터
+
+
 	UIState* _state;
 };
 

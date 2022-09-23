@@ -6,42 +6,42 @@
 
 bool GameManager::Init()
 {
+	cout << "SocketInit " << endl;
 	_state = Lobby::instance();
-	//WSAData wsaData;
-	//if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-	//	return;
+	WSAData wsaData;
+	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+		return false;
 
-	//SOCKET clientSocket = ::socket(AF_INET, SOCK_STREAM, 0);
-	//if (clientSocket == INVALID_SOCKET)
-	//	return;
+	SOCKET clientSocket = ::socket(AF_INET, SOCK_STREAM, 0);
+	if (clientSocket == INVALID_SOCKET)
+		return false;
 
-	//u_long on =1;
-	//if (::ioctlsocket(clientSocket, FIONBIO, &on) == INVALID_SOCKET)
-	//	return;
+	u_long on =1;
+	if (::ioctlsocket(clientSocket, FIONBIO, &on) == INVALID_SOCKET)
+		return false;
 
-	//SOCKADDR_IN serverAddr;
-	//::memset(&serverAddr, 0, sizeof(serverAddr));
-	//serverAddr.sin_family = AF_INET;
-	//::inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
-	//serverAddr.sin_port = ::htons(7777);
+	SOCKADDR_IN serverAddr;
+	::memset(&serverAddr, 0, sizeof(serverAddr));
+	serverAddr.sin_family = AF_INET;
+	::inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
+	serverAddr.sin_port = ::htons(7777);
 
-
-
-	//// Connect
-	//while (true)
-	//{
-	//	if (::connect(clientSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
-	//	{
-	//		// 원래 블록했어야 했는데... 너가 논블로킹으로 하라며?
-	//		if (::WSAGetLastError() == WSAEWOULDBLOCK)
-	//			continue;
-	//		// 이미 연결된 상태라면 break
-	//		if (::WSAGetLastError() == WSAEISCONN)
-	//			break;
-	//		// Error
-	//		break;
-	//	}
-	//}
+	// Connect
+	while (true)
+	{
+		if (::connect(clientSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
+		{
+			// 원래 블록했어야 했는데... 너가 논블로킹으로 하라며?
+			if (::WSAGetLastError() == WSAEWOULDBLOCK)
+				continue;
+			// 이미 연결된 상태라면 break
+			if (::WSAGetLastError() == WSAEISCONN)
+				break;
+			// Error
+			break;
+		}
+	}
+	cout << "ServerConnected " << endl;
 	return true;
 }
 
@@ -90,27 +90,20 @@ GameManager::GameManager(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT)
 
 void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y)
 {
-	_pongs.push_back(make_shared<Pong>(width, height, x, y));
+	_pongs.push_back(make_shared<Breakout>(width, height, x, y));
 }
 
 void GameManager::Tick()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if (_noGUI) {
-		cout << "ticked" << endl;
-
-		for (auto& i : _pongs) {
-			i->Tick();
-		}
-		return;
-	}
-
 	ProcessInput(10);
 	_state->HandleInput(this);
+
+	if (_noGUI)
+		return;
+
 	_state->Render(this);
-
-
 
 	glutSwapBuffers();
 	glutPostRedisplay();
@@ -118,7 +111,7 @@ void GameManager::Tick()
 
 void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y,char L, char R)
 {
-	_pongs.push_back(make_shared<Pong>(width, height, x, y, L, R));
+	_pongs.push_back(make_shared<Breakout>(width, height, x, y, L, R));
 	
 }
 

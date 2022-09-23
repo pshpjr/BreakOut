@@ -1,16 +1,16 @@
 #include "pch.h"
-#include "Pong.h"
+#include "Breakout.h"
 
 #include <string>
 
 
 
-Pong::~Pong()
+Breakout::~Breakout()
 {
 	Clear();
 }
 
-void Pong::Init()
+void Breakout::Init()
 {
 	//변수 초기화 및 임의의 공 방향 정하기
 	_state = ALIVE;
@@ -80,12 +80,12 @@ void Pong::Init()
 
 }
 
-bool Pong::isDead() const
+bool Breakout::isDead() const
 {
 	return _life <= 0;
 }
 
-void Pong::Update()
+void Breakout::Update()
 {
 	for (const auto i : _update_requires) {
 		i->update();
@@ -100,7 +100,7 @@ void Pong::Update()
 
 }
 
-void Pong::block_collision_test() const
+void Breakout::block_collision_test() const
 {
 	Collision collision(false, UP, { 0,0 });
 
@@ -143,7 +143,7 @@ void Pong::block_collision_test() const
 	}
 }
 
-void Pong::control_block_collision_test() const
+void Breakout::control_block_collision_test() const
 {
 
 	Collision collision = CheckCollision(*_b, *_control_block);
@@ -161,7 +161,8 @@ void Pong::control_block_collision_test() const
 	}
 
 }
-void Pong::control_block_out_test_and_modify() const
+
+void Breakout::control_block_out_test_and_modify() const
 {
 	pt cbLocation = _control_block->getStart();
 	pt cbSize = _control_block->getSize();
@@ -172,7 +173,7 @@ void Pong::control_block_out_test_and_modify() const
 
 }
 
-void Pong::ball_out_test() 
+void Breakout::ball_out_test() 
 {
 	Collision collision = CheckCollision(*_b, *_deadline);
 
@@ -195,7 +196,7 @@ void Pong::ball_out_test()
 	
 }
 
-void Pong::Render()
+void Breakout::Render()
 {
 	glViewport(_viewportX, _viewportY, _width, _height);
 	glLoadIdentity();
@@ -226,7 +227,7 @@ void Pong::Render()
 	}
 }
 
-void Pong::Tick()
+void Breakout::Tick()
 {
 	if (_state == ALIVE)
 		Update();
@@ -236,7 +237,7 @@ void Pong::Tick()
 	Render();
 }
 
-void Pong::Reset()
+void Breakout::Reset()
 {
 	Clear();
 	Init();
@@ -244,7 +245,7 @@ void Pong::Reset()
 
 
 
-Direction Pong::VectorDirection(glm::vec2 target) const
+Direction Breakout::VectorDirection(glm::vec2 target) const
 {
 	glm::vec2 compass[] = {
 	glm::vec2(0.0f, 1.0f),	// up
@@ -267,7 +268,7 @@ Direction Pong::VectorDirection(glm::vec2 target) const
 	return (Direction)best_match;
 }
 
-Collision Pong::CheckCollision(const Ball& one, const Block& two) const
+Collision Breakout::CheckCollision(const Ball& one, const Block& two) const
 {
 	// get center point circle first 
 	glm::vec2 center = one.getLocation();
@@ -292,14 +293,14 @@ Collision Pong::CheckCollision(const Ball& one, const Block& two) const
 }
 
 
-void Pong::changeState(PlayerState state)
+void Breakout::changeState(PlayerState state)
 {
 	_state = state;
 }
 
 
 
-void Pong::Clear()
+void Breakout::Clear()
 {
 	for (auto& i : _update_requires) {
 		delete i;

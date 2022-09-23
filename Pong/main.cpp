@@ -5,13 +5,13 @@
 
 /*TODO: 좌표 처리 정수로 변환*/
 
-void hideCMD()
+void HideCMD(bool isHide)
 {
-	HWND hWnd = GetForegroundWindow();	ShowWindow(hWnd, SW_HIDE);
+	HWND hWnd = GetForegroundWindow();
+	isHide ? ShowWindow(hWnd, SW_SHOW) : ShowWindow(hWnd, SW_HIDE);
 }
 
 int WINDOWSIZE = 100;
-
 
 int32 SCREEN_WIDTH = 800;
 int32 SCREEN_HEIGHT = 600;
@@ -49,28 +49,57 @@ void GLInit() {
 	glutInitWindowPosition(0, 0);
 
 	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
-	string s = SCREEN_WIDTH + "x" + SCREEN_HEIGHT;
-	glutGameModeString(s.c_str());
-	if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
-		glutEnterGameMode();
+	//string s = SCREEN_WIDTH + "x" + SCREEN_HEIGHT;
+	//glutGameModeString(s.c_str());
+	//if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
+	//	glutEnterGameMode();
 	glDisable(GL_LIGHTING);
 
-	glutCreateWindow("Pong Loader");
-	glutSetCursor(GLUT_CURSOR_NONE);
-	glutFullScreen();
+	glutCreateWindow("Breakout 99");
+	//glutSetCursor(GLUT_CURSOR_NONE);
+	//glutFullScreen();
+}
+
+void ArgParseInit(int argc, char** argv)
+{
+	argparse::ArgumentParser program("Breakout");
+
+	program.add_argument("-noGUI")
+		.help("GUI Setting")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument("-d")
+		.help("Dummy client enable")
+		.default_value(false)
+		.implicit_value(true);
+
+	try {
+		program.parse_args(argc, argv);
+	}
+	catch (const std::runtime_error& err) {
+		std::cerr << err.what() << std::endl;
+		std::cerr << program;
+		std::exit(1);
+	}
+
+	if(program["-noGUI"] == true)
+	{
+		noGUI = true;
+	}
 }
 
 
-
 int main(int argc, char** argv) {
-	hideCMD();
+	ArgParseInit(argc, argv);
+	HideCMD(noGUI);
+
 	if (noGUI == false) {
 		glutInit(&argc, argv);
 		GLInit();
+		cout << "noGUI Enabled" << endl;
 	}
 	GameInit();
-
-
 
 
 	GM->Start();

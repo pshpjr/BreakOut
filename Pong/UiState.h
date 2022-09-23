@@ -63,6 +63,8 @@ public:
 	}
 	void Render(GameManager* GM) override;
 	void HandleInput(GameManager* GM) override;
+private:
+	int _count = 0;
 };
 
 class Win : public UIState

@@ -24,6 +24,7 @@
 	*crash = 0xDEADBEEF;					\
 }
 
+//expr이 거짓이면 실행
 #define ASSERT_CRASH(expr)			\
 {									\
 	if (!(expr))					\
