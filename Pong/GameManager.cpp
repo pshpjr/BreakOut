@@ -41,6 +41,8 @@ bool GameManager::Init()
 			break;
 		}
 	}
+	recv(clientSocket, recvBuf, sizeof(recvBuf), 0);
+
 	cout << "ServerConnected " << endl;
 	return true;
 }

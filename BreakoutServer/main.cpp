@@ -47,7 +47,6 @@ void WorkerThreadMain(HANDLE iocpHandle)
 			continue;
 		}
 
-		ASSERT_CRASH(overlappedEx->type == IO_TYPE::READ);
 
 		cout << "Recv Data IOCP = " << bytesTransferred << endl;
 
@@ -114,6 +113,7 @@ int main()
 		SOCKADDR_IN clientAddr;
 		int32 addrLen = sizeof(clientAddr);
 
+
 		SOCKET clientSocket = ::accept(listenSocket, (SOCKADDR*)&clientAddr, &addrLen);
 		if (clientSocket == INVALID_SOCKET)
 			return 0;
@@ -132,12 +132,12 @@ int main()
 		wsaBuf.len = BUFSIZE;
 
 		OverlappedEx* overlappedEx = new OverlappedEx();
-		overlappedEx->type = IO_TYPE::READ;
+		overlappedEx->type = IO_TYPE::WRITE;
 
 		// ADD_REF
 		DWORD recvLen = 0;
 		DWORD flags = 0;
-		::WSARecv(clientSocket, &wsaBuf, 1, &recvLen, &flags, &overlappedEx->overlapped, NULL);
+		::WSASend(clientSocket, &wsaBuf, 1, &recvLen, flags, &overlappedEx->overlapped, NULL);
 
 		// 유저가 게임 접속 종료!
 		//Session* s = sessionManager.back();

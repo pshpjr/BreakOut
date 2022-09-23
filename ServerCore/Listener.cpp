@@ -102,7 +102,7 @@ void Listener::RegisterAccept(AcceptEvent* acceptEvent)
 
 void Listener::ProcessAccept(AcceptEvent* acceptEvent)
 {
-	SessionRef session = acceptEvent->_session;
+	SessionRef session = acceptEvent->_session;//acceptEvent는 내가 만든거
 
 	if(false == SocketUtils::SetUpdateAcceptSocket(session->GetSocket(),_socket))
 	{
@@ -120,10 +120,12 @@ void Listener::ProcessAccept(AcceptEvent* acceptEvent)
 		return;
 	}
 
-
 	session->SetNetAddress(NetAddress(sockAddress));
+	/*세션이 만들어짐(연결됬다면) 가장 먼저 할 일은 세션쪽 함수를 호출한다.(onConnected)
+	 *지금 코드 컨벤션은 Register 이용해 비동기 등록하고, 완료되면 Process 호출하는 형식으로 진행. 
+	 */
 
-	cout << "client Connected" << endl;
-
+	session->ProcessConnect();
+	//이벤트는 계속 돌려 씀
 	RegisterAccept(acceptEvent);
 }

@@ -2,7 +2,7 @@
 #include <mutex>
 #include <atomic>
 
-using BYTE = unsigned char;
+using BYTE = unsigned char;//char은 문자열 같으니까 데이터라는 느낌을 강조하기 위해
 using int8 = __int8;
 using int16 = __int16;
 using int32 = __int32;

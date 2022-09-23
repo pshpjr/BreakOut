@@ -26,7 +26,7 @@ public:
 	int CONTROLBLOCKSPEED = 8;
 
 	//서버 데이터
-
+	char recvBuf[1000];
 
 	UIState* _state;
 };
