@@ -20,7 +20,7 @@
     <ClCompile Include="Breakout.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="BreakoutServer.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">

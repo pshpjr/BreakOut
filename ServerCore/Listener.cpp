@@ -88,7 +88,7 @@ void Listener::RegisterAccept(AcceptEvent* acceptEvent)
 	0을 넣어준다. 값이 0이면 수신받지 않는다.
 	뒤의 인자는 주소 + 16바이트 이상 쓰라고 msdn에 적혀있음.
 	받은 데이터의 byte(안 씀)과 overlapped 객체*/
-	if (false == SocketUtils::acceptEx(_socket,session->GetSocket(),session->_recvBuffer,0,
+	if (false == SocketUtils::acceptEx(_socket,session->GetSocket(),session->_recvBuffer.WritePos(),0,
 		sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16,
 		OUT & byteReceived, static_cast<LPOVERLAPPED>(acceptEvent)))
 	{

@@ -6,7 +6,8 @@ enum class EventType :uint8
 	Connect,
 	Accept,
 	Recv,
-	Send
+	Send,
+	Disconnect
 };
 
 //이렇게 상속  받으면 0번 주소에 OVERLAPPED 데이터부터 들어가니까
@@ -34,6 +35,14 @@ public:
 	ConnectEvent() : IocpEvent(EventType::Connect) { }
 };
 
+/*
+ * DisconnectEvent
+ */
+class DisconnectEvent : public IocpEvent
+{
+public:
+	DisconnectEvent() : IocpEvent(EventType::Disconnect) { }
+};
 
 /*
  * AcceptEvent

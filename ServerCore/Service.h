@@ -42,15 +42,14 @@ public:
 
 protected:
 	USE_LOCK;
+	ServiceType			_type;
+	NetAddress			_netAddress = {};
+	IocpCoreRef			_iocpCore;
 
-	ServiceType				_type;
-	NetAddress				_netAddress = {};
-	IocpCoreRef				_iocpCore;
-
-	Set<SessionRef>			_sessions;
-	int32					_sessionCount = 0;
-	int32					_maxSessionCount = 0;
-	SessionFactory			_sessionFactory;
+	Set<SessionRef>		_sessions;
+	int32				_sessionCount = 0;
+	int32				_maxSessionCount = 0;
+	SessionFactory		_sessionFactory;
 };
 
 /**
@@ -60,9 +59,9 @@ class ClientService : public Service // 클라이언트에서 실행
 {
 public:
 	ClientService(NetAddress targetAddress, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
-	virtual ~ClientService();
+	virtual ~ClientService() {}
 
-	virtual bool Start() override;
+	virtual bool	Start() override;
 };
 
 
@@ -74,11 +73,11 @@ class ServerService : public Service// 서버에서 실행
 {
 public:
 	ServerService(NetAddress targetAddress, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
-	virtual ~ServerService();
+	virtual ~ServerService() {}
 
-	virtual bool Start() override;
-	virtual void CloseService() override;
+	virtual bool	Start() override;
+	virtual void	CloseService() override;
 
 private:
-	ListenerRef _listener = nullptr;
+	ListenerRef		_listener = nullptr;
 };

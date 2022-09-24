@@ -8,12 +8,12 @@ public:
 	GameManager(int32 SCREENWIDHT, int32 SCREENHEIGHT);
 	void AddPong(int32 width, int32 height, int32 x, int32 y);
 
-	void Tick();
+	bool Tick();
 	void AddPong(int32 width, int32 height, int32 x, int32 y, char L, char R);
 	void Start();
 	void noGUI(bool value);
 	bool Init();
-	void ProcessInput(float dt);
+	bool ProcessInput(float dt);
 	void ChangeState(UIState* state) { _state = state; }
 
 	//벡터에 값을 넣음 -> 벡터 확장 -> 이동/복사 해야 함 -> 소멸자 호출
