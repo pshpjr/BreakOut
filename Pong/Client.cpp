@@ -1,16 +1,16 @@
 #include "pch.h"
-#include "GameManager.h"
+#include "Client.h"
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
-bool GameManager::Init()
+bool Client::Init()
 {
 	_state = Lobby::instance();
 
 	return true;
 }
 
-bool GameManager::ProcessInput(float dt)
+bool Client::ProcessInput(float dt)
 {
 	float velocity = 1 * dt;
 	// move playerboard
@@ -24,7 +24,7 @@ bool GameManager::ProcessInput(float dt)
 
 
 
-GameManager::GameManager(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT)
+Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT)
 {
 	_pongs.reserve(99);
 	Init();
@@ -55,12 +55,12 @@ GameManager::GameManager(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT)
 	}
 }
 
-void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y)
+void Client::AddPong(int32 width, int32 height, int32 x, int32 y)
 {
 	_pongs.push_back(make_shared<Breakout>(width, height, x, y));
 }
 
-bool GameManager::Tick()
+bool Client::Tick()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -78,13 +78,13 @@ bool GameManager::Tick()
 	return true;
 }
 
-void GameManager::AddPong(int32 width, int32 height, int32 x, int32 y,char L, char R)
+void Client::AddPong(int32 width, int32 height, int32 x, int32 y,char L, char R)
 {
 	_pongs.push_back(make_shared<Breakout>(width, height, x, y, L, R));
 	
 }
 
-void GameManager::Start()
+void Client::Start()
 {
 	while (Tick())
 	{
@@ -92,7 +92,7 @@ void GameManager::Start()
 	}
 }
 
-void GameManager::noGUI(bool value)
+void Client::noGUI(bool value)
 {
 	_noGUI = value;
 	for (auto& i : _pongs) {

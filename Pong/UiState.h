@@ -1,12 +1,12 @@
 #pragma once
 
-class GameManager;
+class Client;
 
 class UIState
 {
 public:
-	virtual void Render(GameManager* GM);
-	virtual void HandleInput(GameManager* GM) {}
+	virtual void Render(Client* GM);
+	virtual void HandleInput(Client* GM) {}
 };
 
 class Lobby : public UIState
@@ -18,9 +18,9 @@ public:
 		return instance;
 	}
 
-	void Render(GameManager* GM) override;
+	void Render(Client* GM) override;
 
-	void HandleInput(GameManager* GM) override;
+	void HandleInput(Client* GM) override;
 
 };
 
@@ -32,8 +32,8 @@ public:
 		static Matching* instance = new Matching();
 		return instance;
 	}
-	void Render(GameManager* GM) override;
-	void HandleInput(GameManager* GM) override;
+	void Render(Client* GM) override;
+	void HandleInput(Client* GM) override;
 
 private:
 	int _count = 0;
@@ -46,8 +46,8 @@ public:
 		static GameReady* instance = new GameReady();
 		return instance;
 	}
-	void Render(GameManager* GM) override;
-	void HandleInput(GameManager* GM) override;
+	void Render(Client* GM) override;
+	void HandleInput(Client* GM) override;
 
 private:
 	int _count = 0;
@@ -61,8 +61,8 @@ public:
 		static Playing* instance = new Playing();
 		return instance;
 	}
-	void Render(GameManager* GM) override;
-	void HandleInput(GameManager* GM) override;
+	void Render(Client* GM) override;
+	void HandleInput(Client* GM) override;
 private:
 	int _count = 0;
 };
@@ -75,6 +75,6 @@ public:
 		static Win* instance = new Win();
 		return instance;
 	}
-	void Render(GameManager* GM) override;
-	void HandleInput(GameManager* GM) override;
+	void Render(Client* GM) override;
+	void HandleInput(Client* GM) override;
 };

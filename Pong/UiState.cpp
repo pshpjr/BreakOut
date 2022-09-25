@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "UiState.h"
-#include "GameManager.h"
+#include "Client.h"
 
 
-void UIState::Render(GameManager* GM)
+void UIState::Render(Client* GM)
 {
 	glViewport(GM->_width, 0, GM->_width, GM->_height);
 	glLoadIdentity();
@@ -12,7 +12,7 @@ void UIState::Render(GameManager* GM)
 	drawText("Breakout 99", GM->_width + GM->_width / 3, GM->_height * 0.9);
 }
 
-void Lobby::Render(GameManager* GM)
+void Lobby::Render(Client* GM)
 {
 	glClearColor(1, 1, 1, 1);
 	UIState::Render(GM);
@@ -22,7 +22,7 @@ void Lobby::Render(GameManager* GM)
 	drawText("ESC : exit", GM->_width + GM->_width / 3, GM->_height * 0.2 - 24);
 }
 
-void Lobby::HandleInput(GameManager* GM)
+void Lobby::HandleInput(Client* GM)
 {
 	if (isKeyPressing(VK_SPACE))
 	{
@@ -31,7 +31,7 @@ void Lobby::HandleInput(GameManager* GM)
 	}
 }
 
-void Matching::Render(GameManager* GM)
+void Matching::Render(Client* GM)
 {
 
 	GM->_mainPlay->Render();
@@ -56,7 +56,7 @@ void Matching::Render(GameManager* GM)
 	drawText("(press S to stop)", GM->_width + GM->_width / 3, GM->_height * 0.2-24);
 }
 
-void Matching::HandleInput(GameManager* GM)
+void Matching::HandleInput(Client* GM)
 {
 	if (isKeyPressing('S'))
 	{
@@ -70,7 +70,7 @@ void Matching::HandleInput(GameManager* GM)
 	}
 }
 
-void GameReady::Render(GameManager* GM)
+void GameReady::Render(Client* GM)
 {
 	UIState::Render(GM);
 	string s;
@@ -98,7 +98,7 @@ void GameReady::Render(GameManager* GM)
 
 }
 
-void GameReady::HandleInput(GameManager* GM)
+void GameReady::HandleInput(Client* GM)
 {
 	if (isKeyPressing(VK_SPACE))
 	{
@@ -107,7 +107,7 @@ void GameReady::HandleInput(GameManager* GM)
 	}
 }
 
-void Playing::Render(GameManager* GM)
+void Playing::Render(Client* GM)
 {
 	if (_count == 2) {
 		for (int j = 0; j < 3; j++)
@@ -132,7 +132,7 @@ void Playing::Render(GameManager* GM)
 	wrap(_count, 0, 3);
 }
 
-void Playing::HandleInput(GameManager* GM)
+void Playing::HandleInput(Client* GM)
 {
 	if (isKeyPressing('A'))
 	{
@@ -157,7 +157,7 @@ void Playing::HandleInput(GameManager* GM)
 	}
 }
 
-void Win::Render(GameManager* GM)
+void Win::Render(Client* GM)
 {
 	UIState::Render(GM);
 	drawText("You are Winner!!", GM->_width + GM->_width / 3, GM->_height * 0.2);
@@ -170,7 +170,7 @@ void Win::Render(GameManager* GM)
 	}
 }
 
-void Win::HandleInput(GameManager* GM)
+void Win::HandleInput(Client* GM)
 {
 	if (isKeyPressing(VK_SPACE))
 	{

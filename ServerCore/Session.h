@@ -22,7 +22,7 @@ public:
 
 public:
 
-	void			Send(BYTE* buffer, int32 len);
+	void			Send(SendBufferRef sendBuffer);
 	bool			Connect();
 	void			Disconnect(const WCHAR* cause/*왜 끊었는지*/);//해당 세션 종료(밴, 상대방 종료 등등)
 
@@ -52,13 +52,11 @@ private:
 	bool					RegisterDisconnect();
 	void					RegisterRecv();
 	void					RegisterSend();
-	void					RegisterSend(SendEvent* sendEvent);
 
 	void					ProcessConnect();//연결 완료
 	void					ProcessDisconnect();
 	void					ProcessRecv(int32 numOfBytes);
 	void					ProcessSend(int32 numOfBytes);
-	void					ProcessSend(SendEvent* sendEvent,int32 numOfBytes);
 
 	void					HandleError(int32 errorCode);
 
@@ -82,6 +80,8 @@ private:
 	/*수신 관련*/
 	RecvBuffer				_recvBuffer;
 	/*송신 관련*/
+	Queue<SendBufferRef>	_sendQueue;
+	Atomic<bool>			_sendRegisterd = false;
 
 private:
 	/*세션이 호출한 IO 함수가 진행중이면 세션을 참조해 객체가 사라지지 않도록 함*/
@@ -89,5 +89,6 @@ private:
 	ConnectEvent			_connectEvent;
 	DisconnectEvent			_disconnectEvent;
 	RecvEvent				_recvEvent;
+	SendEvent				_sendEvent;
 };
 

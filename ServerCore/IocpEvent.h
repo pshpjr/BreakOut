@@ -75,6 +75,6 @@ class SendEvent : public IocpEvent
 public:
 	SendEvent() : IocpEvent(EventType::Send) { }
 
-	//temp
-	vector<BYTE> buffer;
+	//메모리 풀링하는 버퍼
+	Vector<SendBufferRef> sendBuffers;
 };

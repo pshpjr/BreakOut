@@ -1,7 +1,7 @@
 #pragma once
 
 class Breakout;
-class GameManager;
+class Client;
 
 enum GameState
 {

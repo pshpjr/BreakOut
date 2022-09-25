@@ -18,4 +18,4 @@
 #include "Objects.h"
 #include "string.h"
 #include "UiState.h"
-#include "GameManager.h"
+#include "Client.h"

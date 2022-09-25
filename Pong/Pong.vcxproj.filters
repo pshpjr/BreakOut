@@ -13,7 +13,7 @@
     <ClCompile Include="Objects.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="GameManager.cpp">
+    <ClCompile Include="Client.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="UiState.cpp">
@@ -33,7 +33,7 @@
     <ClInclude Include="Macro.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="GameManager.h">
+    <ClInclude Include="Client.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="UiState.h">

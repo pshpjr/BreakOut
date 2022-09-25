@@ -14,18 +14,17 @@ Session::~Session()
 	SocketUtils::Close(_socket);
 }
 
-void Session::Send(BYTE* buffer, int32 len)
+
+
+void Session::Send(SendBufferRef sendBuffer)
 {
-	//temp
-	SendEvent* sendEvent = xnew<SendEvent>();
-	sendEvent->_owner = shared_from_this();
+	WRITE_LOCK;
 
-	sendEvent->buffer.resize(len);
-	::memcpy(sendEvent->buffer.data(), buffer, len);
+	_sendQueue.push(sendBuffer);
 
+	if (_sendRegisterd.exchange(true) == false)
+		RegisterSend();
 
-	WRITE_LOCK
-	RegisterSend(sendEvent);
 }
 
 bool Session::Connect()
@@ -40,7 +39,7 @@ bool Session::Connect()
 
 void Session::Disconnect(const WCHAR* cause)
 {
-	//exchange : 변경해본다. 기존 값이랑 넣을 값이랑 같으면 false를 리턴
+	//exchange : 변경해본다. 변경 후 이전에 있던 값을 리턴
 	//상태가 false면 걍 패스
 	if (_connected.exchange(false) == false)
 		return;
@@ -76,7 +75,7 @@ void Session::Dispatch(IocpEvent* iocpEvent, int32 numOfBytes)
 		ProcessRecv(numOfBytes);
 		break;
 	case EventType::Send:
-		ProcessSend(static_cast<SendEvent*>(iocpEvent), numOfBytes);
+		ProcessSend(numOfBytes);
 		break;
 	case EventType::Disconnect:
 		ProcessDisconnect();
@@ -182,34 +181,58 @@ void Session::RegisterRecv()
 
 void Session::RegisterSend()
 {
-
-}
-
-//sendEvent를 맴버로 가지고 있지 않으니까 일단 넘겨주는 버전 임시로 만들어 사용
-void Session::RegisterSend(SendEvent* sendEvent)
-{
 	//send를 단계별로 이해할 수 있게 임시 코드가 많음.
-	//그래도 문제점을 쉽게 이해할 수 있다.
+//그래도 문제점을 쉽게 이해할 수 있다.
 
 	if (IsConnected() == false)
 		return;
 
-	WSABUF wsaBuf;
-	wsaBuf.buf = (char*)sendEvent->buffer.data();
-	wsaBuf.len = (ULONG)sendEvent->buffer.size();
+	_sendEvent.Init();
+	_sendEvent._owner = shared_from_this();
+
+	//나중에 외부에서 락 안잡고 호출할수도 있으니 안에서 락 잡음
+	{
+		WRITE_LOCK;
+
+		int32 writeSize = 0;
+		while(_sendQueue.empty() == false)
+		{
+			SendBufferRef sendBuffer = _sendQueue.front();
+
+			writeSize += sendBuffer->WriteSize();
+			//TODO: 너무 많으면 break;
+			_sendQueue.pop();
+			_sendEvent.sendBuffers.push_back(sendBuffer);
+		}
+	}
+
+	//scatter gather : 흩어진 데이터를 한 번에 보낸다.
+
+	Vector<WSABUF> wsabufs;
+	wsabufs.reserve(_sendEvent.sendBuffers.size());
+	for(SendBufferRef sendBuffer : _sendEvent.sendBuffers)
+	{
+		WSABUF wsaBuf;
+		wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
+		wsaBuf.len = static_cast<LONG>(sendBuffer->WriteSize());
+		wsabufs.push_back(wsaBuf);
+	}
+
 
 	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(_socket, &wsaBuf, 1, OUT & numOfBytes, 0, sendEvent, nullptr))
+	if (SOCKET_ERROR == ::WSASend(_socket, wsabufs.data(), static_cast<DWORD>(wsabufs.size()), OUT & numOfBytes, 0, &_sendEvent, nullptr))
 	{
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
 			HandleError(errorCode);
-			sendEvent->_owner = nullptr;
-			xdelete(sendEvent);
+			_sendEvent._owner = nullptr;
+			_sendEvent.sendBuffers.clear();
+			_sendRegisterd.store(false); 
 		}
 	}
 }
+
 
 void Session::ProcessConnect()
 {
@@ -269,21 +292,23 @@ void Session::ProcessRecv(int32 numOfBytes)
 
 void Session::ProcessSend(int32 numOfBytes)
 {
-}
+	_sendEvent._owner = nullptr;
+	_sendEvent.sendBuffers.clear();
 
-//Temp
-void Session::ProcessSend(SendEvent* sendEvent, int32 numOfBytes)
-{
-	sendEvent->_owner = nullptr;
-	xdelete(sendEvent);
-
-	if(numOfBytes == 0)
+	if (numOfBytes == 0)
 	{
 		Disconnect(L"send 0");
 		return;
 	}
 	OnSend(numOfBytes);
+
+	WRITE_LOCK;
+	if (_sendQueue.empty())
+		_sendRegisterd.store(false);
+	else
+		RegisterSend();
 }
+
 
 void Session::HandleError(int32 errorCode)
 {

@@ -4,7 +4,7 @@
 #include "Session.h"
 #include "ThreadManager.h"
 
-GMPtr GM;
+ClientPtr GM;
 
 bool noGUI = false;
 bool Exit = false;
@@ -76,7 +76,7 @@ void my_reshape(int w, int h) {
 
 void GameInit()
 {
-	GM = make_shared<GameManager>(SCREEN_WIDTH, SCREEN_HEIGHT);
+	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	GM->noGUI(noGUI);
 
@@ -136,6 +136,7 @@ void ArgParseInit(int argc, char** argv)
 		.help("Dummy client enable")
 		.default_value(false)
 		.implicit_value(true);
+	//TODO: 사람 수 인자로 받게
 
 	try {
 		program.parse_args(argc, argv);
@@ -150,6 +151,7 @@ void ArgParseInit(int argc, char** argv)
 	{
 		noGUI = true;
 	}
+
 }
 
 

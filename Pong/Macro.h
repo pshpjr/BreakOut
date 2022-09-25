@@ -1,7 +1,7 @@
 #pragma once
 
 class Breakout;
-class GameManager;
+class Client;
 
 enum GameState
 {
@@ -22,8 +22,8 @@ enum Direction {
 };
 using pt = glm::vec2;
 
-using PongPtr = shared_ptr<Breakout>;
-using GMPtr = shared_ptr<GameManager>;
+using BreakoutPtr = shared_ptr<Breakout>;
+using ClientPtr = shared_ptr<Client>;
 
 
 
