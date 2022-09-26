@@ -35,7 +35,7 @@ private:
 template<typename Type, typename... Args>
 Type* xnew(Args&&... args)
 {
-	Type* memory = static_cast<Type*>(BaseAllocator::Alloc(sizeof(Type)));
+	Type* memory = static_cast<Type*>(PoolAllocator::Alloc(sizeof(Type)));
 	new(memory)Type(forward<Args>(args)...); // placement new
 	return memory;
 }
@@ -44,7 +44,7 @@ template<typename Type>
 void xdelete(Type* obj)
 {
 	obj->~Type();
-	BaseAllocator::Release(obj);
+	PoolAllocator::Release(obj);
 }
 
 template<typename Type, typename... Args>

@@ -18,11 +18,21 @@ Session::~Session()
 
 void Session::Send(SendBufferRef sendBuffer)
 {
-	WRITE_LOCK;
+	if (IsConnected() == false)
+		return;
+	bool registerSend = false;
 
-	_sendQueue.push(sendBuffer);
+	{
+		WRITE_LOCK;
 
-	if (_sendRegisterd.exchange(true) == false)
+		_sendQueue.push(sendBuffer);
+
+		if (_sendRegisterd.exchange(true) == false)
+			registerSend = true;
+	}
+	//락을 좀 더 작게 잡을 수 있음.
+	//registersend 전체를 락 잡을 필요는 없음
+	if(registerSend)
 		RegisterSend();
 
 }
@@ -49,11 +59,6 @@ void Session::Disconnect(const WCHAR* cause)
 	//temp
 
 	wcout << "Disconnect : " << cause << endl;
-
-	OnDisconnected();
-
-	//소켓 닫고 세션 release 하면 refcount가 감소. 만약 event가 걸려 있지 않다면 삭제됨
-	GetService()->ReleaseSession(GetSessionRef());
 
 	RegisterDisconnect();
 }
@@ -135,12 +140,16 @@ bool Session::RegisterDisconnect()
 			return false;
 		}
 	}
-
+	return true;
 }
 
 void Session::ProcessDisconnect()
 {
 	_disconnectEvent._owner = nullptr;
+
+	OnDisconnected();
+	//소켓 닫고 세션 release 하면 refcount가 감소. 만약 event가 걸려 있지 않다면 삭제됨
+	GetService()->ReleaseSession(GetSessionRef());
 }
 
 void Session::RegisterRecv()
@@ -322,6 +331,39 @@ void Session::HandleError(int32 errorCode)
 		cout << "Handle Error " << errorCode << endl;
 		break;	
 	}
+}
+
+PacketSession::PacketSession()
+{
+}
+
+PacketSession::~PacketSession()
+{
+
+}
+
+//데이터 받았을 때 호출하는데, 데이터 크기 어떻게 할지는 알아서
+//헤더 + 데이터를 데이터 사이즈로 하자. 
+int32 PacketSession::OnRecv(BYTE* buffer, int32 len)
+{
+	int32 processLen = 0;
+	while (true)
+	{
+		int32 dataSize = len - processLen;
+		//4바이트는 들고 와서 헤더는 볼 수 있는가?
+		if (dataSize < sizeof(PacketHeader))
+			break;
+		PacketHeader header = *reinterpret_cast<PacketHeader*>(&buffer[processLen]);
+		if (dataSize < header.size)
+			break;
+
+		//패킷 전부 옴
+
+		OnRecvPacket(&buffer[processLen], header.size);
+
+		processLen += header.size;
+	}
+	return processLen;
 }
 
 

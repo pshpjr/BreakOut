@@ -28,7 +28,7 @@ public:
 	static bool Bind(SOCKET socket, NetAddress netAddr);
 	static bool BindAnyAddress(SOCKET socket, uint16 port);
 	static bool Listen(SOCKET socket, int32 backlog = SOMAXCONN);
-	static void Close(SOCKET socket);
+	static void Close(SOCKET& socket);
 
 };
 

@@ -18,11 +18,11 @@ public:
 	IocpCore();
 	~IocpCore();
 
-	HANDLE GetHandle() { return _iocpHanle; }
+	HANDLE GetHandle() { return _iocpHandle; }
 
 	bool Register(IocpObjectRef iocpObject);
 	bool Dispatch(uint32 timeoutMs = INFINITE);//실제로 일감을 가지고 오는 스레드들을 실행. 
 
 private:
-	HANDLE _iocpHanle;
+	HANDLE _iocpHandle;
 };

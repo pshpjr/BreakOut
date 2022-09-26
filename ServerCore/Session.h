@@ -43,7 +43,7 @@ public:
 private:
 	/*인터페이스 구현*/
 	virtual HANDLE			GetHandle() override;
-	virtual void			Dispatch(IocpEvent* iocpEvent, int32 numOfBytes) override;
+	virtual void			Dispatch(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
 
 private:
 							/*전송 관련*/
@@ -92,3 +92,30 @@ private:
 	SendEvent				_sendEvent;
 };
 
+/*PacketSession*/
+//받는 쪽이랑 관련이 있음. 우리가 Recv 끝날 때 전부 다 받지 않을 수 있음.
+//전체 패킷을 다 보냈는지 알려줄 수 있는 프로토콜을 정해야 함.
+//어떻게 데이터 끝을 알리느나?
+//1. 특수문자를 쓴다면? 데이터가 겹칠 수 있음.
+//2. 정석은 패킷 헤더. string 같은 가변 데이터 위해 size를 사용
+
+struct PacketHeader
+{
+	uint16 size;//패킷 크기
+	uint16 id;//데이터 종류
+};
+
+//컨텐츠에선 패킷 세션 상속받아서 
+class PacketSession : public Session
+{
+public:
+	PacketSession();
+	~PacketSession();
+
+	PacketSessionRef GetPacketSessionRef() { return static_pointer_cast<PacketSession>(shared_from_this()); }
+
+protected:
+	int32 OnRecv(BYTE* buffer, int32 len) sealed;
+	virtual int32 OnRecvPacket(BYTE* buffer, int32 len) abstract;
+
+};

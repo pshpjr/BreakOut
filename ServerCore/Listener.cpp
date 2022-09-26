@@ -44,7 +44,7 @@ bool Listener::StartAccept(ServerServiceRef service)
 
 
 	const int32 acceptCount = _service->GetMaxSessionCount()/2;
-	for (int i = 0; i < acceptCount; ++i)
+	for (int i = 0; i < acceptCount; i++)
 	{
 		AcceptEvent* acceptEvent = xnew<AcceptEvent>();
 		//레퍼런스 유지한 shared_ptr 생성. 

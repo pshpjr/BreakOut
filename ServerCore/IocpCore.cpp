@@ -3,26 +3,23 @@
 #include "IocpEvent.h"
 
 
-//tmp
-
-IocpCore GIocpCore;
 
 
 IocpCore::IocpCore()
 {
-	_iocpHanle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
-	ASSERT_CRASH(_iocpHanle != INVALID_HANDLE_VALUE);
+	_iocpHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
+	ASSERT_CRASH(_iocpHandle != INVALID_HANDLE_VALUE);
 }
 
 IocpCore::~IocpCore()
 {
-	CloseHandle(_iocpHanle);
+	CloseHandle(_iocpHandle);
 }
 
 //IocpHandle에 새 일감 등록
 bool IocpCore::Register(IocpObjectRef iocpObject)
 {
-	return ::CreateIoCompletionPort(iocpObject->GetHandle(), _iocpHanle,
+	return ::CreateIoCompletionPort(iocpObject->GetHandle(), _iocpHandle,
 		0, 0);
 	//iocompletionport에 이것저것 다 넣을 수 있음. 세션만 넣는 게 아니라 일감이나 네트워크 아닌 것도 넣어짐
 	//'일감'으로 통칭
@@ -40,7 +37,7 @@ bool IocpCore::Dispatch(uint32 timeoutMs)
 	//key를 사용하지 않고, IocpEvent가 호출한곳의 SharedPtr을 가지고 있게 함. 
 	IocpEvent* iocpEvent = nullptr;
 
-	if(::GetQueuedCompletionStatus(_iocpHanle, OUT & numOfBytes, OUT &key,OUT reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), timeoutMs))
+	if(::GetQueuedCompletionStatus(_iocpHandle, OUT & numOfBytes, OUT &key,OUT reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), timeoutMs))
 	{
 		IocpObjectRef iocpObject = iocpEvent->_owner;
 		iocpObject->Dispatch(iocpEvent, numOfBytes);//여기 dispatch는 콜백 느낌.

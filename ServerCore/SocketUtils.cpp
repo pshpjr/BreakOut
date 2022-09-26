@@ -95,7 +95,7 @@ bool SocketUtils::Listen(SOCKET socket, int32 backlog)
 	return SOCKET_ERROR != listen(socket, backlog);
 }
 
-void SocketUtils::Close(SOCKET socket)
+void SocketUtils::Close(SOCKET& socket)
 {
 	if (socket != INVALID_SOCKET)
 		::closesocket(socket);
