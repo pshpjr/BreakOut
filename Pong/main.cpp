@@ -11,6 +11,9 @@ ClientPtr GM;
 bool noGUI = false;
 bool Exit = false;
 string key;
+
+const int KEY_LENGTH = 5;
+
 class ServerSession : public Session
 {
 public:
@@ -105,7 +108,7 @@ string GetKey()
 	if (fin.fail())
 	{
 		std::ofstream fout("key.txt");
-		key = random_string(5);
+		key = random_string(KEY_LENGTH);
 
 		fout << key;
 		fout.close();
@@ -123,6 +126,9 @@ string GetKey()
 bool GameInit()
 {
 	key = GetKey();
+	if (noGUI == true)
+		key = random_string(KEY_LENGTH);
+
 	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	GM->noGUI(noGUI);
