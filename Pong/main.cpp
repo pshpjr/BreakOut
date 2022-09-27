@@ -3,11 +3,14 @@
 #include "Service.h"
 #include "Session.h"
 #include "ThreadManager.h"
-
+#include "fstream"
+#include <random>
+#include <string>
 ClientPtr GM;
 
 bool noGUI = false;
 bool Exit = false;
+string key;
 class ServerSession : public Session
 {
 public:
@@ -64,6 +67,26 @@ int32 SCREEN_HEIGHT = 600;
 
 //박스는 항상 좌하단 좌표를 start로 넣을 것
 
+
+std::string random_string(std::string::size_type length)
+{
+	static auto& chrs = "0123456789"
+		"abcdefghijklmnopqrstuvwxyz"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	thread_local static std::mt19937 rg{ std::random_device{}() };
+	thread_local static std::uniform_int_distribution<std::string::size_type> pick(0, sizeof(chrs) - 2);
+
+	std::string s;
+
+	s.reserve(length);
+
+	while (length--)
+		s += chrs[pick(rg)];
+
+	return s;
+}
+
 void my_reshape(int w, int h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
@@ -74,8 +97,32 @@ void my_reshape(int w, int h) {
 	glLoadIdentity();
 }
 
-void GameInit()
+string GetKey()
 {
+	string key;
+	std::ifstream fin("key.txt");
+
+	if (fin.fail())
+	{
+		std::ofstream fout("key.txt");
+		key = random_string(5);
+
+		fout << key;
+		fout.close();
+
+		return key;
+	}
+
+	fin >> key;
+
+	fin.close();
+
+	return key;
+}
+
+bool GameInit()
+{
+	key = GetKey();
 	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	GM->noGUI(noGUI);
@@ -88,7 +135,11 @@ void GameInit()
 		MakeShared<ServerSession>, // TODO : SessionManager 등
 		1);
 
-	ASSERT_CRASH(service->Start());
+	if(service->Start() == false)
+	{
+		cout << "Cannot Connect to Server" << endl;
+		return false;
+	}
 
 	for (int32 i = 0; i < 2; i++)
 	{
@@ -100,6 +151,7 @@ void GameInit()
 				}
 			});
 	}
+	return true;
 }
 
 void GLInit() {
@@ -150,6 +202,7 @@ void ArgParseInit(int argc, char** argv)
 	if(program["-noGUI"] == true)
 	{
 		noGUI = true;
+		cout << "noGUI Enabled" << endl;
 	}
 
 }
@@ -162,11 +215,12 @@ int main(int argc, char** argv) {
 	if (noGUI == false) {
 		glutInit(&argc, argv);
 		GLInit();
-		cout << "noGUI Enabled" << endl;
 	}
-	GameInit();
+	if (GameInit() == false)
+		return 0;
 
 	GM->Start();
+	
 	Exit = true;
 	GThreadManager->Join();
 	return 0;

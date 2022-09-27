@@ -335,6 +335,7 @@ void Session::HandleError(int32 errorCode)
 
 PacketSession::PacketSession()
 {
+
 }
 
 PacketSession::~PacketSession()
@@ -343,7 +344,8 @@ PacketSession::~PacketSession()
 }
 
 //데이터 받았을 때 호출하는데, 데이터 크기 어떻게 할지는 알아서
-//헤더 + 데이터를 데이터 사이즈로 하자. 
+//헤더 + 데이터를 데이터 사이즈로 하자.
+
 int32 PacketSession::OnRecv(BYTE* buffer, int32 len)
 {
 	int32 processLen = 0;
