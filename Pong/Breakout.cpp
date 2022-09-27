@@ -16,48 +16,40 @@ void Breakout::Init()
 	_state = ALIVE;
 	_life = 3;
 
-	float mapwidth = MAPRIGHT - MAPLEFT;
+
+	//객체에 들어가는 변수들 초기화
 	float mapHeight = MAPTOP - MAPBOTTOM;
-	float ratio = mapwidth / 512.0f;
-	BALLSIZE *= ratio;
-	BALLSPEED *= ratio;
-	WALLTHICKNESS *= ratio;
+	pt controlSize = { CONTROLBLOCKWIDTH,3 };
+	pt controlStart = { baseWidth / 2 - controlSize.x / 2, MAPBOTTOM + baseHeight * 0.1 };
+	pt ballLocation = { _mapwidth / 2 + MAPLEFT,mapHeight * 0.3 + MAPBOTTOM };
 
-	//std::random_device rd;
-	//std::mt19937 gen(rd());
-	//std::uniform_int_distribution<int> dis(1, 100);
-	//_b->setVector({ dis(gen) / static_cast<double>(100),dis(gen) / static_cast<double>(100) });
+
+
 	_control_block = new ControlBlock();
-
-
-	_control_block->setRatio(ratio);
-
-	pt controlSize = { _width * 0.3,3 };
-	pt controlStart = { _viewportX + _width / 2 - controlSize.x/2, MAPBOTTOM + _height*0.1 };
-
 	_control_block->setStart(controlStart);
 	_control_block->setSize(controlSize);
 
 
+	_b = new Ball(ballLocation, { 1,1 }, BALLSPEED, BALLSIZE);
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(-1, 1);
+	glm::vec2 beginVector(dis(gen),1);
 
-	pt ballLocation = { mapwidth / 2 + MAPLEFT,mapHeight * 0.3+ MAPBOTTOM };
-
-	_b = new Ball(ballLocation, { 1,1 }, BALLSPEED,BALLSIZE);
-	_b->setVector(glm::normalize(glm::vec2(0.35, 0.97 )));
+	_b->setVector(glm::normalize(beginVector));
 
 
 	//게임판 생성
 	_update_requires.push_back(_control_block);
 	_update_requires.push_back(_b);
 
-	_deadBlind = new Block({ _viewportX,_viewportY }, { _width,_height });
+	_deadBlind = new Block({ 0,0 }, { baseWidth,baseHeight });
 
 	_blocks.push_back(new Block(pt(MAPLEFT-WALLTHICKNESS, MAPBOTTOM), pt(WALLTHICKNESS, mapHeight), true)); //left
 	_blocks.push_back(new Block(pt(MAPRIGHT, MAPBOTTOM), pt(WALLTHICKNESS, mapHeight), true));//right
-	_blocks.push_back(new Block(pt(MAPLEFT-WALLTHICKNESS, MAPTOP), pt(mapwidth + WALLTHICKNESS*2, WALLTHICKNESS), true));//top
+	_blocks.push_back(new Block(pt(MAPLEFT-WALLTHICKNESS, MAPTOP), pt(_mapwidth + WALLTHICKNESS*2, WALLTHICKNESS), true));//top
 
-
-	_deadline = new Block(pt(MAPLEFT, MAPBOTTOM), pt(mapwidth, WALLTHICKNESS), true);//bottom
+	_deadline = new Block(pt(MAPLEFT, MAPBOTTOM), pt(_mapwidth, WALLTHICKNESS), true);//bottom
 
 	//TODO: 두 개 하나로 통합
 	for (int i = 0; i <MAPROW; i++) {
@@ -65,12 +57,9 @@ void Breakout::Init()
 			_map[i][j] = 3;
 		}
 	}
-
-	float blockGap = mapwidth * 0.1f;
-	int start = MAPLEFT + blockGap;
+	int start = MAPLEFT + BLOCKGAP;
 
 	int startH = MAPBOTTOM + mapHeight * 0.6f;
-
 
 	for (int i = 0; i < MAPROW; i++) {
 		for (int j = 0; j < MAPCOL; j++) {
@@ -201,7 +190,7 @@ void Breakout::Render()
 	glViewport(_viewportX, _viewportY, _width, _height);
 	glLoadIdentity();
 
-	glOrtho(_viewportX, _viewportX+_width, _viewportY, _viewportY+_height, -2, 2);
+	glOrtho(0, baseWidth, 0, baseHeight, -2, 2);
 	glClearColor(1, 1, 1, 1);
 
 	glColor3f(1.0f, 0.0f, 1.0f);
@@ -218,12 +207,6 @@ void Breakout::Render()
 
 	for (const auto& i : _blocks) {
 		i->draw();
-	}
-
-	if (_isMyPlay) {
-		drawText("Life: " + std::to_string(_life), _viewportX + _width * 0.35, _viewportY + _height * 0.8);
-		drawText(std::to_string(13) + "/99" , _viewportX + _width * 0.7, _viewportY + _height * 0.8);
-
 	}
 }
 

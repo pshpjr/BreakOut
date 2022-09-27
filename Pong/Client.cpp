@@ -24,13 +24,11 @@ bool Client::ProcessInput(float dt)
 
 
 
-Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT)
+Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT) :SCREENWIDTH(SCREEN_WIDTH),SCREENHEIGHT(SCREEN_HEIGHT)
 {
 	_pongs.reserve(99);
 	Init();
 	int width = SCREEN_WIDTH / 3;
-	_width = width;
-	_height = SCREEN_HEIGHT;
 	int mWidth = width / 7;
 	int mHeight = SCREEN_HEIGHT / 7;
 

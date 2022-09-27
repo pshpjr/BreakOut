@@ -44,15 +44,11 @@ public:
 	};
 
 
-	Breakout(int32 width, int32 height, int32 x, int32 y) :
-		_state(ALIVE), _width(width), _height(height), _viewportX(x), _viewportY(y),
-		MAPLEFT(x + width * 0.1f), MAPRIGHT(x + width - width * 0.1f), MAPBOTTOM(y + height * 0.2), MAPTOP(y + height - height * 0.24f)
+	Breakout(int32 width, int32 height, int32 x, int32 y) : MAPLEFT(baseWidth * 0.05f), MAPRIGHT(baseWidth * 0.95f),
+		MAPBOTTOM(baseHeight * 0.2f), MAPTOP(baseHeight * 0.75f),
+		_state(ALIVE), _width(width), _height(height), _viewportX(x), _viewportY(y)
 	{
-		int mapWidth = MAPRIGHT - MAPLEFT;
-		_mapwidth = mapWidth;
-		float blockGap = mapWidth * 0.1f;
-		BLOCKWIDTH = (mapWidth - blockGap * 2.0f) / 10;
-		BLOCKHEIGHT = BLOCKWIDTH / 2;
+		_mapwidth = MAPRIGHT - MAPLEFT;
 		Init();
 	}
 	Breakout(int32 width, int32 height, int32 x, int32 y, char keyL, char keyR) : Breakout(width, height,x,y)
@@ -99,19 +95,30 @@ public:
 	bool _isMyPlay = false;
 
 	bool noGUI = false;
+	int _life = 3;
 private:
 	PlayerState _state;
+
+	//뷰포트 설정 
 	int32 _width;
 	int32 _height;
 	int32 _viewportX = 0, _viewportY = 0;
+
+	const int32 baseWidth = 640;
+	const int32 baseHeight = 1080;
 
 	const float MAPLEFT, MAPRIGHT,MAPBOTTOM,MAPTOP;
 	float BALLSIZE = 10;
 
 	int WALLTHICKNESS = 15;
-	int BLOCKWIDTH = 100;
-	int BLOCKHEIGHT = 50;
+	int BLOCKWIDTH = 46;
+	int BLOCKHEIGHT = 23;
+	int BLOCKGAP = 57;
+
 	float BALLSPEED = 4;
+	int CONTROLBLOCKSPEED = 8;
+	int CONTROLBLOCKWIDTH = 200;
+
 
 	float _deltaTime = 16.6;//60fps
 
@@ -121,7 +128,7 @@ private:
 
 	int _map[10][5];
 
-	int _life = 3;
+
 	int _mapwidth;
 
 	//TEMP

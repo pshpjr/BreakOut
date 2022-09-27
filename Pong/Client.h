@@ -22,12 +22,19 @@ public:
 	bool _noGUI = false;
 	bool Keys[256]; //키보드 입력
 	char _keyL = 'a', _keyR = 'd';
-	int32 _width = 0, _height = 0; 
+
 	int CONTROLBLOCKSPEED = 8;
+
+	int32 SCREENWIDTH;
+	int32 SCREENHEIGHT;
+
+	const int32 baseWidth = 640;
+	const int32 baseHeight = 1080;
 
 	//서버 데이터
 	char recvBuf[1000];
 
+	int _remainPlayer = 99;
 	UIState* _state;
 };
 

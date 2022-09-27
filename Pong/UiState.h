@@ -7,6 +7,11 @@ class UIState
 public:
 	virtual void Render(Client* GM);
 	virtual void HandleInput(Client* GM) {}
+
+protected:
+	float center = 0.47;
+	float bottomHRate = 0.15;
+	float topHRate = 0.8;
 };
 
 class Lobby : public UIState

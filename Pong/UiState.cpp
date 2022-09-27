@@ -5,21 +5,21 @@
 
 void UIState::Render(Client* GM)
 {
-	glViewport(GM->_width, 0, GM->_width, GM->_height);
+	glViewport(0, 0, GM->SCREENWIDTH, GM->SCREENHEIGHT);
 	glLoadIdentity();
 
-	glOrtho(GM->_width, GM->_width * 2 ,0, GM->_height, -2, 2);
-	drawText("Breakout 99", GM->_width + GM->_width / 3, GM->_height * 0.9);
+	glOrtho(0, GM->SCREENWIDTH, 0, GM->SCREENHEIGHT, -2, 2);
+	drawText("Breakout 99", GM->SCREENWIDTH * center , GM->baseHeight * topHRate);
 }
 
 void Lobby::Render(Client* GM)
 {
 	glClearColor(1, 1, 1, 1);
 	UIState::Render(GM);
-	GM->_mainPlay->Render();
+	drawText("press Space to start Matching", GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	drawText("ESC : exit", GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate - 24);
 
-	drawText("press Space to start Matching", GM->_width + GM->_width/3, GM->_height * 0.2);
-	drawText("ESC : exit", GM->_width + GM->_width / 3, GM->_height * 0.2 - 24);
+	GM->_mainPlay->Render();
 }
 
 void Lobby::HandleInput(Client* GM)
@@ -33,8 +33,6 @@ void Lobby::HandleInput(Client* GM)
 
 void Matching::Render(Client* GM)
 {
-
-	GM->_mainPlay->Render();
 	UIState::Render(GM);
 	string s;
 
@@ -52,8 +50,10 @@ void Matching::Render(Client* GM)
 	}
 	_count++;
 	wrap(OUT _count, 0, 30);
-	drawText("Matching... " +s, GM->_width + GM->_width / 3, GM->_height * 0.2);
-	drawText("(press S to stop)", GM->_width + GM->_width / 3, GM->_height * 0.2-24);
+	drawText("Matching... " +s, GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	drawText("(press S to stop)", GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate-24);
+
+	GM->_mainPlay->Render();
 }
 
 void Matching::HandleInput(Client* GM)
@@ -89,7 +89,7 @@ void GameReady::Render(Client* GM)
 	}
 	_count++;
 	wrap(OUT _count, 0, 30);
-	drawText("Waiting... " + s, GM->_width + GM->_width / 3, GM->_height * 0.2);
+	drawText("Waiting... " + s, GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
 
 	for (auto& i : GM->_pongs)
 	{
@@ -109,14 +109,22 @@ void GameReady::HandleInput(Client* GM)
 
 void Playing::Render(Client* GM)
 {
+
+	_count++;
+	wrap(_count, 0, 3);
+
+	int players = 0;
 	if (_count == 2) {
 		for (int j = 0; j < 3; j++)
 		{
 			for (auto& i : GM->_pongs)
 			{
+				if(i->isDead())
+					continue;
 				if (i == GM->_mainPlay)
 					continue;
 				i->Update();
+				
 			}
 		}
 	}
@@ -126,10 +134,21 @@ void Playing::Render(Client* GM)
 	for (auto& i : GM->_pongs)
 	{
 		i->Render();
+		if (i->isDead() == false)
+			players++;
 	}
 
-	_count++;
-	wrap(_count, 0, 3);
+	if (players == 1)
+		GM->ChangeState(Win::instance());
+
+	glViewport(0, 0, GM->SCREENWIDTH, GM->SCREENHEIGHT);
+	glLoadIdentity();
+
+	glOrtho(0, GM->SCREENWIDTH, 0, GM->SCREENHEIGHT, -2, 2);
+
+	drawText("Life: " + std::to_string(GM->_mainPlay->_life), GM->SCREENWIDTH * 0.4, GM->baseHeight * topHRate - 24);
+	drawText(std::to_string(players) + "/99", GM->SCREENWIDTH * 0.6, GM->baseHeight * topHRate);
+
 }
 
 void Playing::HandleInput(Client* GM)
@@ -160,8 +179,8 @@ void Playing::HandleInput(Client* GM)
 void Win::Render(Client* GM)
 {
 	UIState::Render(GM);
-	drawText("You are Winner!!", GM->_width + GM->_width / 3, GM->_height * 0.2);
-	drawText("(Press the Space to go to lobby.)", GM->_width + GM->_width / 3, GM->_height * 0.2 - 24);
+	drawText("You are Winner!!", GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	drawText("(Press the Space to go to lobby.)", GM->SCREENWIDTH * 0.4, GM->SCREENHEIGHT * bottomHRate - 24);
 	
 
 	for (auto& i : GM->_pongs)
