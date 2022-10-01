@@ -14,7 +14,7 @@ bool Client::Init()
 	_state = Lobby::instance();
 	this_thread::sleep_for(1s);
 	_service = MakeShared<ClientService>(
-		NetAddress(L"127.0.0.1", 7777),
+		NetAddress(_ip,_port),
 		MakeShared<IocpCore>(),
 		MakeShared<ClientSession>, // TODO : SessionManager µî
 		1);
@@ -43,14 +43,14 @@ bool Client::ProcessInput(float dt)
 	_state->HandleInput(this);
 	
 	if (isKeyPressing(VK_ESCAPE)) {
-		return false;
+		glutLeaveMainLoop();
 	}
 	return true;
 }
 
 
 
-Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT) :SCREENWIDTH(SCREEN_WIDTH),SCREENHEIGHT(SCREEN_HEIGHT)
+Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT,wstring ip, int port) :SCREENWIDTH(SCREEN_WIDTH),SCREENHEIGHT(SCREEN_HEIGHT),_ip(ip),_port(port)
 {
 	_pongs.reserve(99);
 	Init();
@@ -79,6 +79,7 @@ Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT) :SCREENWIDTH(SCREEN_WIDT
 	}
 }
 
+
 void Client::AddPong(int32 width, int32 height, int32 x, int32 y)
 {
 	_pongs.push_back(make_shared<Breakout>(width, height, x, y));
@@ -106,14 +107,6 @@ void Client::AddPong(int32 width, int32 height, int32 x, int32 y,char L, char R)
 {
 	_pongs.push_back(make_shared<Breakout>(width, height, x, y, L, R));
 	
-}
-
-void Client::Start()
-{
-	while (Tick())
-	{
-		this_thread::sleep_for(16.6ms);
-	}
 }
 
 void Client::End()

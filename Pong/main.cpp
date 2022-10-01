@@ -14,7 +14,8 @@ bool noGUI = false;
 bool Exit = false;
 string key;
 ClientServiceRef _service;
-
+wstring ip;
+int port;
 
 int WINDOWSIZE = 100;
 
@@ -44,13 +45,23 @@ void my_reshape(int w, int h) {
 
 bool GameInit()
 {
-	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT);
+	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT,ip,port);
 
 	GM->noGUI(noGUI);
 
 	this_thread::sleep_for(1s);
 
 	return true;
+}
+void idle()
+{
+	glutPostRedisplay();
+}
+
+void tick()
+{
+	GM->Tick();
+	this_thread::sleep_for(16.6ms);
 }
 
 void GLInit() {
@@ -61,17 +72,17 @@ void GLInit() {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutInitWindowPosition(0, 0);
+	glutIdleFunc(idle);
 
 	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
-	//string s = SCREEN_WIDTH + "x" + SCREEN_HEIGHT;
-	//glutGameModeString(s.c_str());
-	//if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
-	//	glutEnterGameMode();
+
 	glDisable(GL_LIGHTING);
 
 	glutCreateWindow("Breakout 99");
-	//glutSetCursor(GLUT_CURSOR_NONE);
-	//glutFullScreen();
+	glutFullScreen();
+	glutDisplayFunc(tick);
+	glutSetCursor(GLUT_CURSOR_NONE);
+
 }
 
 void ArgParseInit(int argc, char** argv)
@@ -87,7 +98,18 @@ void ArgParseInit(int argc, char** argv)
 		.help("Dummy client enable")
 		.default_value(false)
 		.implicit_value(true);
-	//TODO: 사람 수 인자로 받게
+
+	program.add_argument("-i")
+		.help("IP")
+		.default_value<std::string>(std::string{ "127.0.0.1" })
+		.required()
+		.nargs(1);
+
+	program.add_argument("-p")
+		.help("Port")
+		.default_value<string>(std::string{ "7777" })
+		.required()
+		.nargs(1);
 
 	try {
 		program.parse_args(argc, argv);
@@ -104,6 +126,11 @@ void ArgParseInit(int argc, char** argv)
 		cout << "noGUI Enabled" << endl;
 	}
 
+	string p = program.get("-p");
+	port = stoi(p);
+
+	string tmp = program.get<std::string>("-i");
+	ip.assign(tmp.begin(), tmp.end());
 }
 
 int main(int argc, char** argv) {
@@ -117,7 +144,7 @@ int main(int argc, char** argv) {
 	if (GameInit() == false)
 		return 0;
 
-	GM->Start();
+	glutMainLoop();
 
 	GThreadManager->Join();
 	return 0;

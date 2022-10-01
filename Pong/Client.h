@@ -5,7 +5,7 @@ class Client
 {
 public:
 
-	Client(int32 SCREENWIDHT, int32 SCREENHEIGHT);
+	Client(int32 SCREENWIDHT, int32 SCREENHEIGHT,wstring ip, int port);
 	void AddPong(int32 width, int32 height, int32 x, int32 y);
 
 
@@ -46,6 +46,9 @@ public:
 	ClientServiceRef _service;
 
 	bool _exit = false;
+
+	wstring _ip;
+	int _port;
 };
 
 extern ClientPtr GM;
