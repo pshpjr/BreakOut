@@ -86,4 +86,12 @@
       <Filter>Utils</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Common\Protocol\Protocol.proto">
+      <Filter>Protocol</Filter>
+    </None>
+    <None Include="..\Common\Protocol\Struct.proto">
+      <Filter>Protocol</Filter>
+    </None>
+  </ItemGroup>
 </Project>

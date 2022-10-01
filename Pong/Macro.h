@@ -55,3 +55,11 @@ inline bool isKeyPressing(char c)
 #elif
 #endif
 }
+
+inline bool isKeyStateChanged(char c,bool& state)
+{
+	bool isPressed = isKeyPressing(c);
+	bool changed = isPressed != state;
+	state = isPressed;
+	return changed;
+}

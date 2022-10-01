@@ -4,7 +4,7 @@
 #include "BufferReader.h"
 #include "BufferWriter.h"
 #include "ServerSession.h"
-
+#include "Service.h"
 
 void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, int32 len)
 {
@@ -66,7 +66,7 @@ void ServerPacketHandler::Handle_C_MACHING_GAME(GameSessionRef session, BYTE* bu
 
 	session->Send(MakeSendBuffer(pkt2));
 
-	this_thread::sleep_for(3s);
+	this_thread::sleep_for(1s);
 
 	Protocol::S_START pkt3;
 	session->Send(MakeSendBuffer(pkt3));
@@ -82,4 +82,18 @@ void ServerPacketHandler::Handle_C_READY(GameSessionRef session, BYTE* buffer, i
 
 void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, int32 len)
 {
+	Protocol::C_MOVE pkt;
+	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+
+	Protocol::KeyInput* key = new Protocol::KeyInput;
+
+	key->set_direction(pkt.input().direction());
+	key->set_onoff(pkt.input().onoff());
+
+	Protocol::S_MOVE pkt2;
+	auto send = pkt2.add_inputs();
+	send->set_allocated_input(key);
+	send->set_userid(1);
+	auto sBuffer = MakeSendBuffer(pkt2);
+	session->GetService()->Broadcast(sBuffer);
 }

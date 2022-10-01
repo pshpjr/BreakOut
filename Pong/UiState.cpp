@@ -144,21 +144,50 @@ void Playing::Render(Client* GM)
 
 void Playing::HandleInput(Client* GM)
 {
-	if (isKeyPressing('A'))
+	//¿ÞÂÊ : direction True
+	if (isKeyStateChanged('A',_lState))
 	{
-		for (auto &i : GM->_pongs)
-		{
-			i->_control_block->setVector({ -1,0 });
-			i->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
-		}
+		//auto i = GM->_mainPlay;
+		//i->_control_block->setVector({ -1,0 });
+
+
+		//i->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
+		//if (_lState == false) {
+		//	i->_control_block->setSpeed(0);
+		//}
+
+		Protocol::KeyInput* key = new Protocol::KeyInput;
+		Protocol::C_MOVE pkt;
+
+		key->set_direction(true);
+		key->set_onoff(_lState);
+
+		pkt.set_allocated_input(key);
+
+		SendBufferRef buffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
+
+		GM->_service->Broadcast(buffer);
+		
 	}
-	if (isKeyPressing('D'))
+	if (isKeyStateChanged('D',_rState))
 	{
-		for (auto i : GM->_pongs)
-		{
-			i->_control_block->setVector({ 1,0 });
-			i->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
-		}
+
+		//auto i = GM->_mainPlay;
+		//i->_control_block->setVector({ 1,0 });
+
+		//i->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
+		//if (_rState == false)
+		//	i->_control_block->setSpeed(0);
+
+		Protocol::KeyInput* key = new Protocol::KeyInput;
+		Protocol::C_MOVE pkt;
+
+		key->set_direction(false);
+		key->set_onoff(_rState);
+
+		pkt.set_allocated_input(key);
+		SendBufferRef buffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
+		GM->_service->Broadcast(buffer);
 	}
 	if (isKeyPressing('V'))
 	{

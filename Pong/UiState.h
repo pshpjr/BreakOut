@@ -1,5 +1,11 @@
 #pragma once
 
+
+namespace Protocol
+{
+	class KeyInput;
+}
+
 class Client;
 
 class UIState
@@ -70,6 +76,10 @@ public:
 	void HandleInput(Client* GM) override;
 private:
 	int _count = 0;
+
+	bool _lState = false;
+	bool _rState = false;
+
 };
 
 class Win : public UIState

@@ -1542,7 +1542,6 @@ class S_MOVE final :
 
   enum : int {
     kInputsFieldNumber = 2,
-    kPlayerIdFieldNumber = 1,
   };
   // repeated .Protocol.KeyInputU inputs = 2;
   int inputs_size() const;
@@ -1562,15 +1561,6 @@ class S_MOVE final :
   const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::KeyInputU >&
       inputs() const;
 
-  // uint64 playerId = 1;
-  void clear_playerid();
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid() const;
-  void set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_playerid() const;
-  void _internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value);
-  public:
-
   // @@protoc_insertion_point(class_scope:Protocol.S_MOVE)
  private:
   class _Internal;
@@ -1579,7 +1569,6 @@ class S_MOVE final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::KeyInputU > inputs_;
-  ::PROTOBUF_NAMESPACE_ID::uint64 playerid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -1913,26 +1902,6 @@ inline void C_MOVE::set_allocated_input(::Protocol::KeyInput* input) {
 // -------------------------------------------------------------------
 
 // S_MOVE
-
-// uint64 playerId = 1;
-inline void S_MOVE::clear_playerid() {
-  playerid_ = uint64_t{0u};
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 S_MOVE::_internal_playerid() const {
-  return playerid_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::uint64 S_MOVE::playerid() const {
-  // @@protoc_insertion_point(field_get:Protocol.S_MOVE.playerId)
-  return _internal_playerid();
-}
-inline void S_MOVE::_internal_set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  
-  playerid_ = value;
-}
-inline void S_MOVE::set_playerid(::PROTOBUF_NAMESPACE_ID::uint64 value) {
-  _internal_set_playerid(value);
-  // @@protoc_insertion_point(field_set:Protocol.S_MOVE.playerId)
-}
 
 // repeated .Protocol.KeyInputU inputs = 2;
 inline int S_MOVE::_internal_inputs_size() const {

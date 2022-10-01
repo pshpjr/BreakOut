@@ -64,4 +64,21 @@ void BreakoutPacketHandler::Handle_S_START(BYTE* buffer, int32 len)
 
 void BreakoutPacketHandler::Handle_S_MOVE(BYTE* buffer, int32 len)
 {
+	Protocol::S_MOVE pkt;
+	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+
+	for(auto i : pkt.inputs())
+	{
+		if (i.input().onoff())
+			GM->_mainPlay->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
+		else
+			GM->_mainPlay->_control_block->setSpeed(0);
+
+		if (i.input().direction())
+			GM->_mainPlay->_control_block->setVector({ -1,0 });
+		else
+			GM->_mainPlay->_control_block->setVector({ 1,0 });
+	}
+
+
 }

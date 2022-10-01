@@ -66,6 +66,5 @@ message C_MOVE
 //여기서 id는 서버쪽 배열 인덱스번호
 message S_MOVE
 {
-	uint64 playerId = 1;
 	repeated KeyInputU inputs = 2;
 }
