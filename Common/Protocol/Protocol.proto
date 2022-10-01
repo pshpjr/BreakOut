@@ -1,0 +1,71 @@
+syntax = "proto3";
+package Protocol;
+
+import "Enum.proto";
+import "Struct.proto";
+
+// 클라에서 보내는건 C_, 서버에서 보내는건 S_
+
+//로그인시 내 코드를 보냄
+message C_LOGIN
+{
+	string userCode =1;
+}
+//서버는 받아서 저장 후 알겠다고 응답.
+message S_LOGIN
+{
+	bool success = 1;
+}
+//클라에서 게임 참가 요청
+message C_MACHING_GAME
+{
+	
+}
+//서버에서는 자리가 있는 방에 클라를 넣고 방 번호를 알려줌
+message S_MACHING_GAME
+{
+	int32 roomNumber = 1;
+}
+//클라: 해당 방에서 나가고 싶다. 
+message C_CANCLE_GAME
+{
+	int32 roomNumber = 1;
+}
+//서버: 알겠다
+message S_CANCLE_GAME
+{
+	bool success = 1;
+}
+//방에 있는 모든 클라에게 게임 접속했다고 알림
+//다른 참가자들의 정보를 보냄
+//참가자 정보는 로그인 코드, 이름으로 구성
+//전부 배열로 관리하고 my만 포인터로 저장.
+message S_ENTER_GAME
+{
+	bool success = 1;
+	int32 roomNumber = 2;
+	repeated Player players = 3;
+}
+//정보 수신 후 초기화 완료했음을 알림
+message C_READY
+{
+
+}
+//게임 동시에 시작하기 위한 패킷
+message S_START
+{
+
+}
+
+//클라의 이동
+message C_MOVE
+{	
+	KeyInput input = 1;
+}
+//클라 이동 정보 브로드캐스트
+//여기서 id는 서버쪽 배열 인덱스번호
+message S_MOVE
+{
+	uint64 playerId = 1;
+	repeated KeyInputU inputs = 2;
+}

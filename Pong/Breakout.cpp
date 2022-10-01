@@ -15,15 +15,12 @@ void Breakout::Init()
 	//변수 초기화 및 임의의 공 방향 정하기
 	_state = ALIVE;
 	_life = 3;
-
-
+	
 	//객체에 들어가는 변수들 초기화
 	float mapHeight = MAPTOP - MAPBOTTOM;
 	pt controlSize = { CONTROLBLOCKWIDTH,3 };
 	pt controlStart = { baseWidth / 2 - controlSize.x / 2, MAPBOTTOM + baseHeight * 0.1 };
 	pt ballLocation = { _mapwidth / 2 + MAPLEFT,mapHeight * 0.3 + MAPBOTTOM };
-
-
 
 	_control_block = new ControlBlock();
 	_control_block->setStart(controlStart);
@@ -294,7 +291,4 @@ void Breakout::Clear()
 	}
 	_blocks.clear();
 	delete _deadline;
-
-	BALLSIZE = 10;
-	BALLSPEED = 4;
 }

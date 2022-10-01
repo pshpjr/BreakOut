@@ -29,6 +29,7 @@ public:
 	virtual void		CloseService();
 	void				SetSessionFactory(SessionFactory func) { _sessionFactory = func; };
 
+	void				Broadcast(SendBufferRef sendBuffer);
 	SessionRef			CreateSession();//세션 생성, IocpCore에 등록
 	void				AddSession(SessionRef session);//있는 세션을 추가
 	void				ReleaseSession(SessionRef session);

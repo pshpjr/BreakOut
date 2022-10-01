@@ -15,6 +15,9 @@
     <Filter Include="Util">
       <UniqueIdentifier>{c69244b2-19f1-484c-b2a8-cdfb79d7cead}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{4c9f4f64-7a89-4f38-9538-57431a899896}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Breakout.cpp">
@@ -23,24 +26,33 @@
     <ClCompile Include="BreakoutServer.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="Physics.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="GameSession.cpp">
+    <ClCompile Include="ServerSession.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="GameSessionManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="ServerPacketHandler.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Pong\Enum.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Pong\Protocol.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Pong\Struct.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Breakout.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="Macro.h">
@@ -49,11 +61,26 @@
     <ClInclude Include="Physics.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="GameSession.h">
+    <ClInclude Include="ServerSession.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="GameSessionManager.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerPacketHandler.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Pong\Enum.pb.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Pong\Protocol.pb.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Pong\Struct.pb.h">
+      <Filter>Protocol</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

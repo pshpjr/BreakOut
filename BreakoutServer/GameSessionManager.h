@@ -1,8 +1,7 @@
 #pragma once
+#include "pch.h"
 
-class GameSession;
-
-using GameSessionRef = shared_ptr<GameSession>;
+class ServerSession;
 
 class GameSessionManager
 {

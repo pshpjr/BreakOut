@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "GameSession.h"
+#include "ServerSession.h"
 #include "ThreadManager.h"
 #include "Service.h"
 
@@ -11,7 +11,7 @@ int main()
 	ServerServiceRef service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
-		MakeShared<GameSession>, // TODO : SessionManager µî
+		MakeShared<ServerSession>, // TODO : SessionManager µî
 		100);
 
 	ASSERT_CRASH(service->Start());
@@ -26,6 +26,5 @@ int main()
 				}
 			});
 	}
-
 	GThreadManager->Join();
 }

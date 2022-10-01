@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "UiState.h"
 #include "Client.h"
-
-
+#include "Service.h"
+#include "BreakoutPacketHandler.h"
 void UIState::Render(Client* GM)
 {
 	glViewport(0, 0, GM->SCREENWIDTH, GM->SCREENHEIGHT);
@@ -26,8 +26,9 @@ void Lobby::HandleInput(Client* GM)
 {
 	if (isKeyPressing(VK_SPACE))
 	{
+		Protocol::C_MACHING_GAME pkt;
+		GM->_service->Broadcast(BreakoutPacketHandler::MakeSendBuffer(pkt));
 		cout << "matching Start" << endl;
-		GM->ChangeState(Matching::instance());
 	}
 }
 
@@ -63,11 +64,6 @@ void Matching::HandleInput(Client* GM)
 		GM->ChangeState(Lobby::instance());
 	}
 
-	if(isKeyPressing('M'))
-	{
-		cout << "match Ready" << endl;
-		GM->ChangeState(GameReady::instance());
-	}
 }
 
 void GameReady::Render(Client* GM)
@@ -100,11 +96,6 @@ void GameReady::Render(Client* GM)
 
 void GameReady::HandleInput(Client* GM)
 {
-	if (isKeyPressing(VK_SPACE))
-	{
-		cout << "GameStart" << endl;
-		GM->ChangeState(Playing::instance());
-	}
 }
 
 void Playing::Render(Client* GM)

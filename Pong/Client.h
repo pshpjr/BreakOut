@@ -8,11 +8,17 @@ public:
 	Client(int32 SCREENWIDHT, int32 SCREENHEIGHT);
 	void AddPong(int32 width, int32 height, int32 x, int32 y);
 
+
 	bool Tick();
-	void AddPong(int32 width, int32 height, int32 x, int32 y, char L, char R);
-	void Start();
-	void noGUI(bool value);
+
+
 	bool Init();
+	void Start();
+	void End();
+
+	void noGUI(bool value);
+	void AddPong(int32 width, int32 height, int32 x, int32 y, char L, char R);
+
 	bool ProcessInput(float dt);
 	void ChangeState(UIState* state) { _state = state; }
 
@@ -36,6 +42,11 @@ public:
 
 	int _remainPlayer = 99;
 	UIState* _state;
+
+	ClientServiceRef _service;
+
+	bool _exit = false;
 };
 
+extern ClientPtr GM;
 

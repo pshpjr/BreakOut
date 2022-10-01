@@ -4,6 +4,7 @@
 
 #ifdef _DEBUG
 #pragma comment(lib, "Debug\\ServerCore.lib")
+#pragma comment(lib, "Debug\\libprotobufd.lib")
 #else
 #pragma comment(lib, "Release\\ServerCore.lib")
 #endif
@@ -20,8 +21,11 @@
 #include <winsock2.h>
 #include <mswsock.h>
 #include <ws2tcpip.h>
+
+#include "ServerSession.h"
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 #include "SocketUtils.h"
 #include "Memory.h"
 
+using GameSessionRef = shared_ptr<ServerSession>;

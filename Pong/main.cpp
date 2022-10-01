@@ -6,54 +6,23 @@
 #include "fstream"
 #include <random>
 #include <string>
-ClientPtr GM;
+#include "BreakoutPacketHandler.h"
+class ServerSession;
+
 
 bool noGUI = false;
 bool Exit = false;
 string key;
+ClientServiceRef _service;
 
-const int KEY_LENGTH = 5;
 
-class ServerSession : public Session
-{
-public:
-	~ServerSession()
-	{
-		cout << "~ServerSession" << endl;
-	}
+int WINDOWSIZE = 100;
 
-	virtual void OnConnected() override
-	{
-		cout << "Connected To Server" << endl;
-	}
+int32 SCREEN_WIDTH = 800;
+int32 SCREEN_HEIGHT = 600;
 
-	virtual int32 OnRecv(BYTE* buffer, int32 len) override
-	{
-		cout << "OnRecv Len = " << len << endl;
+char sendData[] = "Hello World";
 
-		this_thread::sleep_for(1s);
-		string s = (char*)buffer;
-		int i = stoi(s);
-		if (GM->_state == Playing::instance()) {
-			GM->_mainPlay->_control_block->setVector({i,0 });
-			GM->_mainPlay->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
-		}
-
-		return len;
-	}
-
-	virtual void OnSend(int32 len) override
-	{
-		cout << "OnSend Len = " << len << endl;
-	}
-
-	virtual void OnDisconnected() override
-	{
-		cout << "Disconnected" << endl;
-	}
-};
-
-/*TODO: 좌표 처리 정수로 변환*/
 
 void HideCMD(bool isHide)
 {
@@ -61,34 +30,6 @@ void HideCMD(bool isHide)
 	isHide ? ShowWindow(hWnd, SW_SHOW) : ShowWindow(hWnd, SW_HIDE);
 }
 
-int WINDOWSIZE = 100;
-
-int32 SCREEN_WIDTH = 800;
-int32 SCREEN_HEIGHT = 600;
-
-
-
-//박스는 항상 좌하단 좌표를 start로 넣을 것
-
-
-std::string random_string(std::string::size_type length)
-{
-	static auto& chrs = "0123456789"
-		"abcdefghijklmnopqrstuvwxyz"
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-	thread_local static std::mt19937 rg{ std::random_device{}() };
-	thread_local static std::uniform_int_distribution<std::string::size_type> pick(0, sizeof(chrs) - 2);
-
-	std::string s;
-
-	s.reserve(length);
-
-	while (length--)
-		s += chrs[pick(rg)];
-
-	return s;
-}
 
 void my_reshape(int w, int h) {
 	glViewport(0, 0, w, h);
@@ -100,63 +41,15 @@ void my_reshape(int w, int h) {
 	glLoadIdentity();
 }
 
-string GetKey()
-{
-	string key;
-	std::ifstream fin("key.txt");
-
-	if (fin.fail())
-	{
-		std::ofstream fout("key.txt");
-		key = random_string(KEY_LENGTH);
-
-		fout << key;
-		fout.close();
-
-		return key;
-	}
-
-	fin >> key;
-
-	fin.close();
-
-	return key;
-}
 
 bool GameInit()
 {
-	key = GetKey();
-	if (noGUI == true)
-		key = random_string(KEY_LENGTH);
-
 	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	GM->noGUI(noGUI);
 
 	this_thread::sleep_for(1s);
 
-	ClientServiceRef service = MakeShared<ClientService>(
-		NetAddress(L"127.0.0.1", 7777),
-		MakeShared<IocpCore>(),
-		MakeShared<ServerSession>, // TODO : SessionManager 등
-		1);
-
-	if(service->Start() == false)
-	{
-		cout << "Cannot Connect to Server" << endl;
-		return false;
-	}
-
-	for (int32 i = 0; i < 2; i++)
-	{
-		GThreadManager->Launch([=]()
-			{
-				while (!Exit)
-				{
-					service->GetIocpCore()->Dispatch();
-				}
-			});
-	}
 	return true;
 }
 
@@ -213,7 +106,6 @@ void ArgParseInit(int argc, char** argv)
 
 }
 
-
 int main(int argc, char** argv) {
 	ArgParseInit(argc, argv);
 	//HideCMD(noGUI);
@@ -226,8 +118,7 @@ int main(int argc, char** argv) {
 		return 0;
 
 	GM->Start();
-	
-	Exit = true;
+
 	GThreadManager->Join();
 	return 0;
 }

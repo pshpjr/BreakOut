@@ -3,9 +3,35 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
+#include "ClientSession.h"
+#include "Service.h"
+#include "ThreadManager.h"
+
+ClientPtr GM;
+
 bool Client::Init()
 {
 	_state = Lobby::instance();
+	this_thread::sleep_for(1s);
+	_service = MakeShared<ClientService>(
+		NetAddress(L"127.0.0.1", 7777),
+		MakeShared<IocpCore>(),
+		MakeShared<ClientSession>, // TODO : SessionManager µî
+		1);
+
+	_service->Start();
+
+	for (int32 i = 0; i < 2; i++)
+	{
+		GThreadManager->Launch([=]()
+			{
+				while (!_exit)
+				{
+					_service->GetIocpCore()->Dispatch();
+				}
+			});
+	}
+
 
 	return true;
 }
@@ -88,6 +114,11 @@ void Client::Start()
 	{
 		this_thread::sleep_for(16.6ms);
 	}
+}
+
+void Client::End()
+{
+	_exit = true;
 }
 
 void Client::noGUI(bool value)

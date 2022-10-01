@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "GameSessionManager.h"
-#include "GameSession.h"
+#include "ServerSession.h"
 
 GameSessionManager GSessionManager;
 

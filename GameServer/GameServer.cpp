@@ -5,6 +5,9 @@
 #include "GameSession.h"
 #include "GameSessionManager.h"
 #include "BufferWriter.h"
+#include "ServerPacketHandler.h"
+#include "Protocol.pb.h"
+
 int main()
 {
 	ServerServiceRef service = MakeShared<ServerService>(
@@ -26,30 +29,7 @@ int main()
 			});
 	}
 
-	char sendData[100] = "Hello World";
-
-	while (true)
-	{
-		SendBufferRef sendBuffer = GSendBufferManager->Open(4096);
-
-		BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
-
-		PacketHeader* header = bw.Reserve<PacketHeader>();
-
-		bw << (uint64)1001 << (uint32)100 << (uint16)10;
-
-		bw.Write(sendData,sizeof(sendData));
-
-		header->size = bw.WriteSize();
-		header->id = 1;
-
-
-		sendBuffer->Close(bw.WriteSize());
-
-		GSessionManager.Broadcast(sendBuffer);
-
-		this_thread::sleep_for(250ms);
-	}
+	
 
 	GThreadManager->Join();
 }

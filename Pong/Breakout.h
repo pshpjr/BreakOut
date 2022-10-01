@@ -108,16 +108,16 @@ private:
 	const int32 baseHeight = 1080;
 
 	const float MAPLEFT, MAPRIGHT,MAPBOTTOM,MAPTOP;
-	float BALLSIZE = 10;
 
-	int WALLTHICKNESS = 15;
-	int BLOCKWIDTH = 46;
-	int BLOCKHEIGHT = 23;
-	int BLOCKGAP = 57;
+	const float BALLSIZE = 10;
+	const int WALLTHICKNESS = 15;
+	const int BLOCKWIDTH = 46;
+	const int BLOCKHEIGHT = 23;
+	const int BLOCKGAP = 57;
 
-	float BALLSPEED = 4;
-	int CONTROLBLOCKSPEED = 8;
-	int CONTROLBLOCKWIDTH = 200;
+	const float BALLSPEED = 4;
+	const int CONTROLBLOCKSPEED = 8;
+	const int CONTROLBLOCKWIDTH = 200;
 
 
 	float _deltaTime = 16.6;//60fps
