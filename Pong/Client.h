@@ -12,7 +12,7 @@ public:
 	bool Tick();
 
 
-	bool Init();
+	bool InitService();
 	void Start();
 	void End();
 
@@ -46,6 +46,7 @@ public:
 	ClientServiceRef _service;
 
 	bool _exit = false;
+
 
 	wstring _ip;
 	int _port;

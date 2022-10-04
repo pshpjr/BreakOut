@@ -4,9 +4,8 @@
 #include "ThreadManager.h"
 #include "Service.h"
 #include "argparse.hpp"
-
 wstring ip = L"127.0.0.1";
-int port = 7777;
+uint16 port = 12321;
 
 void ArgParseInit(int argc, char** argv)
 {
@@ -20,7 +19,7 @@ void ArgParseInit(int argc, char** argv)
 
 	program.add_argument("-p")
 		.help("Port")
-		.default_value<string>(std::string{ "7777" })
+		.default_value<string>(std::string{ "12321" })
 		.required()
 		.nargs(1);
 
@@ -40,17 +39,19 @@ void ArgParseInit(int argc, char** argv)
 	ip.assign(tmp.begin(),tmp.end());
 	
 }
+
+
 int main(int argc, char** argv)
 {
 	ArgParseInit(argc, argv);
 
 	ServerServiceRef service = MakeShared<ServerService>(
-		NetAddress(ip,port),
+		NetAddress(ip, port),
 		MakeShared<IocpCore>(),
 		MakeShared<ServerSession>, // TODO : SessionManager µî
 		100);
 
-	ASSERT_CRASH(service->Start());
+	service->Start();
 
 	for (int32 i = 0; i < 5; i++)
 	{
@@ -62,5 +63,8 @@ int main(int argc, char** argv)
 				}
 			});
 	}
+
+
+
 	GThreadManager->Join();
 }

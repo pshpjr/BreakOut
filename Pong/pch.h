@@ -22,3 +22,4 @@
 #include "Client.h"
 #include "ClientSession.h"
 #include "Protocol.pb.h"
+#include "BreakoutPacketHandler.h"

@@ -77,8 +77,6 @@ SendBufferRef SendBufferManager::Open(uint32 size)
 		LSendBufferChunk->Reset();
 	}
 
-	cout << "free " << LSendBufferChunk->FreeSize() << endl;
-
 	return LSendBufferChunk->Open(size);
 }
 
@@ -86,7 +84,6 @@ SendBufferRef SendBufferManager::Open(uint32 size)
 //버퍼 청크를 다 썼으면 다시 반납
 SendBufferChunkRef SendBufferManager::Pop()
 {
-	cout << "PopGlobal" << endl;
 	{
 		WRITE_LOCK;
 		if(_sendBufferChunks.empty()==false)
@@ -114,7 +111,5 @@ void SendBufferManager::Push(SendBufferChunkRef buffer)
 
 void SendBufferManager::PushGlobal(SendBufferChunk* buffer)
 {
-	cout << "PushGlobal" << endl;
-
 	GSendBufferManager->Push(SendBufferChunkRef(buffer, PushGlobal));
 }

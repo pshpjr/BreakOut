@@ -13,11 +13,26 @@ class UIState
 public:
 	virtual void Render(Client* GM);
 	virtual void HandleInput(Client* GM) {}
+	static string Loading(int& count);
 
 protected:
 	float center = 0.47;
 	float bottomHRate = 0.15;
 	float topHRate = 0.8;
+};
+class Init : public UIState
+{
+public:
+	static Init* instance()
+	{
+		static Init* instance = new Init();
+		return instance;
+	}
+	void Render(Client* GM) override;
+	void HandleInput(Client* GM) override;
+
+private:
+	int _count = 0;
 };
 
 class Lobby : public UIState
@@ -32,7 +47,8 @@ public:
 	void Render(Client* GM) override;
 
 	void HandleInput(Client* GM) override;
-
+private:
+	bool _matchingState = false;
 };
 
 class Matching : public UIState

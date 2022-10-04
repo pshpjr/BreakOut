@@ -32,7 +32,7 @@
     <ClCompile Include="ServerSession.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="GameSessionManager.cpp">
+    <ClCompile Include="RoomManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="ServerPacketHandler.cpp">
@@ -50,6 +50,9 @@
     <ClCompile Include="..\Pong\Struct.pb.cc">
       <Filter>Protocol</Filter>
     </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Breakout.h">
@@ -64,7 +67,7 @@
     <ClInclude Include="ServerSession.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="GameSessionManager.h">
+    <ClInclude Include="RoomManager.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="ServerPacketHandler.h">
@@ -81,6 +84,9 @@
     </ClInclude>
     <ClInclude Include="..\Pong\Struct.pb.h">
       <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

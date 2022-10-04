@@ -189,11 +189,6 @@ public:
 	void update() override
 	{
 		_start += _vector * _speed * _ratio;
-
-		//if (_speed <= 0.1f)
-		//	_speed = 0;
-		//else
-		//	_speed *= 0.85f;
 	}
 
 private:

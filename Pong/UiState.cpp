@@ -3,6 +3,9 @@
 #include "Client.h"
 #include "Service.h"
 #include "BreakoutPacketHandler.h"
+
+
+
 void UIState::Render(Client* GM)
 {
 	glViewport(0, 0, GM->SCREENWIDTH, GM->SCREENHEIGHT);
@@ -10,6 +13,39 @@ void UIState::Render(Client* GM)
 
 	glOrtho(0, GM->SCREENWIDTH, 0, GM->SCREENHEIGHT, -2, 2);
 	drawText("Breakout 99", GM->SCREENWIDTH * center , GM->baseHeight * topHRate);
+}
+
+string UIState::Loading(int& count)
+{
+	string s = "";
+	switch (count / 3)
+	{
+	case 0:
+		s = "/";
+		break;
+	case 1:
+		s = "--";
+		break;
+	case 2:
+		s = "\\";
+		break;
+	}
+	count++;
+	wrap(OUT count, 0, 30);
+	return s;
+}
+
+void Init::Render(Client* GM)
+{
+	UIState::Render(GM);
+	drawText("Connect to Server... " + Loading(_count), GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	
+	GM->_mainPlay->Render();
+}
+
+void Init::HandleInput(Client* GM)
+{
+	UIState::HandleInput(GM);
 }
 
 void Lobby::Render(Client* GM)
@@ -24,8 +60,11 @@ void Lobby::Render(Client* GM)
 
 void Lobby::HandleInput(Client* GM)
 {
-	if (isKeyPressing(VK_SPACE))
+	if (isKeyStateChanged(VK_SPACE,OUT _matchingState))
 	{
+		if (_matchingState == false)
+			return;
+
 		Protocol::C_MACHING_GAME pkt;
 		GM->_service->Broadcast(BreakoutPacketHandler::MakeSendBuffer(pkt));
 		cout << "matching Start" << endl;
@@ -35,23 +74,8 @@ void Lobby::HandleInput(Client* GM)
 void Matching::Render(Client* GM)
 {
 	UIState::Render(GM);
-	string s;
 
-	switch (_count / 3)
-	{
-	case 0:
-		s = "/";
-		break;
-	case 1:
-		s = "--";
-		break;
-	case 2:
-		s = "\\";
-		break;
-	}
-	_count++;
-	wrap(OUT _count, 0, 30);
-	drawText("Matching... " +s, GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	drawText("Matching... " +Loading(_count), GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
 	drawText("(press S to stop)", GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate-24);
 
 	GM->_mainPlay->Render();
@@ -69,23 +93,8 @@ void Matching::HandleInput(Client* GM)
 void GameReady::Render(Client* GM)
 {
 	UIState::Render(GM);
-	string s;
 
-	switch (_count / 3)
-	{
-	case 0:
-		s = "/";
-		break;
-	case 1:
-		s = "--";
-		break;
-	case 2:
-		s = "\\";
-		break;
-	}
-	_count++;
-	wrap(OUT _count, 0, 30);
-	drawText("Waiting... " + s, GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	drawText("Waiting... " + Loading(_count), GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
 
 	for (auto& i : GM->_pongs)
 	{
@@ -145,6 +154,7 @@ void Playing::Render(Client* GM)
 void Playing::HandleInput(Client* GM)
 {
 	//¿ÞÂÊ : direction True
+
 	if (isKeyStateChanged('A',_lState))
 	{
 		//auto i = GM->_mainPlay;

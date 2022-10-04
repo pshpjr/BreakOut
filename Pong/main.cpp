@@ -14,8 +14,8 @@ bool noGUI = false;
 bool Exit = false;
 string key;
 ClientServiceRef _service;
-wstring ip;
-int port;
+wstring ip = L"127.0.0.1";
+uint16 port = 12321;
 
 int WINDOWSIZE = 100;
 
@@ -49,7 +49,6 @@ bool GameInit()
 
 	GM->noGUI(noGUI);
 
-	this_thread::sleep_for(1s);
 
 	return true;
 }
@@ -107,7 +106,7 @@ void ArgParseInit(int argc, char** argv)
 
 	program.add_argument("-p")
 		.help("Port")
-		.default_value<string>(std::string{ "7777" })
+		.default_value<string>(std::string{ "12321" })
 		.required()
 		.nargs(1);
 

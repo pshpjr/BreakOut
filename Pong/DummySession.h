@@ -2,23 +2,14 @@
 #include "pch.h"
 
 
-enum : uint16
+class DummySession : public PacketSession
 {
-	C_LOGIN,
-	S_LOGIN,
-	C_MACHING_GAME,
-	S_MACHING_GAME,
-	C_CANCLE_GAME,
-	S_CANCLE_GAME,
-	S_ENTER_GAME,
-	C_READY,
-	S_START,
-	C_MOVE,
-	S_MOVE
-};
+protected:
+	void OnConnected() override;
+	void OnSend(int32 len) override;
+	void OnDisconnected() override;
+	void OnRecvPacket(BYTE* buffer, int32 len) override;
 
-class BreakoutPacketHandler
-{
 public:
 	static SendBufferRef MakeSendBuffer(Protocol::C_LOGIN& pkt) { return _MakeSendBuffer(pkt, C_LOGIN); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_MACHING_GAME& pkt) { return _MakeSendBuffer(pkt, C_MACHING_GAME); }
@@ -26,17 +17,15 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::C_READY& pkt) { return _MakeSendBuffer(pkt, C_READY); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_MOVE& pkt) { return _MakeSendBuffer(pkt, C_MOVE); }
 
-	static void HandlePacket(BYTE* buffer, int32 len);
-
-	static void Handle_S_LOGIN(BYTE* buffer, int32 len);
-	static void Handle_S_MACHING_GAME(BYTE* buffer, int32 len);
-	static void Handle_S_CANCLE_GAME(BYTE* buffer, int32 len);
-	static void Handle_S_ENTER_GAMET(BYTE* buffer, int32 len);
-	static void Handle_S_START(BYTE* buffer, int32 len);
-	static void Handle_S_MOVE(BYTE* buffer, int32 len);
+	void HandlePacket(BYTE* buffer, int32 len);
+	void Handle_S_LOGIN(BYTE* buffer, int32 len);
+	void Handle_S_MACHING_GAME(BYTE* buffer, int32 len);
+	void Handle_S_CANCLE_GAME(BYTE* buffer, int32 len);
+	void Handle_S_ENTER_GAMET(BYTE* buffer, int32 len);
+	void Handle_S_START(BYTE* buffer, int32 len);
+	void Handle_S_MOVE(BYTE* buffer, int32 len);
 
 private:
-
 	template <typename T>
 	static SendBufferRef _MakeSendBuffer(T& pkt, uint16 pktid)
 	{
@@ -54,9 +43,6 @@ private:
 		sendBuffer->Close(PacketSize);
 		return sendBuffer;
 	}
-};
 
-class DummyPacketHandler
-{
-
+	volatile GameState _state = LOBBY;
 };

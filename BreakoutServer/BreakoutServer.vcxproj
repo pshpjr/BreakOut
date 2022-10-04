@@ -183,8 +183,9 @@
     </ClCompile>
     <ClCompile Include="Breakout.cpp" />
     <ClCompile Include="BreakoutServer.cpp" />
+    <ClCompile Include="Room.cpp" />
     <ClCompile Include="ServerSession.cpp" />
-    <ClCompile Include="GameSessionManager.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -199,8 +200,9 @@
     <ClInclude Include="..\Pong\Protocol.pb.h" />
     <ClInclude Include="..\Pong\Struct.pb.h" />
     <ClInclude Include="Breakout.h" />
+    <ClInclude Include="Room.h" />
     <ClInclude Include="ServerSession.h" />
-    <ClInclude Include="GameSessionManager.h" />
+    <ClInclude Include="RoomManager.h" />
     <ClInclude Include="Macro.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Physics.h" />

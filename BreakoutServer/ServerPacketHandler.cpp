@@ -16,6 +16,7 @@ void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, i
 
 	br >> header;
 
+	
 	switch (header.id)
 	{
 	case C_LOGIN:
@@ -46,8 +47,6 @@ void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, i
 
 	session->_key = pkt.usercode();
 
-	cout << session->_key << endl;
-
 	Protocol::S_LOGIN loginOk;
 	loginOk.set_success(true);
 	auto buff = MakeSendBuffer(loginOk);
@@ -56,17 +55,21 @@ void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, i
 
 void ServerPacketHandler::Handle_C_MACHING_GAME(GameSessionRef session, BYTE* buffer, int32 len)
 {
+	int roomNumber = GRoomManager.AddPlayer(session);
+	ASSERT_CRASH(roomNumber > -1);
+
 	Protocol::S_MACHING_GAME pkt;
-	pkt.set_roomnumber(1);
+	pkt.set_roomnumber(roomNumber);
 	session->Send(MakeSendBuffer(pkt));
 
-	Protocol::S_ENTER_GAME pkt2;
-	pkt2.set_roomnumber(1);
-	pkt2.set_success(true);
+	this_thread::sleep_for(1s);
 
+	Protocol::S_ENTER_GAME pkt2;
+	pkt2.set_roomnumber(roomNumber);
+	pkt2.set_success(true);
 	session->Send(MakeSendBuffer(pkt2));
 
-	this_thread::sleep_for(1s);
+	this_thread::sleep_for(2s);
 
 	Protocol::S_START pkt3;
 	session->Send(MakeSendBuffer(pkt3));

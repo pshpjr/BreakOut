@@ -1,14 +1,16 @@
 ﻿#pragma once
 #include "BufferReader.h"
 #include "BufferWriter.h"
-#include "GameSessionManager.h"
+#include "RoomManager.h"
 #include "Protocol.pb.h"
 //S_ : 서버로 보내는
 //C_ : 클라로 보내는
 
-enum : uint16
+inline int Count = 0;
+
+enum PACKET_TYPE: uint16
 {
-	C_LOGIN = 1,
+	C_LOGIN,
 	S_LOGIN,
 	C_MACHING_GAME,
 	S_MACHING_GAME,
@@ -20,10 +22,20 @@ enum : uint16
 	C_MOVE,
 	S_MOVE
 };
-
+inline vector<string> PACKET_TYPE_STR = { "C_LOGIN", "S_LOGIN",
+	"C_MACHING_GAME",
+	"S_MACHING_GAME",
+	"C_CANCLE_GAME",
+	"S_CANCLE_GAME",
+	"S_ENTER_GAME",
+	"C_READY",
+	"S_START",
+	"C_MOVE",
+	"S_MOVE" };
 class ServerPacketHandler
 {
 public:
+
 	static void HandlePacket(PacketSessionRef session, BYTE* buffer, int32 len);
 
 	static SendBufferRef MakeSendBuffer(Protocol::S_LOGIN& pkt) { return _MakeSendBuffer(pkt, S_LOGIN); }

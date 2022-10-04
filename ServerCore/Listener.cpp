@@ -36,7 +36,12 @@ bool Listener::StartAccept(ServerServiceRef service)
 		return false;
 
 	if (SocketUtils::Bind(_socket, service->GetNetAddress()) == false)
+	{
+		int32 errCode = WSAGetLastError();
+
 		return false;
+	}
+		
 
 	if (SocketUtils::Listen(_socket) == false)
 		return false;

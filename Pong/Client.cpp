@@ -8,13 +8,44 @@
 #include "ThreadManager.h"
 
 ClientPtr GM;
-
-bool Client::Init()
+//TODO: Render와 Update 분리
+//분리 후 최대 동접자 수 테스트
+Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT, wstring ip, int port) :SCREENWIDTH(SCREEN_WIDTH), SCREENHEIGHT(SCREEN_HEIGHT), _ip(ip), _port(port)
 {
-	_state = Lobby::instance();
 	this_thread::sleep_for(1s);
+
+	_pongs.reserve(99);
+	_state = Init::instance();
+	int width = SCREEN_WIDTH / 3;
+	int mWidth = width / 7;
+	int mHeight = SCREEN_HEIGHT / 7;
+
+	AddPong(width, SCREEN_HEIGHT, width, 0);
+	_mainPlay = _pongs[0];
+	_mainPlay->_isMyPlay = true;
+
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
+		}
+	}
+	for (int i = 0; i < 7; i++)
+	{
+		for (int j = 0; j < 7; j++)
+		{
+			AddPong(mWidth, mHeight, j * mWidth + width * 2, i * mHeight, 'j', 'l');
+		}
+	}
+
+	InitService();
+
+}
+bool Client::InitService()
+{
 	_service = MakeShared<ClientService>(
-		NetAddress(_ip,_port),
+		NetAddress(_ip, _port),
 		MakeShared<IocpCore>(),
 		MakeShared<ClientSession>, // TODO : SessionManager 등
 		1);
@@ -50,34 +81,7 @@ bool Client::ProcessInput(float dt)
 
 
 
-Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT,wstring ip, int port) :SCREENWIDTH(SCREEN_WIDTH),SCREENHEIGHT(SCREEN_HEIGHT),_ip(ip),_port(port)
-{
-	_pongs.reserve(99);
-	Init();
-	int width = SCREEN_WIDTH / 3;
-	int mWidth = width / 7;
-	int mHeight = SCREEN_HEIGHT / 7;
 
-
-	AddPong(width, SCREEN_HEIGHT, width, 0);
-	_mainPlay = _pongs[0];
-	_mainPlay->_isMyPlay = true;
-
-	for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
-		}
-	}
-	for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			AddPong(mWidth, mHeight, j * mWidth + width * 2, i * mHeight, 'j', 'l');
-		}
-	}
-}
 
 
 void Client::AddPong(int32 width, int32 height, int32 x, int32 y)

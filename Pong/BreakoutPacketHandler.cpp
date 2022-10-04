@@ -38,9 +38,7 @@ void BreakoutPacketHandler::HandlePacket(BYTE* buffer, int32 len)
 
 void BreakoutPacketHandler::Handle_S_LOGIN(BYTE* buffer, int32 len)
 {
-	Protocol::S_LOGIN pkt;
-
-	cout << pkt.success() << endl;
+	GM->ChangeState(Lobby::instance());
 }
 
 void BreakoutPacketHandler::Handle_S_MACHING_GAME(BYTE* buffer, int32 len)
@@ -82,3 +80,4 @@ void BreakoutPacketHandler::Handle_S_MOVE(BYTE* buffer, int32 len)
 
 
 }
+
