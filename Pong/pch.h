@@ -23,3 +23,6 @@
 #include "ClientSession.h"
 #include "Protocol.pb.h"
 #include "BreakoutPacketHandler.h"
+#include "DummySession.h"
+#include "DummyPacketHandler.h"
+#include "BufferReader.h"

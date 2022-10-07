@@ -107,30 +107,33 @@ void GameReady::HandleInput(Client* GM)
 {
 }
 
-void Playing::Render(Client* GM)
+void Playing::Update(Client* GM)
 {
-
 	_count++;
-	wrap(_count, 0, 3);
+	wrap(_count, 0, 12);
 
-	int players = 0;
-	if (_count == 2) {
-		for (int j = 0; j < 3; j++)
+	if (_count == 11) {
+		for (int j = 0; j < 11; j++)
 		{
 			for (auto& i : GM->_pongs)
 			{
-				if(i->isDead())
+				if (i->isDead())
 					continue;
 				if (i == GM->_mainPlay)
 					continue;
 				i->Update();
-				
+
 			}
 		}
 	}
 
 	GM->_mainPlay->Update();
+}
 
+void Playing::Render(Client* GM)
+{
+	int players = 0;
+	
 	for (auto& i : GM->_pongs)
 	{
 		i->Render();
@@ -169,11 +172,12 @@ void Playing::HandleInput(Client* GM)
 		Protocol::KeyInput* key = new Protocol::KeyInput;
 		Protocol::C_MOVE pkt;
 
+
 		key->set_direction(true);
 		key->set_onoff(_lState);
 
 		pkt.set_allocated_input(key);
-
+		pkt.set_roomnumber(GM->_roomNumber);
 		SendBufferRef buffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
 
 		GM->_service->Broadcast(buffer);

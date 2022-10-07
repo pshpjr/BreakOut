@@ -61,6 +61,7 @@ public:
 	ClientService(NetAddress targetAddress, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
 	virtual ~ClientService() {}
 
+	Set<SessionRef> getSessions() const;
 	virtual bool	Start() override;
 };
 

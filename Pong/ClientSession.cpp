@@ -7,9 +7,8 @@ ClientSession::~ClientSession()
 
 void ClientSession::OnConnected()
 {
-	string key = GetKey();
 	Protocol::C_LOGIN pkt;
-	pkt.set_usercode(key);
+	pkt.set_usercode(GM->_key);
 	auto sendBuffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
 	Send(sendBuffer);
 }
@@ -26,6 +25,7 @@ void ClientSession::OnDisconnected()
 
 void ClientSession::OnRecvPacket(BYTE* buffer, int32 len)
 {
-	BreakoutPacketHandler::HandlePacket(buffer, len);
+	PacketSessionRef session= GetPacketSessionRef();
+	BreakoutPacketHandler::HandlePacket(session,buffer, len);
 }
 

@@ -20,7 +20,6 @@ void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, i
 	switch (header.id)
 	{
 	case C_LOGIN:
-		cout << "handle Login" << endl;
 		Handle_C_LOGIN(gameSession, buffer, len);
 		break;
 	case C_MACHING_GAME:
@@ -47,6 +46,8 @@ void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, i
 
 	session->_key = pkt.usercode();
 
+	cout << "userKEY : " << session->_key << endl;
+
 	Protocol::S_LOGIN loginOk;
 	loginOk.set_success(true);
 	auto buff = MakeSendBuffer(loginOk);
@@ -56,37 +57,42 @@ void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, i
 void ServerPacketHandler::Handle_C_MACHING_GAME(GameSessionRef session, BYTE* buffer, int32 len)
 {
 	int roomNumber = GRoomManager.AddPlayer(session);
-	ASSERT_CRASH(roomNumber > -1);
+
+	if (roomNumber < 0)
+		cout << "Server is full" << endl;
 
 	Protocol::S_MACHING_GAME pkt;
 	pkt.set_roomnumber(roomNumber);
 	session->Send(MakeSendBuffer(pkt));
 
-	this_thread::sleep_for(1s);
-
-	Protocol::S_ENTER_GAME pkt2;
-	pkt2.set_roomnumber(roomNumber);
-	pkt2.set_success(true);
-	session->Send(MakeSendBuffer(pkt2));
-
-	this_thread::sleep_for(2s);
-
-	Protocol::S_START pkt3;
-	session->Send(MakeSendBuffer(pkt3));
+	Room& room = GRoomManager.getRoom(roomNumber);
+	
 }
 
 void ServerPacketHandler::Handle_C_CANCLE_GAME(GameSessionRef session, BYTE* buffer, int32 len)
 {
+	Protocol::C_CANCLE_GAME pkt;
+	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+
+	int32 roomNumber = pkt.roomnumber();
+
+	GRoomManager.RemovePlayer(session, roomNumber);
 }
 
 void ServerPacketHandler::Handle_C_READY(GameSessionRef session, BYTE* buffer, int32 len)
 {
+	Protocol::C_READY pkt;
+	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+
+	session->_ready = true;
 }
 
 void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, int32 len)
 {
 	Protocol::C_MOVE pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+
+	int32 roomN = pkt.roomnumber();
 
 	Protocol::KeyInput* key = new Protocol::KeyInput;
 
@@ -96,7 +102,9 @@ void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, in
 	Protocol::S_MOVE pkt2;
 	auto send = pkt2.add_inputs();
 	send->set_allocated_input(key);
-	send->set_userid(1);
+	send->set_code(session->_key);
+
 	auto sBuffer = MakeSendBuffer(pkt2);
-	session->GetService()->Broadcast(sBuffer);
+
+	GRoomManager.getRoom(roomN).Broadcast(sBuffer);
 }

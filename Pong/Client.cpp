@@ -12,7 +12,7 @@ ClientPtr GM;
 //분리 후 최대 동접자 수 테스트
 Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT, wstring ip, int port) :SCREENWIDTH(SCREEN_WIDTH), SCREENHEIGHT(SCREEN_HEIGHT), _ip(ip), _port(port)
 {
-	this_thread::sleep_for(1s);
+	_key = GetKey();
 
 	_pongs.reserve(99);
 	_state = Init::instance();
@@ -91,15 +91,26 @@ void Client::AddPong(int32 width, int32 height, int32 x, int32 y)
 
 bool Client::Tick()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	if (false == ProcessInput(10))
-		return false;
-	_state->HandleInput(this);
+	Update();
 
 	if (_noGUI)
 		return true;
+	Render();
+	return true;
+}
 
+bool Client::Update()
+{
+	if (false == ProcessInput(10))
+		return false;
+	_state->HandleInput(this);
+	_state->Update(this);
+	return true;
+}
+
+bool Client::Render()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	_state->Render(this);
 
 	glutSwapBuffers();

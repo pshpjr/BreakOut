@@ -35,7 +35,13 @@
       <Filter>Main\Game</Filter>
     </ClCompile>
     <ClCompile Include="DummySession.cpp">
-      <Filter>Main\Network</Filter>
+      <Filter>Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyPacketHandler.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyClient.cpp">
+      <Filter>Dummy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,7 +79,13 @@
       <Filter>Main\Game</Filter>
     </ClInclude>
     <ClInclude Include="DummySession.h">
-      <Filter>Main\Network</Filter>
+      <Filter>Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyPacketHandler.h">
+      <Filter>Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyClient.h">
+      <Filter>Dummy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +103,9 @@
     </Filter>
     <Filter Include="Main\Game">
       <UniqueIdentifier>{6b8aa7ef-7ced-492f-95ce-699e5289206f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dummy">
+      <UniqueIdentifier>{32015c11-bb3a-4640-b4e6-d3828a47906c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

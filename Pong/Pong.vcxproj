@@ -166,6 +166,8 @@
     <ClCompile Include="BreakoutPacketHandler.cpp" />
     <ClCompile Include="ClientSession.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="DummyClient.cpp" />
+    <ClCompile Include="DummyPacketHandler.cpp" />
     <ClCompile Include="DummySession.cpp" />
     <ClCompile Include="Enum.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -200,6 +202,8 @@
     <ClInclude Include="BreakoutPacketHandler.h" />
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="DummyClient.h" />
+    <ClInclude Include="DummyPacketHandler.h" />
     <ClInclude Include="DummySession.h" />
     <ClInclude Include="Enum.pb.h" />
     <ClInclude Include="Macro.h" />

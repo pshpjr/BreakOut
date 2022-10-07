@@ -1,6 +1,8 @@
 #pragma once
 #include "pch.h"
 #include "fstream"
+class DummySession;
+class ClientSession;
 class Breakout;
 class Client;
 
@@ -28,8 +30,8 @@ using pt = glm::vec2;
 
 using BreakoutPtr = shared_ptr<Breakout>;
 using ClientPtr = shared_ptr<Client>;
-
-
+using ClientSessionRef = shared_ptr<ClientSession>;
+using DummySessionRef = shared_ptr<DummySession>;
 
 inline void drawText(string str, float width, float height, float R = 0, float G = 0, float B = 0)
 {

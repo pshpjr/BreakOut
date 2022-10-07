@@ -27,5 +27,5 @@
 #include "glm/ext.hpp"
 #include "SocketUtils.h"
 #include "Memory.h"
-
+#include "Macro.h"
 using GameSessionRef = shared_ptr<ServerSession>;

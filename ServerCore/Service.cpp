@@ -59,6 +59,11 @@ ClientService::ClientService(NetAddress targetAddress, IocpCoreRef core, Session
 }
 
 
+Set<SessionRef> ClientService::getSessions() const
+{
+	return _sessions;
+}
+
 bool ClientService::Start()
 {
 	if (CanStart() == false)

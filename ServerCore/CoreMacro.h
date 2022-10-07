@@ -25,11 +25,12 @@
 }
 
 //expr이 거짓이면 실행
-#define ASSERT_CRASH(expr)			\
+
+#define ASSERT_CRASH(expr,cause)	\
 {									\
 	if (!(expr))					\
 	{								\
-		CRASH("ASSERT_CRASH");		\
+		CRASH(cause);				\
 		__analysis_assume(expr);	\
 	}								\
 }

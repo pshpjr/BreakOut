@@ -53,6 +53,9 @@
     <ClCompile Include="Room.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Breakout.h">
@@ -86,6 +89,9 @@
       <Filter>Protocol</Filter>
     </ClInclude>
     <ClInclude Include="Room.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>

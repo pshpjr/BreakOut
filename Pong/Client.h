@@ -10,8 +10,10 @@ public:
 
 
 	bool Tick();
+	bool Update();
+	bool Render();
 
-
+	
 	bool InitService();
 	void Start();
 	void End();
@@ -40,6 +42,7 @@ public:
 	//서버 데이터
 	char recvBuf[1000];
 
+
 	int _remainPlayer = 99;
 	UIState* _state;
 
@@ -47,9 +50,12 @@ public:
 
 	bool _exit = false;
 
-
+	int32 _roomNumber = -1;
 	wstring _ip;
 	int _port;
+	string _key;
+
+	unordered_map<string, int> index;
 };
 
 extern ClientPtr GM;

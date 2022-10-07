@@ -477,9 +477,23 @@ class KeyInputU final :
   // accessors -------------------------------------------------------
 
   enum : int {
+    kCodeFieldNumber = 1,
     kInputFieldNumber = 2,
-    kUserIdFieldNumber = 1,
   };
+  // string code = 1;
+  void clear_code();
+  const std::string& code() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_code(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_code();
+  PROTOBUF_FUTURE_MUST_USE_RESULT std::string* release_code();
+  void set_allocated_code(std::string* code);
+  private:
+  const std::string& _internal_code() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_code(const std::string& value);
+  std::string* _internal_mutable_code();
+  public:
+
   // .Protocol.KeyInput input = 2;
   bool has_input() const;
   private:
@@ -498,15 +512,6 @@ class KeyInputU final :
       ::Protocol::KeyInput* input);
   ::Protocol::KeyInput* unsafe_arena_release_input();
 
-  // int32 userId = 1;
-  void clear_userid();
-  ::PROTOBUF_NAMESPACE_ID::int32 userid() const;
-  void set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
-  private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_userid() const;
-  void _internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value);
-  public:
-
   // @@protoc_insertion_point(class_scope:Protocol.KeyInputU)
  private:
   class _Internal;
@@ -514,8 +519,8 @@ class KeyInputU final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr code_;
   ::Protocol::KeyInput* input_;
-  ::PROTOBUF_NAMESPACE_ID::int32 userid_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -668,24 +673,49 @@ inline void KeyInput::set_direction(bool value) {
 
 // KeyInputU
 
-// int32 userId = 1;
-inline void KeyInputU::clear_userid() {
-  userid_ = 0;
+// string code = 1;
+inline void KeyInputU::clear_code() {
+  code_.ClearToEmpty();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 KeyInputU::_internal_userid() const {
-  return userid_;
+inline const std::string& KeyInputU::code() const {
+  // @@protoc_insertion_point(field_get:Protocol.KeyInputU.code)
+  return _internal_code();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 KeyInputU::userid() const {
-  // @@protoc_insertion_point(field_get:Protocol.KeyInputU.userId)
-  return _internal_userid();
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void KeyInputU::set_code(ArgT0&& arg0, ArgT... args) {
+ 
+ code_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:Protocol.KeyInputU.code)
 }
-inline void KeyInputU::_internal_set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline std::string* KeyInputU::mutable_code() {
+  // @@protoc_insertion_point(field_mutable:Protocol.KeyInputU.code)
+  return _internal_mutable_code();
+}
+inline const std::string& KeyInputU::_internal_code() const {
+  return code_.Get();
+}
+inline void KeyInputU::_internal_set_code(const std::string& value) {
   
-  userid_ = value;
+  code_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline void KeyInputU::set_userid(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_userid(value);
-  // @@protoc_insertion_point(field_set:Protocol.KeyInputU.userId)
+inline std::string* KeyInputU::_internal_mutable_code() {
+  
+  return code_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
+}
+inline std::string* KeyInputU::release_code() {
+  // @@protoc_insertion_point(field_release:Protocol.KeyInputU.code)
+  return code_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
+}
+inline void KeyInputU::set_allocated_code(std::string* code) {
+  if (code != nullptr) {
+    
+  } else {
+    
+  }
+  code_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), code,
+      GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set_allocated:Protocol.KeyInputU.code)
 }
 
 // .Protocol.KeyInput input = 2;

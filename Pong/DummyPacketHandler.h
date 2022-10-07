@@ -1,23 +1,6 @@
 ﻿#pragma once
 #include "pch.h"
-
-
-enum : uint16
-{
-	C_LOGIN,
-	S_LOGIN,
-	C_MACHING_GAME,
-	S_MACHING_GAME,
-	C_CANCLE_GAME,
-	S_CANCLE_GAME,
-	S_ENTER_GAME,
-	C_READY,
-	S_START,
-	C_MOVE,
-	S_MOVE
-};
-
-class BreakoutPacketHandler
+class DummyPacketHandler : public BreakoutPacketHandler
 {
 public:
 	static SendBufferRef MakeSendBuffer(Protocol::C_LOGIN& pkt) { return _MakeSendBuffer(pkt, C_LOGIN); }
@@ -28,15 +11,15 @@ public:
 
 	static void HandlePacket(PacketSessionRef session, BYTE* buffer, int32 len);
 
-	static void Handle_S_LOGIN(ClientSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_S_MACHING_GAME(ClientSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_S_CANCLE_GAME(ClientSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_S_ENTER_GAMET(ClientSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_S_START(ClientSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_S_MOVE(ClientSessionRef session, BYTE* buffer, int32 len);
+	static void Handle_S_LOGIN(DummySessionRef session, BYTE* buffer, int32 len);
+	static void Handle_S_MACHING_GAME(DummySessionRef session, BYTE* buffer, int32 len);
+	static void Handle_S_CANCLE_GAME(DummySessionRef session, BYTE* buffer, int32 len);
+	static void Handle_S_ENTER_GAME(DummySessionRef session, BYTE* buffer, int32 len);
+	static void Handle_S_START(DummySessionRef session, BYTE* buffer, int32 len);
+	static void Handle_S_MOVE(DummySessionRef session, BYTE* buffer, int32 len);
 
 private:
-	  
+
 	template <typename T>
 	static SendBufferRef _MakeSendBuffer(T& pkt, uint16 pktid)
 	{

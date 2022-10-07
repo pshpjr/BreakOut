@@ -126,7 +126,8 @@ struct S_STARTDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT S_STARTDefaultTypeInternal _S_START_default_instance_;
 constexpr C_MOVE::C_MOVE(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
-  : input_(nullptr){}
+  : input_(nullptr)
+  , roomnumber_(0){}
 struct C_MOVEDefaultTypeInternal {
   constexpr C_MOVEDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -213,6 +214,7 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Protocol_2eproto::offsets[] PR
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::C_MOVE, input_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::C_MOVE, roomnumber_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::Protocol::S_MOVE, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -231,7 +233,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOB
   { 43, -1, sizeof(::Protocol::C_READY)},
   { 48, -1, sizeof(::Protocol::S_START)},
   { 53, -1, sizeof(::Protocol::C_MOVE)},
-  { 59, -1, sizeof(::Protocol::S_MOVE)},
+  { 60, -1, sizeof(::Protocol::S_MOVE)},
 };
 
 static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
@@ -257,10 +259,10 @@ const char descriptor_table_protodef_Protocol_2eproto[] PROTOBUF_SECTION_VARIABL
   "(\005\" \n\rS_CANCLE_GAME\022\017\n\007success\030\001 \001(\010\"V\n\014"
   "S_ENTER_GAME\022\017\n\007success\030\001 \001(\010\022\022\n\nroomNum"
   "ber\030\002 \001(\005\022!\n\007players\030\003 \003(\0132\020.Protocol.Pl"
-  "ayer\"\t\n\007C_READY\"\t\n\007S_START\"+\n\006C_MOVE\022!\n\005"
-  "input\030\001 \001(\0132\022.Protocol.KeyInput\"-\n\006S_MOV"
-  "E\022#\n\006inputs\030\002 \003(\0132\023.Protocol.KeyInputUb\006"
-  "proto3"
+  "ayer\"\t\n\007C_READY\"\t\n\007S_START\"\?\n\006C_MOVE\022!\n\005"
+  "input\030\001 \001(\0132\022.Protocol.KeyInput\022\022\n\nroomN"
+  "umber\030\002 \001(\005\"-\n\006S_MOVE\022#\n\006inputs\030\002 \003(\0132\023."
+  "Protocol.KeyInputUb\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_Protocol_2eproto_deps[2] = {
   &::descriptor_table_Enum_2eproto,
@@ -268,7 +270,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Protocol_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Protocol_2eproto = {
-  false, false, 446, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
+  false, false, 466, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
   &descriptor_table_Protocol_2eproto_once, descriptor_table_Protocol_2eproto_deps, 2, 11,
   schemas, file_default_instances, TableStruct_Protocol_2eproto::offsets,
   file_level_metadata_Protocol_2eproto, file_level_enum_descriptors_Protocol_2eproto, file_level_service_descriptors_Protocol_2eproto,
@@ -2005,11 +2007,15 @@ C_MOVE::C_MOVE(const C_MOVE& from)
   } else {
     input_ = nullptr;
   }
+  roomnumber_ = from.roomnumber_;
   // @@protoc_insertion_point(copy_constructor:Protocol.C_MOVE)
 }
 
 void C_MOVE::SharedCtor() {
-input_ = nullptr;
+::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+    reinterpret_cast<char*>(&input_) - reinterpret_cast<char*>(this)),
+    0, static_cast<size_t>(reinterpret_cast<char*>(&roomnumber_) -
+    reinterpret_cast<char*>(&input_)) + sizeof(roomnumber_));
 }
 
 C_MOVE::~C_MOVE() {
@@ -2043,6 +2049,7 @@ void C_MOVE::Clear() {
     delete input_;
   }
   input_ = nullptr;
+  roomnumber_ = 0;
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -2056,6 +2063,13 @@ const char* C_MOVE::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
       case 1:
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
           ptr = ctx->ParseMessage(_internal_mutable_input(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // int32 roomNumber = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          roomnumber_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -2096,6 +2110,12 @@ failure:
         1, _Internal::input(this), target, stream);
   }
 
+  // int32 roomNumber = 2;
+  if (this->roomnumber() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(2, this->_internal_roomnumber(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -2117,6 +2137,13 @@ size_t C_MOVE::ByteSizeLong() const {
     total_size += 1 +
       ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
         *input_);
+  }
+
+  // int32 roomNumber = 2;
+  if (this->roomnumber() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_roomnumber());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2153,6 +2180,9 @@ void C_MOVE::MergeFrom(const C_MOVE& from) {
   if (from.has_input()) {
     _internal_mutable_input()->::Protocol::KeyInput::MergeFrom(from._internal_input());
   }
+  if (from.roomnumber() != 0) {
+    _internal_set_roomnumber(from._internal_roomnumber());
+  }
 }
 
 void C_MOVE::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -2176,7 +2206,12 @@ bool C_MOVE::IsInitialized() const {
 void C_MOVE::InternalSwap(C_MOVE* other) {
   using std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(input_, other->input_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(C_MOVE, roomnumber_)
+      + sizeof(C_MOVE::roomnumber_)
+      - PROTOBUF_FIELD_OFFSET(C_MOVE, input_)>(
+          reinterpret_cast<char*>(&input_),
+          reinterpret_cast<char*>(&other->input_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata C_MOVE::GetMetadata() const {

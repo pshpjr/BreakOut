@@ -7,8 +7,9 @@
 #include <random>
 #include <string>
 #include "BreakoutPacketHandler.h"
+#include "DummyClient.h"
 class ServerSession;
-
+DummyClient* DM;
 
 bool noGUI = false;
 bool Exit = false;
@@ -24,6 +25,7 @@ int32 SCREEN_HEIGHT = 600;
 
 char sendData[] = "Hello World";
 
+int tmp = 0;
 
 void HideCMD(bool isHide)
 {
@@ -45,6 +47,7 @@ void my_reshape(int w, int h) {
 
 bool GameInit()
 {
+	DM = new DummyClient(ip, port);
 	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT,ip,port);
 
 	GM->noGUI(noGUI);
@@ -60,6 +63,9 @@ void idle()
 void tick()
 {
 	GM->Tick();
+	if(tmp %10 == 0)
+		DM->Loop();
+	tmp++;
 	this_thread::sleep_for(16.6ms);
 }
 
@@ -143,7 +149,12 @@ int main(int argc, char** argv) {
 	if (GameInit() == false)
 		return 0;
 
+
+
 	glutMainLoop();
+
+
+
 
 	GThreadManager->Join();
 	return 0;

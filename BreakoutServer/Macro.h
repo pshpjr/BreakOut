@@ -1,5 +1,6 @@
 #pragma once
 
+class Player;
 class Breakout;
 class Client;
 
@@ -21,7 +22,7 @@ enum Direction {
 	LEFT
 };
 using pt = glm::vec2;
-
+using PlayerRef = shared_ptr<Player>;
 
 template <typename T>
 void wrap(T& OUT data, T low, T high)

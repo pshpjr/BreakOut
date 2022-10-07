@@ -4,6 +4,7 @@
 #include "ThreadManager.h"
 #include "Service.h"
 #include "argparse.hpp"
+#include "RoomManager.h"
 wstring ip = L"127.0.0.1";
 uint16 port = 12321;
 
@@ -53,7 +54,7 @@ int main(int argc, char** argv)
 
 	service->Start();
 
-	for (int32 i = 0; i < 5; i++)
+	for (int32 i = 0; i < 6; i++)
 	{
 		GThreadManager->Launch([=]()
 			{
@@ -64,6 +65,11 @@ int main(int argc, char** argv)
 			});
 	}
 
+	while (true)
+	{
+		GRoomManager.Loop();
+		this_thread::sleep_for(250ms);
+	}
 
 
 	GThreadManager->Join();

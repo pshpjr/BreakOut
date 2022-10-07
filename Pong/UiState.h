@@ -7,11 +7,12 @@ namespace Protocol
 }
 
 class Client;
-
+//Ui가 있을때만 쓰니까 Broadcast해도 문제 없을 듯 
 class UIState
 {
 public:
 	virtual void Render(Client* GM);
+	virtual void Update(Client* GM){}
 	virtual void HandleInput(Client* GM) {}
 	static string Loading(int& count);
 
@@ -88,6 +89,8 @@ public:
 		static Playing* instance = new Playing();
 		return instance;
 	}
+
+	void Update(Client* GM) override;
 	void Render(Client* GM) override;
 	void HandleInput(Client* GM) override;
 private:

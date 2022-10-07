@@ -61,6 +61,7 @@ message S_START
 message C_MOVE
 {	
 	KeyInput input = 1;
+	int32 roomNumber = 2;
 }
 //클라 이동 정보 브로드캐스트
 //여기서 id는 서버쪽 배열 인덱스번호

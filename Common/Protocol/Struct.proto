@@ -15,6 +15,6 @@ message KeyInput
 
 message KeyInputU
 {
-	int32 userId =1;
+	string code =1;
 	KeyInput input = 2;
 }

@@ -1401,6 +1401,7 @@ class C_MOVE final :
 
   enum : int {
     kInputFieldNumber = 1,
+    kRoomNumberFieldNumber = 2,
   };
   // .Protocol.KeyInput input = 1;
   bool has_input() const;
@@ -1420,6 +1421,15 @@ class C_MOVE final :
       ::Protocol::KeyInput* input);
   ::Protocol::KeyInput* unsafe_arena_release_input();
 
+  // int32 roomNumber = 2;
+  void clear_roomnumber();
+  ::PROTOBUF_NAMESPACE_ID::int32 roomnumber() const;
+  void set_roomnumber(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_roomnumber() const;
+  void _internal_set_roomnumber(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.C_MOVE)
  private:
   class _Internal;
@@ -1428,6 +1438,7 @@ class C_MOVE final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::Protocol::KeyInput* input_;
+  ::PROTOBUF_NAMESPACE_ID::int32 roomnumber_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -1897,6 +1908,26 @@ inline void C_MOVE::set_allocated_input(::Protocol::KeyInput* input) {
   }
   input_ = input;
   // @@protoc_insertion_point(field_set_allocated:Protocol.C_MOVE.input)
+}
+
+// int32 roomNumber = 2;
+inline void C_MOVE::clear_roomnumber() {
+  roomnumber_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 C_MOVE::_internal_roomnumber() const {
+  return roomnumber_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 C_MOVE::roomnumber() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_MOVE.roomNumber)
+  return _internal_roomnumber();
+}
+inline void C_MOVE::_internal_set_roomnumber(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  roomnumber_ = value;
+}
+inline void C_MOVE::set_roomnumber(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_roomnumber(value);
+  // @@protoc_insertion_point(field_set:Protocol.C_MOVE.roomNumber)
 }
 
 // -------------------------------------------------------------------
