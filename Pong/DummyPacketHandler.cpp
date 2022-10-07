@@ -86,9 +86,6 @@ void DummyPacketHandler::Handle_S_MOVE(DummySessionRef session, BYTE* buffer, in
 {
 	Protocol::S_MOVE Rpkt;
 	Rpkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
-	for(auto i : Rpkt.inputs())
-	{
-		
-	}
+	auto tmp = Rpkt.inputs();
 }
 

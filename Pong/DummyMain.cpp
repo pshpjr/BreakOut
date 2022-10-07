@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "functional"
 #include "Service.h"
 #include "Session.h"
@@ -8,7 +8,7 @@
 #include <string>
 #include "BreakoutPacketHandler.h"
 #include "DummyClient.h"
-class ServerSession;
+
 DummyClient* DM;
 
 bool noGUI = false;
@@ -18,12 +18,7 @@ ClientServiceRef _service;
 wstring ip = L"127.0.0.1";
 uint16 port = 12321;
 
-int WINDOWSIZE = 100;
-
-int32 SCREEN_WIDTH = 800;
-int32 SCREEN_HEIGHT = 600;
-
-char sendData[] = "Hello World";
+int playerCount = 98;
 
 int tmp = 0;
 
@@ -34,24 +29,10 @@ void HideCMD(bool isHide)
 }
 
 
-void my_reshape(int w, int h) {
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	gluPerspective(40.0, (GLfloat)w / (GLfloat)h, 0.1, 1000.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
-
 
 bool GameInit()
 {
-	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT,ip,port);
-
-	GM->noGUI(noGUI);
-
-
+	DM = new DummyClient(ip, port,playerCount);
 	return true;
 }
 void idle()
@@ -61,30 +42,12 @@ void idle()
 
 void tick()
 {
-	GM->Tick();
+	if (tmp % 10 == 0)
+		DM->Loop();
+	tmp++;
 	this_thread::sleep_for(16.6ms);
 }
 
-void GLInit() {
-	SCREEN_HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
-	SCREEN_WIDTH = glutGet(GLUT_SCREEN_WIDTH);
-
-	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	glutInitWindowPosition(0, 0);
-	glutIdleFunc(idle);
-
-	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
-
-	glDisable(GL_LIGHTING);
-
-	glutCreateWindow("Breakout 99");
-	glutFullScreen();
-	glutDisplayFunc(tick);
-	glutSetCursor(GLUT_CURSOR_NONE);
-
-}
 
 void ArgParseInit(int argc, char** argv)
 {
@@ -112,6 +75,12 @@ void ArgParseInit(int argc, char** argv)
 		.required()
 		.nargs(1);
 
+	program.add_argument("-c")
+		.help("DummyCount")
+		.default_value<string>(std::string{ "98" })
+		.required()
+		.nargs(1);
+
 	try {
 		program.parse_args(argc, argv);
 	}
@@ -121,7 +90,7 @@ void ArgParseInit(int argc, char** argv)
 		std::exit(1);
 	}
 
-	if(program["-noGUI"] == true)
+	if (program["-noGUI"] == true)
 	{
 		noGUI = true;
 		cout << "noGUI Enabled" << endl;
@@ -132,24 +101,22 @@ void ArgParseInit(int argc, char** argv)
 
 	string tmp = program.get<std::string>("-i");
 	ip.assign(tmp.begin(), tmp.end());
+
+	auto i = program.get("-c");
+	playerCount = stoi(i );
 }
 
 int main(int argc, char** argv) {
 	ArgParseInit(argc, argv);
-	//HideCMD(noGUI);
 
-	if (noGUI == false) {
-		glutInit(&argc, argv);
-		GLInit();
-	}
 	if (GameInit() == false)
 		return 0;
 
-
-
-	glutMainLoop();
-
-
+	cout << "dummyStart" << endl;
+	while (true)
+	{
+		tick();
+	}
 
 
 	GThreadManager->Join();

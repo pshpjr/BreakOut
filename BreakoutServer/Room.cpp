@@ -51,7 +51,7 @@ bool Room::isReady()
 
 void Room::Broadcast(SendBufferRef buffer)
 {
-	for(auto session : _sessions)
+	for(auto& session : _sessions)
 	{
 		session.second->Send(buffer);
 	}

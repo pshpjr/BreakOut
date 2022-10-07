@@ -98,8 +98,8 @@ void BreakoutPacketHandler::Handle_S_MOVE(ClientSessionRef session, BYTE* buffer
 {
 	Protocol::S_MOVE pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
-  
-	for(auto i : pkt.inputs())
+	auto tmp = pkt.inputs();
+	for(auto& i : tmp)
 	{
 		int32 index = GM->index[i.code()];
 		if (i.input().onoff())

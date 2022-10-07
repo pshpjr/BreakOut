@@ -109,25 +109,33 @@ void GameReady::HandleInput(Client* GM)
 
 void Playing::Update(Client* GM)
 {
-	_count++;
-	wrap(_count, 0, 12);
+	//_count++;
+	//wrap(_count, 0, 12);
 
-	if (_count == 11) {
-		for (int j = 0; j < 11; j++)
-		{
-			for (auto& i : GM->_pongs)
-			{
-				if (i->isDead())
-					continue;
-				if (i == GM->_mainPlay)
-					continue;
-				i->Update();
+	//if (_count == 11) {
+	//	for (int j = 0; j < 11; j++)
+	//	{
+	//		for (auto& i : GM->_pongs)
+	//		{
+	//			if (i->isDead())
+	//				continue;
+	//			if (i == GM->_mainPlay)
+	//				continue;
+	//			i->Update();
 
-			}
-		}
+	//		}
+	//	}
+	//}
+
+	//GM->_mainPlay->Update();
+
+
+	for (auto& i : GM->_pongs)
+	{
+		if (i->isDead())
+			continue;
+		i->Update();
 	}
-
-	GM->_mainPlay->Update();
 }
 
 void Playing::Render(Client* GM)

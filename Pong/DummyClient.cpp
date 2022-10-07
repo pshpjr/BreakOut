@@ -2,13 +2,13 @@
 #include "DummyClient.h"
 #include "Service.h"
 #include "ThreadManager.h"
-DummyClient::DummyClient(wstring ip, int port) : _ip(ip), _port(port)
+DummyClient::DummyClient(wstring ip, int port,int count = 98) : _ip(ip), _port(port), dummyPlayers(count)
 {
 	_service = MakeShared<ClientService>(
 		NetAddress(_ip, _port),
 		MakeShared<IocpCore>(),
 		MakeShared<DummySession>, // TODO : SessionManager 등
-		98);
+		count);
 
 	_service->Start();
 
@@ -27,7 +27,7 @@ DummyClient::DummyClient(wstring ip, int port) : _ip(ip), _port(port)
 
 void DummyClient::Loop()
 {
-	for(auto i :_service->getSessions())
+	for(auto& i :_service->getSessions())
 	{
 		DummySessionRef session = static_pointer_cast<DummySession>(i);
 		if(session->_state == PLAYING)

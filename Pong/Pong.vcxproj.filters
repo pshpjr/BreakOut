@@ -43,6 +43,9 @@
     <ClCompile Include="DummyClient.cpp">
       <Filter>Dummy</Filter>
     </ClCompile>
+    <ClCompile Include="DummyMain.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

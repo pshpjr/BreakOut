@@ -34,7 +34,6 @@ void Session::Send(SendBufferRef sendBuffer)
 	//registersend 전체를 락 잡을 필요는 없음
 	if(registerSend)
 		RegisterSend();
-
 }
 
 bool Session::Connect()
