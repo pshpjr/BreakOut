@@ -42,10 +42,8 @@ void idle()
 
 void tick()
 {
-	if (tmp % 10 == 0)
-		DM->Loop();
-	tmp++;
-	this_thread::sleep_for(16.6ms);
+	DM->Loop();
+	this_thread::sleep_for(1s);
 }
 
 
