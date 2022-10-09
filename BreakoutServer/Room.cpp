@@ -90,7 +90,6 @@ void Room::Broadcast(Protocol::S_MOVE data)
 
 void Room::Broadcast(SendBufferRef buffer)
 {
-	WRITE_LOCK;
 	for(auto& session : _sessions)
 	{
 		session.second->Send(buffer);

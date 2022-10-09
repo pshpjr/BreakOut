@@ -33,7 +33,7 @@ public:
 
 	unordered_map <string, GameSessionRef> _sessions;
 private:
-	int32 MAXPLAYER = 60;
+	int32 MAXPLAYER = 99;
 	uint32 playerCount = 0;
 	int32 roomNumber = 0;
 

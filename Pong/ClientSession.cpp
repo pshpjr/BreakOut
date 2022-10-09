@@ -8,6 +8,7 @@ ClientSession::~ClientSession()
 void ClientSession::OnConnected()
 {
 	Protocol::C_LOGIN pkt;
+	cout << "Send Key : "+GM->_key<<endl;
 	pkt.set_usercode(GM->_key);
 	auto sendBuffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
 	Send(sendBuffer);

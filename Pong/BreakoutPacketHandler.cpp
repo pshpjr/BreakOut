@@ -96,6 +96,7 @@ void BreakoutPacketHandler::Handle_S_START(ClientSessionRef session, BYTE* buffe
 
 void BreakoutPacketHandler::Handle_S_MOVE(ClientSessionRef session, BYTE* buffer, int32 len)
 {
+	cout << "handle Move" << endl;
 	Protocol::S_MOVE pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 	auto tmp = pkt.inputs();

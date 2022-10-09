@@ -47,7 +47,7 @@ void DummyClient::Loop()
 			session->_owner->onOff = !session->_owner->onOff;
 
 			pkt.set_allocated_input(key);
-
+			pkt.set_roomnumber(session->_owner->roomNumber);
 			SendBufferRef buffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
 
 			session->Send(buffer);

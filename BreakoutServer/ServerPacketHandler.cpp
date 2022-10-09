@@ -40,6 +40,7 @@ void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, i
 
 void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, int32 len)
 {
+
 	Protocol::C_LOGIN pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
@@ -104,7 +105,7 @@ void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, in
 
 
 		auto sBuffer = MakeSendBuffer(pkt2);
-		GRoomManager._rooms[roomN]->Broadcast(sBuffer);
+		//GRoomManager._rooms[roomN]->Broadcast(sBuffer);
 
-		//GRoomManager.getRoom(roomN).Broadcast(pkt2);
+		GRoomManager._rooms[roomN]->Broadcast(pkt2);
 }

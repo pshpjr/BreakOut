@@ -208,9 +208,12 @@ void Playing::HandleInput(Client* GM)
 		key->set_onoff(_rState);
 
 		pkt.set_allocated_input(key);
+		pkt.set_roomnumber(GM->_roomNumber);
 		SendBufferRef buffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
+
 		GM->_service->Broadcast(buffer);
 	}
+
 	if (isKeyPressing('V'))
 	{
 		cout << "Win!!" << endl;
