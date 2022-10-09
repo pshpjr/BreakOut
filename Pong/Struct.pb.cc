@@ -46,7 +46,8 @@ PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT KeyInputDefaultTypeInternal _Ke
 constexpr KeyInputU::KeyInputU(
   ::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized)
   : code_(&::PROTOBUF_NAMESPACE_ID::internal::fixed_address_empty_string)
-  , input_(nullptr){}
+  , onoff_(false)
+  , direction_(false){}
 struct KeyInputUDefaultTypeInternal {
   constexpr KeyInputUDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -82,7 +83,8 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Struct_2eproto::offsets[] PROT
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   PROTOBUF_FIELD_OFFSET(::Protocol::KeyInputU, code_),
-  PROTOBUF_FIELD_OFFSET(::Protocol::KeyInputU, input_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::KeyInputU, onoff_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::KeyInputU, direction_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::Protocol::Player)},
@@ -99,13 +101,13 @@ static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] =
 const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\014Struct.proto\022\010Protocol\"$\n\006Player\022\014\n\004co"
   "de\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\",\n\010KeyInput\022\r\n\005on"
-  "Off\030\001 \001(\010\022\021\n\tdirection\030\002 \001(\010\"<\n\tKeyInput"
-  "U\022\014\n\004code\030\001 \001(\t\022!\n\005input\030\002 \001(\0132\022.Protoco"
-  "l.KeyInputb\006proto3"
+  "Off\030\001 \001(\010\022\021\n\tdirection\030\002 \001(\010\";\n\tKeyInput"
+  "U\022\014\n\004code\030\001 \001(\t\022\r\n\005onOff\030\002 \001(\010\022\021\n\tdirect"
+  "ion\030\003 \001(\010b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Struct_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Struct_2eproto = {
-  false, false, 178, descriptor_table_protodef_Struct_2eproto, "Struct.proto", 
+  false, false, 177, descriptor_table_protodef_Struct_2eproto, "Struct.proto", 
   &descriptor_table_Struct_2eproto_once, nullptr, 0, 3,
   schemas, file_default_instances, TableStruct_Struct_2eproto::offsets,
   file_level_metadata_Struct_2eproto, file_level_enum_descriptors_Struct_2eproto, file_level_service_descriptors_Struct_2eproto,
@@ -590,13 +592,8 @@ void KeyInput::InternalSwap(KeyInput* other) {
 
 class KeyInputU::_Internal {
  public:
-  static const ::Protocol::KeyInput& input(const KeyInputU* msg);
 };
 
-const ::Protocol::KeyInput&
-KeyInputU::_Internal::input(const KeyInputU* msg) {
-  return *msg->input_;
-}
 KeyInputU::KeyInputU(::PROTOBUF_NAMESPACE_ID::Arena* arena)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor();
@@ -611,17 +608,18 @@ KeyInputU::KeyInputU(const KeyInputU& from)
     code_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, from._internal_code(), 
       GetArenaForAllocation());
   }
-  if (from._internal_has_input()) {
-    input_ = new ::Protocol::KeyInput(*from.input_);
-  } else {
-    input_ = nullptr;
-  }
+  ::memcpy(&onoff_, &from.onoff_,
+    static_cast<size_t>(reinterpret_cast<char*>(&direction_) -
+    reinterpret_cast<char*>(&onoff_)) + sizeof(direction_));
   // @@protoc_insertion_point(copy_constructor:Protocol.KeyInputU)
 }
 
 void KeyInputU::SharedCtor() {
 code_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-input_ = nullptr;
+::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
+    reinterpret_cast<char*>(&onoff_) - reinterpret_cast<char*>(this)),
+    0, static_cast<size_t>(reinterpret_cast<char*>(&direction_) -
+    reinterpret_cast<char*>(&onoff_)) + sizeof(direction_));
 }
 
 KeyInputU::~KeyInputU() {
@@ -633,7 +631,6 @@ KeyInputU::~KeyInputU() {
 void KeyInputU::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
   code_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
-  if (this != internal_default_instance()) delete input_;
 }
 
 void KeyInputU::ArenaDtor(void* object) {
@@ -653,10 +650,9 @@ void KeyInputU::Clear() {
   (void) cached_has_bits;
 
   code_.ClearToEmpty();
-  if (GetArenaForAllocation() == nullptr && input_ != nullptr) {
-    delete input_;
-  }
-  input_ = nullptr;
+  ::memset(&onoff_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&direction_) -
+      reinterpret_cast<char*>(&onoff_)) + sizeof(direction_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -675,10 +671,17 @@ const char* KeyInputU::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
-      // .Protocol.KeyInput input = 2;
+      // bool onOff = 2;
       case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
-          ptr = ctx->ParseMessage(_internal_mutable_input(), ptr);
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          onoff_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // bool direction = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 24)) {
+          direction_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
           CHK_(ptr);
         } else goto handle_unusual;
         continue;
@@ -721,12 +724,16 @@ failure:
         1, this->_internal_code(), target);
   }
 
-  // .Protocol.KeyInput input = 2;
-  if (this->has_input()) {
+  // bool onOff = 2;
+  if (this->onoff() != 0) {
     target = stream->EnsureSpace(target);
-    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(
-        2, _Internal::input(this), target, stream);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(2, this->_internal_onoff(), target);
+  }
+
+  // bool direction = 3;
+  if (this->direction() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBoolToArray(3, this->_internal_direction(), target);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -752,11 +759,14 @@ size_t KeyInputU::ByteSizeLong() const {
         this->_internal_code());
   }
 
-  // .Protocol.KeyInput input = 2;
-  if (this->has_input()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
-        *input_);
+  // bool onOff = 2;
+  if (this->onoff() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // bool direction = 3;
+  if (this->direction() != 0) {
+    total_size += 1 + 1;
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -793,8 +803,11 @@ void KeyInputU::MergeFrom(const KeyInputU& from) {
   if (!from.code().empty()) {
     _internal_set_code(from._internal_code());
   }
-  if (from.has_input()) {
-    _internal_mutable_input()->::Protocol::KeyInput::MergeFrom(from._internal_input());
+  if (from.onoff() != 0) {
+    _internal_set_onoff(from._internal_onoff());
+  }
+  if (from.direction() != 0) {
+    _internal_set_direction(from._internal_direction());
   }
 }
 
@@ -824,7 +837,12 @@ void KeyInputU::InternalSwap(KeyInputU* other) {
       &code_, GetArenaForAllocation(),
       &other->code_, other->GetArenaForAllocation()
   );
-  swap(input_, other->input_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(KeyInputU, direction_)
+      + sizeof(KeyInputU::direction_)
+      - PROTOBUF_FIELD_OFFSET(KeyInputU, onoff_)>(
+          reinterpret_cast<char*>(&onoff_),
+          reinterpret_cast<char*>(&other->onoff_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata KeyInputU::GetMetadata() const {

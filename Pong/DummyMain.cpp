@@ -18,7 +18,7 @@ ClientServiceRef _service;
 wstring ip = L"127.0.0.1";
 uint16 port = 12321;
 
-int playerCount = 98;
+int playerCount = 99;
 
 int tmp = 0;
 

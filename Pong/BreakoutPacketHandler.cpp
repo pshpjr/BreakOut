@@ -102,12 +102,12 @@ void BreakoutPacketHandler::Handle_S_MOVE(ClientSessionRef session, BYTE* buffer
 	for(auto& i : tmp)
 	{
 		int32 index = GM->index[i.code()];
-		if (i.input().onoff())
+		if (i.onoff())
 			GM->_pongs[index]->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
 		else
 			GM->_pongs[index]->_control_block->setSpeed(0);
 
-		if (i.input().direction())
+		if (i.direction())
 			GM->_pongs[index]->_control_block->setVector({ -1,0 });
 		else
 			GM->_pongs[index]->_control_block->setVector({ 1,0 });

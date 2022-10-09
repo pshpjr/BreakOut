@@ -16,5 +16,6 @@ message KeyInput
 message KeyInputU
 {
 	string code =1;
-	KeyInput input = 2;
+	bool onOff = 2;
+	bool direction = 3;
 }

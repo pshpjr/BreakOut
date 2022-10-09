@@ -478,7 +478,8 @@ class KeyInputU final :
 
   enum : int {
     kCodeFieldNumber = 1,
-    kInputFieldNumber = 2,
+    kOnOffFieldNumber = 2,
+    kDirectionFieldNumber = 3,
   };
   // string code = 1;
   void clear_code();
@@ -494,23 +495,23 @@ class KeyInputU final :
   std::string* _internal_mutable_code();
   public:
 
-  // .Protocol.KeyInput input = 2;
-  bool has_input() const;
+  // bool onOff = 2;
+  void clear_onoff();
+  bool onoff() const;
+  void set_onoff(bool value);
   private:
-  bool _internal_has_input() const;
+  bool _internal_onoff() const;
+  void _internal_set_onoff(bool value);
   public:
-  void clear_input();
-  const ::Protocol::KeyInput& input() const;
-  PROTOBUF_FUTURE_MUST_USE_RESULT ::Protocol::KeyInput* release_input();
-  ::Protocol::KeyInput* mutable_input();
-  void set_allocated_input(::Protocol::KeyInput* input);
+
+  // bool direction = 3;
+  void clear_direction();
+  bool direction() const;
+  void set_direction(bool value);
   private:
-  const ::Protocol::KeyInput& _internal_input() const;
-  ::Protocol::KeyInput* _internal_mutable_input();
+  bool _internal_direction() const;
+  void _internal_set_direction(bool value);
   public:
-  void unsafe_arena_set_allocated_input(
-      ::Protocol::KeyInput* input);
-  ::Protocol::KeyInput* unsafe_arena_release_input();
 
   // @@protoc_insertion_point(class_scope:Protocol.KeyInputU)
  private:
@@ -520,7 +521,8 @@ class KeyInputU final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr code_;
-  ::Protocol::KeyInput* input_;
+  bool onoff_;
+  bool direction_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -718,87 +720,44 @@ inline void KeyInputU::set_allocated_code(std::string* code) {
   // @@protoc_insertion_point(field_set_allocated:Protocol.KeyInputU.code)
 }
 
-// .Protocol.KeyInput input = 2;
-inline bool KeyInputU::_internal_has_input() const {
-  return this != internal_default_instance() && input_ != nullptr;
+// bool onOff = 2;
+inline void KeyInputU::clear_onoff() {
+  onoff_ = false;
 }
-inline bool KeyInputU::has_input() const {
-  return _internal_has_input();
+inline bool KeyInputU::_internal_onoff() const {
+  return onoff_;
 }
-inline void KeyInputU::clear_input() {
-  if (GetArenaForAllocation() == nullptr && input_ != nullptr) {
-    delete input_;
-  }
-  input_ = nullptr;
+inline bool KeyInputU::onoff() const {
+  // @@protoc_insertion_point(field_get:Protocol.KeyInputU.onOff)
+  return _internal_onoff();
 }
-inline const ::Protocol::KeyInput& KeyInputU::_internal_input() const {
-  const ::Protocol::KeyInput* p = input_;
-  return p != nullptr ? *p : reinterpret_cast<const ::Protocol::KeyInput&>(
-      ::Protocol::_KeyInput_default_instance_);
-}
-inline const ::Protocol::KeyInput& KeyInputU::input() const {
-  // @@protoc_insertion_point(field_get:Protocol.KeyInputU.input)
-  return _internal_input();
-}
-inline void KeyInputU::unsafe_arena_set_allocated_input(
-    ::Protocol::KeyInput* input) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(input_);
-  }
-  input_ = input;
-  if (input) {
-    
-  } else {
-    
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:Protocol.KeyInputU.input)
-}
-inline ::Protocol::KeyInput* KeyInputU::release_input() {
+inline void KeyInputU::_internal_set_onoff(bool value) {
   
-  ::Protocol::KeyInput* temp = input_;
-  input_ = nullptr;
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-  return temp;
+  onoff_ = value;
 }
-inline ::Protocol::KeyInput* KeyInputU::unsafe_arena_release_input() {
-  // @@protoc_insertion_point(field_release:Protocol.KeyInputU.input)
+inline void KeyInputU::set_onoff(bool value) {
+  _internal_set_onoff(value);
+  // @@protoc_insertion_point(field_set:Protocol.KeyInputU.onOff)
+}
+
+// bool direction = 3;
+inline void KeyInputU::clear_direction() {
+  direction_ = false;
+}
+inline bool KeyInputU::_internal_direction() const {
+  return direction_;
+}
+inline bool KeyInputU::direction() const {
+  // @@protoc_insertion_point(field_get:Protocol.KeyInputU.direction)
+  return _internal_direction();
+}
+inline void KeyInputU::_internal_set_direction(bool value) {
   
-  ::Protocol::KeyInput* temp = input_;
-  input_ = nullptr;
-  return temp;
+  direction_ = value;
 }
-inline ::Protocol::KeyInput* KeyInputU::_internal_mutable_input() {
-  
-  if (input_ == nullptr) {
-    auto* p = CreateMaybeMessage<::Protocol::KeyInput>(GetArenaForAllocation());
-    input_ = p;
-  }
-  return input_;
-}
-inline ::Protocol::KeyInput* KeyInputU::mutable_input() {
-  // @@protoc_insertion_point(field_mutable:Protocol.KeyInputU.input)
-  return _internal_mutable_input();
-}
-inline void KeyInputU::set_allocated_input(::Protocol::KeyInput* input) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete input_;
-  }
-  if (input) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper<::Protocol::KeyInput>::GetOwningArena(input);
-    if (message_arena != submessage_arena) {
-      input = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, input, submessage_arena);
-    }
-    
-  } else {
-    
-  }
-  input_ = input;
-  // @@protoc_insertion_point(field_set_allocated:Protocol.KeyInputU.input)
+inline void KeyInputU::set_direction(bool value) {
+  _internal_set_direction(value);
+  // @@protoc_insertion_point(field_set:Protocol.KeyInputU.direction)
 }
 
 #ifdef __GNUC__

@@ -28,7 +28,7 @@ struct MemoryHeader : public SLIST_ENTRY
 	}
 
 	int32 allocSize;
-	// TODO : 필요한 추가 정보
+	// TODO : ??? ?? ??
 };
 
 /*-----------------
@@ -43,7 +43,7 @@ public:
 	~MemoryPool();
 
 	void			Push(MemoryHeader* ptr);
-	MemoryHeader* Pop();
+	MemoryHeader*	Pop();
 
 private:
 	SLIST_HEADER	_header;

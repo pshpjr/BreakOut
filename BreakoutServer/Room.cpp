@@ -1,47 +1,53 @@
 ﻿#include "pch.h"
 #include "Room.h"
 
+#include "ServerPacketHandler.h"
+
 int Room::AddSession(GameSessionRef session)
 {
 	WRITE_LOCK;
+	if (playerCount == MAXPLAYER)
+		return false;
+	ASSERT_CRASH(playerCount <= MAXPLAYER);
 	_sessions.insert({ session->_key, session });
-	if (isFull())
-		roomState = READY;
+	playerCount++;
 	return true;
 }
 
 bool Room::RemoveSession(GameSessionRef session)
 {
 	WRITE_LOCK;
-	return _sessions.erase(session->_key);
+	ASSERT_CRASH(playerCount >0);
+	_sessions.erase(session->_key);
+	playerCount--;
+	return true;
 }
 
 void Room::Clear()
 {
-	WRITE_LOCK;
-	roomState = state::MATCHING;
 	for (auto session : _sessions)
 	{
 		session.second->_ready = false;
 	}
 	_sessions.clear();
+	roomState = state::MATCHING;
 }
 
 bool Room::isFull()
 {
 	READ_LOCK;
-	return _sessions.size() == 99;
+	return playerCount == MAXPLAYER;
 }
 
 bool Room::isReady()
 {
-	if (_sessions.size() == 0)
+	if (playerCount == 0)
 		return false;
 
 	if (roomState == state::START)
 		return false;
 
-	for (auto session : _sessions)
+	for (auto& session : _sessions)
 	{
 		if (session.second->_ready == false)
 			return false;
@@ -49,8 +55,42 @@ bool Room::isReady()
 	return true;
 }
 
+
+void Room::Broadcast(Protocol::S_MOVE data)
+{
+	const uint16 dataSize = static_cast<uint16> (data.ByteSizeLong());
+	const uint16 PacketSize = dataSize + sizeof(PacketHeader);
+
+	auto sendBuffer = new char[PacketSize];
+
+
+
+	DWORD sendLen = 0;
+	DWORD flags = 0;
+	PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer);
+	header->size = PacketSize;
+	header->id = PACKET_TYPE::S_MOVE;
+
+	data.SerializeToArray(&header[1], dataSize);
+	WSABUF wsaBuf;
+	wsaBuf.buf = sendBuffer;
+	wsaBuf.len = PacketSize;
+
+	for (auto& session : _sessions)
+	{
+		SessionRef _session = session.second;
+		if(WSASend(_session->GetSocket(), &wsaBuf, 1, &sendLen, flags, nullptr, nullptr) == SOCKET_ERROR)
+		{
+			int32 error = WSAGetLastError();
+			if (error != WSA_IO_PENDING)
+				ASSERT_CRASH("boo");
+		}
+	}
+}
+
 void Room::Broadcast(SendBufferRef buffer)
 {
+	WRITE_LOCK;
 	for(auto& session : _sessions)
 	{
 		session.second->Send(buffer);
@@ -62,4 +102,33 @@ void Room::Broadcast(SendBufferRef buffer)
 void Room::Send(SendBufferRef buffer, GameSessionRef session)
 {
 	session->Send(buffer);
+}
+
+void Room::WaitPlayer()
+{
+	{ WRITE_LOCK; roomState = READY; }
+
+	Protocol::S_ENTER_GAME pkt;
+
+	for (auto& session : _sessions)
+	{
+		auto a = pkt.add_players();
+		a->set_code(session.second->_key);
+		a->set_name("Test");
+	}
+
+	pkt.set_roomnumber(roomNumber);
+	pkt.set_success(true);
+
+	Broadcast(ServerPacketHandler::MakeSendBuffer(pkt));
+}
+
+void Room::PlayStart()
+{
+	{ WRITE_LOCK; roomState = state::START; }
+
+	cout << "Room " + std::to_string(roomNumber) + " start" << endl;
+
+	Protocol::S_START pkt;
+	Broadcast(ServerPacketHandler::MakeSendBuffer(pkt));
 }

@@ -46,6 +46,12 @@
     <ClCompile Include="DummyMain.cpp">
       <Filter>Dummy</Filter>
     </ClCompile>
+    <ClCompile Include="DummyPlayer.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyService.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -88,6 +94,12 @@
       <Filter>Dummy</Filter>
     </ClInclude>
     <ClInclude Include="DummyClient.h">
+      <Filter>Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyPlayer.h">
+      <Filter>Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyService.h">
       <Filter>Dummy</Filter>
     </ClInclude>
   </ItemGroup>

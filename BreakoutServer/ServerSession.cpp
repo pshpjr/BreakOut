@@ -17,11 +17,11 @@ void ServerSession::OnRecvPacket(BYTE* buffer, int32 len)
 {
 	PacketSessionRef session = GetPacketSessionRef();
 	ServerPacketHandler::HandlePacket(session, buffer, len);
-
 	return;
 }
 
 void ServerSession::OnSend(int32 len)
 {
+
 
 }

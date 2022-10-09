@@ -8,13 +8,14 @@ class ServerSession;
 class RoomManager
 {
 public:
-	RoomManager() { }
+	RoomManager() { for (int i = 0; i < 100; i++) { _rooms[i] = make_shared<Room>(i); } }
 	int AddPlayer(GameSessionRef session);
 	bool RemovePlayer(GameSessionRef session, int roomNumber);
 	void Loop();
-	Room& getRoom(int n) { return _rooms[n]; }
+	RoomRef _rooms[100];
+
 private:
-	Room _rooms[100] = {};
+	USE_LOCK;
 };
 
 extern RoomManager GRoomManager;

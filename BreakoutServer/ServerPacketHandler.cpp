@@ -15,7 +15,6 @@ void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, i
 	PacketHeader header{};
 
 	br >> header;
-
 	
 	switch (header.id)
 	{
@@ -46,8 +45,6 @@ void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, i
 
 	session->_key = pkt.usercode();
 
-	cout << "userKEY : " << session->_key << endl;
-
 	Protocol::S_LOGIN loginOk;
 	loginOk.set_success(true);
 	auto buff = MakeSendBuffer(loginOk);
@@ -65,8 +62,6 @@ void ServerPacketHandler::Handle_C_MACHING_GAME(GameSessionRef session, BYTE* bu
 	pkt.set_roomnumber(roomNumber);
 	session->Send(MakeSendBuffer(pkt));
 
-	Room& room = GRoomManager.getRoom(roomNumber);
-	
 }
 
 void ServerPacketHandler::Handle_C_CANCLE_GAME(GameSessionRef session, BYTE* buffer, int32 len)
@@ -89,22 +84,27 @@ void ServerPacketHandler::Handle_C_READY(GameSessionRef session, BYTE* buffer, i
 
 void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, int32 len)
 {
-	Protocol::C_MOVE pkt;
-	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+		Protocol::C_MOVE pkt;
+		pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
-	int32 roomN = pkt.roomnumber();
+		int32 roomN = pkt.roomnumber();
 
-	Protocol::KeyInput* key = new Protocol::KeyInput;
+		Protocol::S_MOVE pkt2;
 
-	key->set_direction(pkt.input().direction());
-	key->set_onoff(pkt.input().onoff());
+		auto send = pkt2.add_inputs();
 
-	Protocol::S_MOVE pkt2;
-	auto send = pkt2.add_inputs();
-	send->set_allocated_input(key);
-	send->set_code(session->_key);
+		auto input = pkt.input();
+		bool dir = input.direction();
+		bool onOff = input.onoff();
 
-	auto sBuffer = MakeSendBuffer(pkt2);
 
-	GRoomManager.getRoom(roomN).Broadcast(sBuffer);
+		send->set_code(session->_key);
+		send->set_direction(dir);
+		send->set_onoff(onOff);
+
+
+		auto sBuffer = MakeSendBuffer(pkt2);
+		GRoomManager._rooms[roomN]->Broadcast(sBuffer);
+
+		//GRoomManager.getRoom(roomN).Broadcast(pkt2);
 }

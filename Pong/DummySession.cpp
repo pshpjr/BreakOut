@@ -2,6 +2,12 @@
 #include "DummySession.h"
 
 #include "BufferReader.h"
+#include "DummyPlayer.h"
+
+DummySession::DummySession()
+{
+	_owner = make_shared<DummyPlayer>();
+}
 
 /*
  *
@@ -11,10 +17,9 @@
 void DummySession::OnConnected()
 {
 	cout << "ClientOnConnect" << endl;
-	string key = random_string(KEY_LENGTH);
 
 	Protocol::C_LOGIN pkt;
-	pkt.set_usercode(key);
+	pkt.set_usercode(_owner->_key);
 	auto sendBuffer = DummyPacketHandler::MakeSendBuffer(pkt);
 	Send(sendBuffer);
 }

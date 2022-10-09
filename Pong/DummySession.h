@@ -2,17 +2,17 @@
 #include "pch.h"
 
 
+class DummyPlayer;
+
 class DummySession : public PacketSession
 {
 public:
+	DummySession();
+
 	void OnConnected() override;
 	void OnSend(int32 len) override;
 	void OnDisconnected() override;
 	void OnRecvPacket(BYTE* buffer, int32 len) override;
 
-	volatile GameState _state = INIT;
-	int32 roomNumber = -1;
-
-	bool onOff = true;
-
+	shared_ptr<DummyPlayer> _owner;
 };

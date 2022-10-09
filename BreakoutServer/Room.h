@@ -1,16 +1,19 @@
 ﻿#pragma once
 #include "pch.h"
 
+
 class Room
 {
+
+
+public:
+	Room(int32 roomNumber):roomNumber(roomNumber) {  }
 	enum state
 	{
 		MATCHING,
 		READY,
 		START
-	} ;
-
-public:
+	};
 
 	int AddSession(GameSessionRef session);
 	bool RemoveSession(GameSessionRef key);
@@ -18,16 +21,23 @@ public:
 	void Clear();
 	bool isFull();
 	bool isReady();
+	state GetState() { READ_LOCK; return roomState; }
+
+	void Broadcast(Protocol::S_MOVE data);
 	void Broadcast(SendBufferRef buffer);
 	void Send(SendBufferRef buffer, GameSessionRef session);
-	int Players() { READ_LOCK; return _sessions.size(); }
-	bool isPlay() {return roomState == state::START; }
-	void WaitPlayer() {roomState = READY;}
-	void PlayStart() { READ_LOCK; roomState = state::START; }
+	int Players() { READ_LOCK; return playerCount; }
+	bool isPlay() {return (roomState == state::START ||roomState ==  state::READY); }
+	void WaitPlayer();
+	void PlayStart();
 
+	unordered_map <string, GameSessionRef> _sessions;
+private:
+	int32 MAXPLAYER = 60;
+	uint32 playerCount = 0;
+	int32 roomNumber = 0;
 
 	USE_LOCK;
-	state roomState = state::MATCHING;
-
-	unordered_map <string,GameSessionRef> _sessions;
+	state roomState = MATCHING;
 };
+using RoomRef = shared_ptr<Room>;

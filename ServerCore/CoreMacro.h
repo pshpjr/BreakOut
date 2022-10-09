@@ -24,13 +24,11 @@
 	*crash = 0xDEADBEEF;					\
 }
 
-//expr이 거짓이면 실행
-
-#define ASSERT_CRASH(expr,cause)	\
+#define ASSERT_CRASH(expr)			\
 {									\
 	if (!(expr))					\
 	{								\
-		CRASH(cause);				\
+		CRASH("ASSERT_CRASH");		\
 		__analysis_assume(expr);	\
 	}								\
 }

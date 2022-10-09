@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "pch.h"
+class DummyService;
+
 class DummyClient
 {
 public:
@@ -10,6 +12,5 @@ public:
 	int _port;
 	int32 dummyPlayers = 98;
 
-	ClientServiceRef _service;
-	set<SessionRef> _sessions;
+	shared_ptr<DummyService> _service;
 };

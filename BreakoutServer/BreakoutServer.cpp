@@ -5,6 +5,7 @@
 #include "Service.h"
 #include "argparse.hpp"
 #include "RoomManager.h"
+
 wstring ip = L"127.0.0.1";
 uint16 port = 12321;
 
@@ -46,11 +47,13 @@ int main(int argc, char** argv)
 {
 	ArgParseInit(argc, argv);
 
+
+
 	ServerServiceRef service = MakeShared<ServerService>(
 		NetAddress(ip, port),
 		MakeShared<IocpCore>(),
 		MakeShared<ServerSession>, // TODO : SessionManager µî
-		100);
+		1000);
 
 	service->Start();
 
@@ -65,11 +68,16 @@ int main(int argc, char** argv)
 			});
 	}
 
+
 	while (true)
 	{
+		this_thread::sleep_for(3s);
+
 		GRoomManager.Loop();
-		this_thread::sleep_for(250ms);
 	}
+
+
+
 
 
 	GThreadManager->Join();

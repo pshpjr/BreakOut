@@ -10,35 +10,35 @@ enum class ServiceType : uint8
 	Client
 };
 
-/**
- * Service
- */
+/*-------------
+	Service
+--------------*/
 
 using SessionFactory = function<SessionRef(void)>;
 
 class Service : public enable_shared_from_this<Service>
 {
 public:
-	Service(ServiceType type/*서버 클라 여부*/, NetAddress address/*연결할 주소*/, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
+	Service(ServiceType type, NetAddress address, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
 	virtual ~Service();
 
 	virtual bool		Start() abstract;
 	bool				CanStart() { return _sessionFactory != nullptr; }
 
 	virtual void		CloseService();
-	void				SetSessionFactory(SessionFactory func) { _sessionFactory = func; };
+	void				SetSessionFactory(SessionFactory func) { _sessionFactory = func; }
 
 	void				Broadcast(SendBufferRef sendBuffer);
-	SessionRef			CreateSession();//세션 생성, IocpCore에 등록
-	void				AddSession(SessionRef session);//있는 세션을 추가
+	SessionRef			CreateSession();
+	void				AddSession(SessionRef session);
 	void				ReleaseSession(SessionRef session);
-	int32				GetCurrentSessionCount() { return _sessionCount; }//lock 잡진 않아서 부정확. 근데 부정확해도 충분
+	int32				GetCurrentSessionCount() { return _sessionCount; }
 	int32				GetMaxSessionCount() { return _maxSessionCount; }
 
 public:
 	ServiceType			GetServiceType() { return _type; }
 	NetAddress			GetNetAddress() { return _netAddress; }
-	IocpCoreRef&		GetIocpCore() { return _iocpCore; }//자주 쓸 함수라 레퍼런스 카운트 늘리기보단 참조로 넘김. 잠시만 써야 함
+	IocpCoreRef&		GetIocpCore() { return _iocpCore; }
 
 protected:
 	USE_LOCK;
@@ -52,25 +52,25 @@ protected:
 	SessionFactory		_sessionFactory;
 };
 
-/**
- * Client Service
- */
-class ClientService : public Service // 클라이언트에서 실행
+/*-----------------
+	ClientService
+------------------*/
+
+class ClientService : public Service
 {
 public:
 	ClientService(NetAddress targetAddress, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
 	virtual ~ClientService() {}
 
-	Set<SessionRef> getSessions() const;
 	virtual bool	Start() override;
 };
 
 
- /**
-  * Server Service
-  */
+/*-----------------
+	ServerService
+------------------*/
 
-class ServerService : public Service// 서버에서 실행
+class ServerService : public Service
 {
 public:
 	ServerService(NetAddress targetAddress, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
