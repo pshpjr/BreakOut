@@ -5,11 +5,12 @@
 
 void Lock::WriteLock(const char* name)
 {
+	P_Event();
 #if _DEBUG
 	GDeadLockProfiler->PushLock(name);
 #endif
 
-	// ??? ???? ???? ??? ??? ??.
+	// 동일한 쓰레드가 소유하고 있다면 무조건 성공.
 	const uint32 lockThreadId = (_lockFlag.load() & WRITE_THREAD_MASK) >> 16;
 	if (LThreadId == lockThreadId)
 	{
@@ -17,7 +18,7 @@ void Lock::WriteLock(const char* name)
 		return;
 	}
 
-	// ??? ?? ? ???? ?? ?? ?, ???? ???? ???.
+	// 아무도 소유 및 공유하고 있지 않을 때, 경합해서 소유권을 얻는다.
 	const int64 beginTick = ::GetTickCount64();
 	const uint32 desired = ((LThreadId << 16) & WRITE_THREAD_MASK);
 	while (true)
@@ -41,11 +42,12 @@ void Lock::WriteLock(const char* name)
 
 void Lock::WriteUnlock(const char* name)
 {
+	P_Event();
 #if _DEBUG
 	GDeadLockProfiler->PopLock(name);
 #endif
 
-	// ReadLock ? ?? ??? WriteUnlock ???.
+	// ReadLock 다 풀기 전에는 WriteUnlock 불가능.
 	if ((_lockFlag.load() & READ_COUNT_MASK) != 0)
 		CRASH("INVALID_UNLOCK_ORDER");
 
@@ -56,11 +58,12 @@ void Lock::WriteUnlock(const char* name)
 
 void Lock::ReadLock(const char* name)
 {
+	P_Event();
 #if _DEBUG
 	GDeadLockProfiler->PushLock(name);
 #endif
 
-	// ??? ???? ???? ??? ??? ??.
+	// 동일한 쓰레드가 소유하고 있다면 무조건 성공.
 	const uint32 lockThreadId = (_lockFlag.load() & WRITE_THREAD_MASK) >> 16;
 	if (LThreadId == lockThreadId)
 	{
@@ -68,7 +71,7 @@ void Lock::ReadLock(const char* name)
 		return;
 	}
 
-	// ??? ???? ?? ?? ? ???? ?? ???? ???.
+	// 아무도 소유하고 있지 않을 때 경합해서 공유 카운트를 올린다.
 	const int64 beginTick = ::GetTickCount64();
 	while (true)
 	{
@@ -88,6 +91,7 @@ void Lock::ReadLock(const char* name)
 
 void Lock::ReadUnlock(const char* name)
 {
+	P_Event();
 #if _DEBUG
 	GDeadLockProfiler->PopLock(name);
 #endif

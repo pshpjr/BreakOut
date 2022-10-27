@@ -24,11 +24,30 @@
 	*crash = 0xDEADBEEF;					\
 }
 
-#define ASSERT_CRASH(expr)			\
+//expr이 거짓이면 실행
+
+#define ASSERT_CRASH(expr,cause)	\
 {									\
 	if (!(expr))					\
 	{								\
-		CRASH("ASSERT_CRASH");		\
+		CRASH(cause);				\
 		__analysis_assume(expr);	\
 	}								\
 }
+
+/*---------------
+	  Profile
+---------------*/
+
+#define _USEPROIFILER 0;
+
+#ifdef _USEPROIFILER
+
+#define P_START OPTICK_FRAME("MainThread");
+#define P_THREAD(NAME) OPTICK_THREAD(##NAME);
+#define P_Event(NAME) OPTICK_EVENT(##NAME);
+#else
+#define P_START 
+#define P_THREAD(NAME) 
+#define P_Event() 
+#endif

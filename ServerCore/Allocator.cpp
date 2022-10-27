@@ -5,7 +5,7 @@
 /*-------------------
 	BaseAllocator
 -------------------*/
-
+//메모리 누수가 있는지 확인하는 코드들을 넣어줄 수 있음. 디버깅이 쉽다. 
 void* BaseAllocator::Alloc(int32 size)
 {
 	return ::malloc(size);

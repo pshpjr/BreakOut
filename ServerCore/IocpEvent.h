@@ -1,21 +1,18 @@
 #pragma once
-
 class Session;
 
-enum class EventType : uint8
+enum class EventType :uint8
 {
 	Connect,
-	Disconnect,
 	Accept,
-	//PreRecv,
 	Recv,
-	Send
+	Send,
+	Disconnect
 };
 
-/*--------------
-	IocpEvent
----------------*/
-
+//이렇게 상속  받으면 0번 주소에 OVERLAPPED 데이터부터 들어가니까
+//예전에 OverlappedEx 첫 멤버로 OVERLAPPED 들고 있는 거랑 같은 역할을 함. 
+//iocp에 넣어줄 때 어떤 이유로 넣는지 확인하는 역할. 
 class IocpEvent : public OVERLAPPED
 {
 public:
@@ -23,62 +20,61 @@ public:
 
 	void			Init();
 
+
 public:
-	EventType		eventType;
-	IocpObjectRef	owner;
+	EventType		_eventType;
+	IocpObjectRef	_owner;
 };
 
-/*----------------
-	ConnectEvent
------------------*/
-
+/*
+ * ConnectEvent
+ */
 class ConnectEvent : public IocpEvent
 {
 public:
 	ConnectEvent() : IocpEvent(EventType::Connect) { }
 };
 
-/*--------------------
-	DisconnectEvent
-----------------------*/
-
+/*
+ * DisconnectEvent
+ */
 class DisconnectEvent : public IocpEvent
 {
 public:
 	DisconnectEvent() : IocpEvent(EventType::Disconnect) { }
 };
 
-/*----------------
-	AcceptEvent
------------------*/
-
+/*
+ * AcceptEvent
+ */
 class AcceptEvent : public IocpEvent
 {
 public:
-	AcceptEvent() : IocpEvent(EventType::Accept) { }
+	AcceptEvent() : IocpEvent(EventType::Accept) {}
 
 public:
-	SessionRef	session = nullptr;
+	SessionRef _session = nullptr;
 };
 
-/*----------------
-	RecvEvent
------------------*/
 
+/*
+ * RecvEvent
+ */
 class RecvEvent : public IocpEvent
 {
 public:
 	RecvEvent() : IocpEvent(EventType::Recv) { }
 };
 
-/*----------------
-	SendEvent
------------------*/
 
+/*
+ * SendEvent
+ */
 class SendEvent : public IocpEvent
 {
 public:
 	SendEvent() : IocpEvent(EventType::Send) { }
-	 
+
+	//메모리 풀링하는 버퍼
 	Vector<SendBufferRef> sendBuffers;
 };

@@ -40,7 +40,8 @@ void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, i
 
 void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, int32 len)
 {
-
+	P_Event();
+	BYTE data = *buffer;
 	Protocol::C_LOGIN pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
@@ -54,6 +55,7 @@ void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, i
 
 void ServerPacketHandler::Handle_C_MACHING_GAME(GameSessionRef session, BYTE* buffer, int32 len)
 {
+	P_Event();
 	int roomNumber = GRoomManager.AddPlayer(session);
 
 	if (roomNumber < 0)
@@ -67,6 +69,7 @@ void ServerPacketHandler::Handle_C_MACHING_GAME(GameSessionRef session, BYTE* bu
 
 void ServerPacketHandler::Handle_C_CANCLE_GAME(GameSessionRef session, BYTE* buffer, int32 len)
 {
+	P_Event();
 	Protocol::C_CANCLE_GAME pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
@@ -77,6 +80,7 @@ void ServerPacketHandler::Handle_C_CANCLE_GAME(GameSessionRef session, BYTE* buf
 
 void ServerPacketHandler::Handle_C_READY(GameSessionRef session, BYTE* buffer, int32 len)
 {
+	P_Event();
 	Protocol::C_READY pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
@@ -85,6 +89,7 @@ void ServerPacketHandler::Handle_C_READY(GameSessionRef session, BYTE* buffer, i
 
 void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, int32 len)
 {
+		P_Event();
 		Protocol::C_MOVE pkt;
 		pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
@@ -92,20 +97,15 @@ void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, in
 
 		Protocol::S_MOVE pkt2;
 
-		auto send = pkt2.add_inputs();
-
 		auto input = pkt.input();
+
 		bool dir = input.direction();
 		bool onOff = input.onoff();
 
-
-		send->set_code(session->_key);
-		send->set_direction(dir);
-		send->set_onoff(onOff);
-
-
 		auto sBuffer = MakeSendBuffer(pkt2);
-		//GRoomManager._rooms[roomN]->Broadcast(sBuffer);
+		GRoomManager._rooms[roomN]->Broadcast(sBuffer);
 
-		GRoomManager._rooms[roomN]->Broadcast(pkt2);
+		//GRoomManager._rooms[roomN]->AddBroadcast(dir, onOff, session->_key);
+
+		//GRoomManager._rooms[roomN]->Broadcast(pkt2);
 }

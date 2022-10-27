@@ -16,7 +16,7 @@ public:
 	};
 
 	int AddSession(GameSessionRef session);
-	bool RemoveSession(GameSessionRef key);
+	//bool RemoveSession(GameSessionRef key);
 	
 	void Clear();
 	bool isFull();
@@ -31,7 +31,8 @@ public:
 	void WaitPlayer();
 	void PlayStart();
 
-	unordered_map <string, GameSessionRef> _sessions;
+	unordered_set<GameSessionRef> _sessions;
+	//unordered_map <string, GameSessionRef> _sessions;
 private:
 	int32 MAXPLAYER = 99;
 	uint32 playerCount = 0;

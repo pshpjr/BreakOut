@@ -28,10 +28,8 @@ void Breakout::Init()
 
 
 	_b = new Ball(ballLocation, { 1,1 }, BALLSPEED, BALLSIZE);
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(-1, 1);
-	glm::vec2 beginVector(dis(gen),1);
+
+	glm::vec2 beginVector(1,1);
 
 	_b->setVector(glm::normalize(beginVector));
 

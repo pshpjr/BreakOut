@@ -9,6 +9,8 @@
 wstring ip = L"127.0.0.1";
 uint16 port = 12321;
 
+static bool run = true;
+
 void ArgParseInit(int argc, char** argv)
 {
 	argparse::ArgumentParser program("Breakout");
@@ -45,8 +47,9 @@ void ArgParseInit(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+	OPTICK_APP("ConsoleApp");
 	ArgParseInit(argc, argv);
-
+	
 
 
 	ServerServiceRef service = MakeShared<ServerService>(
@@ -55,28 +58,31 @@ int main(int argc, char** argv)
 		MakeShared<ServerSession>, // TODO : SessionManager µî
 		1000);
 
+	cout << "server Start IP: " << std::string().assign(ip.begin(), ip.end()) << " Port : " << port << endl;
 	service->Start();
 
 	for (int32 i = 0; i < 6; i++)
 	{
 		GThreadManager->Launch([=]()
 			{
-				while (true)
+				const char* s = "IOCPThread " + i;
+				P_THREAD(s);
+				while (run)
 				{
 					service->GetIocpCore()->Dispatch();
 				}
 			});
 	}
-
-
-	while (true)
+	int32 Lcout = 0;
+	while (run)
 	{
+		P_START;
 		this_thread::sleep_for(3s);
-
 		GRoomManager.Loop();
+
+		if (Lcout == 3)
+			run = false;
 	}
-
-
 
 
 

@@ -5,6 +5,7 @@ message Player
 {
 	string code = 1;
 	string name = 2;
+	float startVector = 3;
 }
 
 message KeyInput

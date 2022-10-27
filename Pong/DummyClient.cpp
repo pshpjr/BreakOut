@@ -31,9 +31,13 @@ DummyClient::DummyClient(wstring ip, int port,int count = 98) : _ip(ip), _port(p
 void DummyClient::Loop()
 {
 	Set<SessionRef>& s = _service->getSessions();
-
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<int> dis(0, 3);
 	for(auto& ses : s)
 	{
+		int data = dis(gen);
+		if(!data)
+			continue;
 		DummySessionRef session = static_pointer_cast<DummySession>(ses);
 
 		if(session->_owner->_state == PLAYING)

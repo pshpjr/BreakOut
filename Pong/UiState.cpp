@@ -4,7 +4,7 @@
 #include "Service.h"
 #include "BreakoutPacketHandler.h"
 
-
+int keycount = 0;
 
 void UIState::Render(Client* GM)
 {
@@ -165,7 +165,7 @@ void Playing::Render(Client* GM)
 void Playing::HandleInput(Client* GM)
 {
 	//¿ÞÂÊ : direction True
-
+	
 	if (isKeyStateChanged('A',_lState))
 	{
 		//auto i = GM->_mainPlay;
@@ -182,6 +182,8 @@ void Playing::HandleInput(Client* GM)
 
 
 		key->set_direction(true);
+		if(_rState == true&& _lState == false)
+			return;
 		key->set_onoff(_lState);
 
 		pkt.set_allocated_input(key);
@@ -193,7 +195,6 @@ void Playing::HandleInput(Client* GM)
 	}
 	if (isKeyStateChanged('D',_rState))
 	{
-
 		//auto i = GM->_mainPlay;
 		//i->_control_block->setVector({ 1,0 });
 
@@ -205,6 +206,8 @@ void Playing::HandleInput(Client* GM)
 		Protocol::C_MOVE pkt;
 
 		key->set_direction(false);
+		if (_lState == true && _rState == false)
+			return;
 		key->set_onoff(_rState);
 
 		pkt.set_allocated_input(key);

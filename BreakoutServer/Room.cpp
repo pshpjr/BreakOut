@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Room.h"
 
+#include <random>
+
 #include "ServerPacketHandler.h"
 
 int Room::AddSession(GameSessionRef session)
@@ -9,25 +11,25 @@ int Room::AddSession(GameSessionRef session)
 	if (playerCount == MAXPLAYER)
 		return false;
 	ASSERT_CRASH(playerCount <= MAXPLAYER);
-	_sessions.insert({ session->_key, session });
+	_sessions.insert(session);
 	playerCount++;
 	return true;
 }
 
-bool Room::RemoveSession(GameSessionRef session)
-{
-	WRITE_LOCK;
-	ASSERT_CRASH(playerCount >0);
-	_sessions.erase(session->_key);
-	playerCount--;
-	return true;
-}
+//bool Room::RemoveSession(GameSessionRef session)
+//{
+//	WRITE_LOCK;
+//	ASSERT_CRASH(playerCount >0);
+//	_sessions.erase(session->_key);
+//	playerCount--;
+//	return true;
+//}
 
 void Room::Clear()
 {
 	for (auto session : _sessions)
 	{
-		session.second->_ready = false;
+		session->_ready = false;
 	}
 	_sessions.clear();
 	roomState = state::MATCHING;
@@ -49,7 +51,7 @@ bool Room::isReady()
 
 	for (auto& session : _sessions)
 	{
-		if (session.second->_ready == false)
+		if (session->_ready == false)
 			return false;
 	}
 	return true;
@@ -76,9 +78,10 @@ void Room::Broadcast(Protocol::S_MOVE data)
 	wsaBuf.buf = sendBuffer;
 	wsaBuf.len = PacketSize;
 
+
 	for (auto& session : _sessions)
 	{
-		SessionRef _session = session.second;
+		SessionRef _session = session;
 		if(WSASend(_session->GetSocket(), &wsaBuf, 1, &sendLen, flags, nullptr, nullptr) == SOCKET_ERROR)
 		{
 			int32 error = WSAGetLastError();
@@ -90,9 +93,10 @@ void Room::Broadcast(Protocol::S_MOVE data)
 
 void Room::Broadcast(SendBufferRef buffer)
 {
+	P_Event();
 	for(auto& session : _sessions)
 	{
-		session.second->Send(buffer);
+		session->Send(buffer);
 	}
 }
 
@@ -105,15 +109,20 @@ void Room::Send(SendBufferRef buffer, GameSessionRef session)
 
 void Room::WaitPlayer()
 {
+
 	{ WRITE_LOCK; roomState = READY; }
 
 	Protocol::S_ENTER_GAME pkt;
 
+	std::mt19937 gen(GRoomManager.rd());
+	std::uniform_real_distribution<float> dis(-1, 1);
 	for (auto& session : _sessions)
 	{
 		auto a = pkt.add_players();
-		a->set_code(session.second->_key);
+		a->set_code(session->_key);
 		a->set_name("Test");
+		float data = dis(gen);
+		a->set_startvector(data);
 	}
 
 	pkt.set_roomnumber(roomNumber);

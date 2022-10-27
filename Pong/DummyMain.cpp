@@ -32,6 +32,7 @@ void HideCMD(bool isHide)
 
 bool GameInit()
 {
+	cout << "Dummy Start IP: " << std::string().assign(ip.begin(), ip.end()) << " Port : " << port << endl;
 	DM = new DummyClient(ip, port,playerCount);
 	return true;
 }
@@ -43,7 +44,7 @@ void idle()
 void tick()
 {
 	DM->Loop();
-	this_thread::sleep_for(1s);
+	this_thread::sleep_for(200ms);
 }
 
 
@@ -110,7 +111,6 @@ int main(int argc, char** argv) {
 	if (GameInit() == false)
 		return 0;
 
-	cout << "dummyStart" << endl;
 	while (true)
 	{
 		tick();

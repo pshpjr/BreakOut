@@ -11,6 +11,7 @@ public:
 	wstring _ip;
 	int _port;
 	int32 dummyPlayers = 98;
-
+	std::random_device rd;
+	
 	shared_ptr<DummyService> _service;
 };

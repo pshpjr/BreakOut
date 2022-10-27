@@ -25,7 +25,8 @@ int RoomManager::AddPlayer(GameSessionRef session)
 
 bool RoomManager::RemovePlayer(GameSessionRef session,int roomNumber)
 {
-	return _rooms[roomNumber]->RemoveSession(session);
+	//return _rooms[roomNumber]->RemoveSession(session);
+	return true;
 }
 
 void RoomManager::Loop()
@@ -38,12 +39,12 @@ void RoomManager::Loop()
 		switch (_rooms[i]->GetState())
 		{
 		case Room::MATCHING:
+			cout << "room Ready" << endl;
 			_rooms[i]->WaitPlayer();
 			break;
 		case Room::READY:
 			if (_rooms[i]->isReady())
 			{
-				cout << "Room " + std::to_string(i) + " start" << endl;
 				_rooms[i]->PlayStart();
 			}
 			break;

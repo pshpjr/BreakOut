@@ -183,6 +183,7 @@ class Player final :
   enum : int {
     kCodeFieldNumber = 1,
     kNameFieldNumber = 2,
+    kStartVectorFieldNumber = 3,
   };
   // string code = 1;
   void clear_code();
@@ -212,6 +213,15 @@ class Player final :
   std::string* _internal_mutable_name();
   public:
 
+  // float startVector = 3;
+  void clear_startvector();
+  float startvector() const;
+  void set_startvector(float value);
+  private:
+  float _internal_startvector() const;
+  void _internal_set_startvector(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.Player)
  private:
   class _Internal;
@@ -221,6 +231,7 @@ class Player final :
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr code_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
+  float startvector_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -625,6 +636,26 @@ inline void Player::set_allocated_name(std::string* name) {
   name_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), name,
       GetArenaForAllocation());
   // @@protoc_insertion_point(field_set_allocated:Protocol.Player.name)
+}
+
+// float startVector = 3;
+inline void Player::clear_startvector() {
+  startvector_ = 0;
+}
+inline float Player::_internal_startvector() const {
+  return startvector_;
+}
+inline float Player::startvector() const {
+  // @@protoc_insertion_point(field_get:Protocol.Player.startVector)
+  return _internal_startvector();
+}
+inline void Player::_internal_set_startvector(float value) {
+  
+  startvector_ = value;
+}
+inline void Player::set_startvector(float value) {
+  _internal_set_startvector(value);
+  // @@protoc_insertion_point(field_set:Protocol.Player.startVector)
 }
 
 // -------------------------------------------------------------------

@@ -1,6 +1,8 @@
 #pragma once
 #include "pch.h"
 
+#include <random>
+
 #include "Room.h"
 
 class ServerSession;
@@ -13,9 +15,11 @@ public:
 	bool RemovePlayer(GameSessionRef session, int roomNumber);
 	void Loop();
 	RoomRef _rooms[100];
-
+	std::random_device rd;
 private:
 	USE_LOCK;
+
+
 };
 
 extern RoomManager GRoomManager;

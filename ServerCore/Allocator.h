@@ -15,7 +15,7 @@ public:
 	StompAllocator
 -------------------*/
 
-class StompAllocator
+class StompAllocator//버그 잡는데 사용. 메모리 오염 문제 해결용
 {
 	enum { PAGE_SIZE = 0x1000 };
 
@@ -60,10 +60,4 @@ public:
 	{
 		PoolAllocator::Release(ptr);
 	}
-
-	template<typename U>
-	bool operator==(const StlAllocator<U>&) { return true; }
-
-	template<typename U>
-	bool operator!=(const StlAllocator<U>&) { return false; }
 };

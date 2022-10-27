@@ -50,7 +50,7 @@ void BreakoutPacketHandler::Handle_S_MACHING_GAME(ClientSessionRef session, BYTE
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
 	GM->_roomNumber = pkt.roomnumber();
-
+	cout << "Room : " << GM->_roomNumber << endl;
 	GM->ChangeState(Matching::instance());
 }
 
@@ -70,18 +70,26 @@ void BreakoutPacketHandler::Handle_S_ENTER_GAMET(ClientSessionRef session, BYTE*
 	}
 
 	int index = 1;
-	for(auto i: pkt.players())
+	for(auto& i: pkt.players())
 	{
-		if (i.code() == GM->_key)
+		string key = i.code();
+		if (key == GM->_key)
 		{
 			GM->index.insert({ i.code(), 0 });
-			continue;
+			index--;
 		}
+		else
+			GM->index.insert({ i.code(),index });
 
-		GM->index.insert({ i.code(),index });
+		glm::vec2 startVector = { i.startvector(),1 };
+		startVector = glm::normalize(startVector);
+		int target = GM->index[key];
+
+		GM->_pongs[target]->_b->setVector(startVector);
+
 		index++;
 	}
-	
+
 	Protocol::C_READY pkt2;
 	SendBufferRef sendBuffer = MakeSendBuffer(pkt2);
 	session->Send(sendBuffer);
@@ -96,13 +104,13 @@ void BreakoutPacketHandler::Handle_S_START(ClientSessionRef session, BYTE* buffe
 
 void BreakoutPacketHandler::Handle_S_MOVE(ClientSessionRef session, BYTE* buffer, int32 len)
 {
-	cout << "handle Move" << endl;
 	Protocol::S_MOVE pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 	auto tmp = pkt.inputs();
 	for(auto& i : tmp)
 	{
 		int32 index = GM->index[i.code()];
+		cout << index << endl;
 		if (i.onoff())
 			GM->_pongs[index]->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
 		else
