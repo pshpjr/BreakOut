@@ -8,8 +8,6 @@
 #include "ThreadManager.h"
 
 ClientPtr GM;
-//TODO: Render와 Update 분리
-//분리 후 최대 동접자 수 테스트
 Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT, wstring ip, int port) :SCREENWIDTH(SCREEN_WIDTH), SCREENHEIGHT(SCREEN_HEIGHT), _ip(ip), _port(port)
 {
 	_key = GetKey();

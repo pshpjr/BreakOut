@@ -15,7 +15,7 @@ DummyClient::DummyClient(wstring ip, int port,int count = 98) : _ip(ip), _port(p
 
 	_service->Start();
 
-	for (int32 i = 0; i < 5; i++)
+	for (int32 i = 0; i < 6; i++)
 	{
 		GThreadManager->Launch([=]()
 			{
@@ -30,9 +30,11 @@ DummyClient::DummyClient(wstring ip, int port,int count = 98) : _ip(ip), _port(p
 
 void DummyClient::Loop()
 {
+
 	Set<SessionRef>& s = _service->getSessions();
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 3);
+	P_Event("sessionRoof");
 	for(auto& ses : s)
 	{
 		int data = dis(gen);

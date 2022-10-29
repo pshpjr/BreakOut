@@ -12,17 +12,20 @@ public:
 	{
 		MATCHING,
 		READY,
-		START
+		START,
+		ENDs
 	};
 
 	int AddSession(GameSessionRef session);
-	//bool RemoveSession(GameSessionRef key);
+	bool RemoveSession(GameSessionRef session);
 	
 	void Clear();
 	bool isFull();
 	bool isReady();
 	state GetState() { READ_LOCK; return roomState; }
 
+	void AddBroadcast(string key, bool dir, bool onOff);
+	void Broadcast();
 	void Broadcast(Protocol::S_MOVE data);
 	void Broadcast(SendBufferRef buffer);
 	void Send(SendBufferRef buffer, GameSessionRef session);
@@ -31,14 +34,16 @@ public:
 	void WaitPlayer();
 	void PlayStart();
 
-	unordered_set<GameSessionRef> _sessions;
-	//unordered_map <string, GameSessionRef> _sessions;
+	//unordered_set<GameSessionRef> _sessions;
+	unordered_map <string, GameSessionRef> _sessions;
 private:
 	int32 MAXPLAYER = 99;
 	uint32 playerCount = 0;
 	int32 roomNumber = 0;
 
-	USE_LOCK;
+	USE_MANY_LOCKS(2); //1 : sessions 건드림, 2: movePkt, pktIdx 건드림
 	state roomState = MATCHING;
+	Protocol::S_MOVE movePkt[2] = {};
+	int32 pktIdx = 0;
 };
 using RoomRef = shared_ptr<Room>;

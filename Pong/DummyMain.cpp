@@ -43,8 +43,11 @@ void idle()
 
 void tick()
 {
+	P_START;
+	uint32 start = GetTickCount();
 	DM->Loop();
-	this_thread::sleep_for(200ms);
+	uint32 lap = GetTickCount() - start;
+	this_thread::sleep_for(chrono::milliseconds(200 - lap));
 }
 
 
@@ -106,6 +109,7 @@ void ArgParseInit(int argc, char** argv)
 }
 
 int main(int argc, char** argv) {
+	OPTICK_APP("DUMMYCLIENT")
 	ArgParseInit(argc, argv);
 
 	if (GameInit() == false)

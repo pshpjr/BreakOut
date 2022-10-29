@@ -7,29 +7,29 @@
 
 int Room::AddSession(GameSessionRef session)
 {
-	WRITE_LOCK;
+	WRITE_LOCK_IDX(0);
 	if (playerCount == MAXPLAYER)
 		return false;
 	ASSERT_CRASH(playerCount <= MAXPLAYER);
-	_sessions.insert(session);
+	_sessions.insert({ session->_key,session });
 	playerCount++;
 	return true;
 }
 
-//bool Room::RemoveSession(GameSessionRef session)
-//{
-//	WRITE_LOCK;
-//	ASSERT_CRASH(playerCount >0);
-//	_sessions.erase(session->_key);
-//	playerCount--;
-//	return true;
-//}
+bool Room::RemoveSession(GameSessionRef session)
+{
+	WRITE_LOCK_IDX(0);
+	ASSERT_CRASH(playerCount >0);
+	_sessions.erase(session->_key);
+	playerCount--;
+	return true;
+}
 
 void Room::Clear()
 {
 	for (auto session : _sessions)
 	{
-		session->_ready = false;
+		session.second->_ready = false;
 	}
 	_sessions.clear();
 	roomState = state::MATCHING;
@@ -37,7 +37,7 @@ void Room::Clear()
 
 bool Room::isFull()
 {
-	READ_LOCK;
+	READ_LOCK_IDX(0);
 	return playerCount == MAXPLAYER;
 }
 
@@ -51,12 +51,23 @@ bool Room::isReady()
 
 	for (auto& session : _sessions)
 	{
-		if (session->_ready == false)
+		if (session.second->_ready == false)
 			return false;
 	}
 	return true;
 }
 
+
+void Room::AddBroadcast(string key, bool dir, bool onOff)
+{
+	P_Event();
+	WRITE_LOCK_IDX(1);
+	auto input = movePkt[pktIdx].add_inputs();
+
+	input->set_code(key);
+	input->set_direction(dir);
+	input->set_onoff(onOff);
+}
 
 void Room::Broadcast(Protocol::S_MOVE data)
 {
@@ -81,7 +92,7 @@ void Room::Broadcast(Protocol::S_MOVE data)
 
 	for (auto& session : _sessions)
 	{
-		SessionRef _session = session;
+		SessionRef _session = session.second;
 		if(WSASend(_session->GetSocket(), &wsaBuf, 1, &sendLen, flags, nullptr, nullptr) == SOCKET_ERROR)
 		{
 			int32 error = WSAGetLastError();
@@ -96,10 +107,28 @@ void Room::Broadcast(SendBufferRef buffer)
 	P_Event();
 	for(auto& session : _sessions)
 	{
-		session->Send(buffer);
+		session.second->Send(buffer);
 	}
 }
-
+/*HACK: Broadcast는 중첩 실행되지 않는다고 가정함(한 방의 Broadcast는 충분한 간격을 두고 실행)*/
+void Room::Broadcast()
+{
+	P_Event();
+	int32 oldIndex = -1;
+	{
+		WRITE_LOCK_IDX(1);
+		oldIndex = pktIdx;
+		pktIdx = pktIdx == 0 ? 1 : 0;
+	}
+	{
+		WRITE_LOCK_IDX(0);
+		for (auto& session : _sessions)
+		{
+			session.second->Send(ServerPacketHandler::MakeSendBuffer(movePkt[oldIndex]));
+		}
+		movePkt[oldIndex].Clear();
+	}
+}
 
 
 void Room::Send(SendBufferRef buffer, GameSessionRef session)
@@ -110,7 +139,7 @@ void Room::Send(SendBufferRef buffer, GameSessionRef session)
 void Room::WaitPlayer()
 {
 
-	{ WRITE_LOCK; roomState = READY; }
+	{ WRITE_LOCK_IDX(0); roomState = READY; }
 
 	Protocol::S_ENTER_GAME pkt;
 
@@ -119,7 +148,7 @@ void Room::WaitPlayer()
 	for (auto& session : _sessions)
 	{
 		auto a = pkt.add_players();
-		a->set_code(session->_key);
+		a->set_code(session.second->_key);
 		a->set_name("Test");
 		float data = dis(gen);
 		a->set_startvector(data);
@@ -133,7 +162,7 @@ void Room::WaitPlayer()
 
 void Room::PlayStart()
 {
-	{ WRITE_LOCK; roomState = state::START; }
+	{ WRITE_LOCK_IDX(0); roomState = state::START; }
 
 	cout << "Room " + std::to_string(roomNumber) + " start" << endl;
 

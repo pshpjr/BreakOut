@@ -203,56 +203,56 @@ void Session::RegisterSend()
 
 	//나중에 외부에서 락 안잡고 호출할수도 있으니 안에서 락 잡음
 	}
-	{
-		int32 writeSize = 0;
-		Queue<SendBufferRef>* data;
-		{
-			WRITE_LOCK;
-			data = &_sendQueue[QueueNumber];
-			QueueNumber = QueueNumber == 0 ? 1 : 0;
-		}
-
 	
-		while(data->empty() == false)
-		{
-			SendBufferRef sendBuffer = data->front();
-
-			writeSize += sendBuffer->WriteSize();
-			//TODO: 너무 많으면 break;
-			data->pop();
-			_sendEvent.sendBuffers.push_back(sendBuffer);
-		}
+	int32 writeSize = 0;
+	Queue<SendBufferRef>* data;
+	{
+		WRITE_LOCK;
+		data = &_sendQueue[QueueNumber];
+		QueueNumber = QueueNumber == 0 ? 1 : 0;
 	}
+
+
+	while(data->empty() == false)
+	{
+		SendBufferRef sendBuffer = data->front();
+
+		writeSize += sendBuffer->WriteSize();
+		//TODO: 너무 많으면 break;
+		data->pop();
+		_sendEvent.sendBuffers.push_back(sendBuffer);
+	}
+	
 	
 	Vector<WSABUF> wsabufs;
 	//scatter gather : 흩어진 데이터를 한 번에 보낸다.
-	{
+	
 
-		wsabufs.reserve(_sendEvent.sendBuffers.size());
-		for(const SendBufferRef& sendBuffer : _sendEvent.sendBuffers)
+	wsabufs.reserve(_sendEvent.sendBuffers.size());
+	for(const SendBufferRef& sendBuffer : _sendEvent.sendBuffers)
+	{
+		WSABUF wsaBuf;
+		wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
+		wsaBuf.len = static_cast<LONG>(sendBuffer->WriteSize());
+		wsabufs.push_back(wsaBuf);
+	}
+	
+
+
+	
+	DWORD numOfBytes = 0;
+	if (SOCKET_ERROR == ::WSASend(_socket, wsabufs.data(), static_cast<DWORD>(wsabufs.size()), OUT & numOfBytes, 0, &_sendEvent, nullptr))
+	{
+		int32 errorCode = ::WSAGetLastError();
+		if (errorCode != WSA_IO_PENDING)
 		{
-			WSABUF wsaBuf;
-			wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
-			wsaBuf.len = static_cast<LONG>(sendBuffer->WriteSize());
-			wsabufs.push_back(wsaBuf);
+			HandleError(errorCode);
+			_sendEvent._owner = nullptr;
+			_sendEvent.sendBuffers.clear();
+			_sendRegisterd.store(false); 
 		}
 	}
-
-
-	{
-		DWORD numOfBytes = 0;
-		if (SOCKET_ERROR == ::WSASend(_socket, wsabufs.data(), static_cast<DWORD>(wsabufs.size()), OUT & numOfBytes, 0, &_sendEvent, nullptr))
-		{
-			int32 errorCode = ::WSAGetLastError();
-			if (errorCode != WSA_IO_PENDING)
-			{
-				HandleError(errorCode);
-				_sendEvent._owner = nullptr;
-				_sendEvent.sendBuffers.clear();
-				_sendRegisterd.store(false); 
-			}
-		}
-	}
+	
 }
 
 
@@ -326,6 +326,7 @@ void Session::ProcessSend(int32 numOfBytes)
 	OnSend(numOfBytes);
 
 	{
+		P_Event("ProcessSendLock");
 		WRITE_LOCK;
 		if (_sendQueue[QueueNumber].empty()) {
 			_sendRegisterd.store(false);

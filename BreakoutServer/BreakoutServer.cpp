@@ -76,14 +76,19 @@ int main(int argc, char** argv)
 	int32 Lcout = 0;
 	while (run)
 	{
+		uint32 start = GetTickCount();
 		P_START;
-		this_thread::sleep_for(3s);
+		
 		GRoomManager.Loop();
+		uint32 lap = GetTickCount() - start;
+		P_Event("sleep")
 
-		if (Lcout == 3)
-			run = false;
+		if (50 >= lap) 
+		{
+			this_thread::sleep_for(chrono::milliseconds(50 - lap));
+		}
+		
 	}
-
 
 
 	GThreadManager->Join();

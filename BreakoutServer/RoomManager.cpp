@@ -31,6 +31,7 @@ bool RoomManager::RemovePlayer(GameSessionRef session,int roomNumber)
 
 void RoomManager::Loop()
 {
+	P_Event()
 	for (int i = 0; i < 99; i++)
 	{
 		if(_rooms[i]->isFull() == false)
@@ -47,6 +48,9 @@ void RoomManager::Loop()
 			{
 				_rooms[i]->PlayStart();
 			}
+			break;
+		case Room::START:
+			_rooms[i]->Broadcast();
 			break;
 		default:
 			break;

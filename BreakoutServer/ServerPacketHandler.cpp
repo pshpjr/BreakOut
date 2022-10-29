@@ -95,17 +95,11 @@ void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, in
 
 		int32 roomN = pkt.roomnumber();
 
-		Protocol::S_MOVE pkt2;
-
 		auto input = pkt.input();
-
 		bool dir = input.direction();
 		bool onOff = input.onoff();
 
-		auto sBuffer = MakeSendBuffer(pkt2);
-		GRoomManager._rooms[roomN]->Broadcast(sBuffer);
-
-		//GRoomManager._rooms[roomN]->AddBroadcast(dir, onOff, session->_key);
+		GRoomManager._rooms[roomN]->AddBroadcast(session->_key,dir, onOff );
 
 		//GRoomManager._rooms[roomN]->Broadcast(pkt2);
 }
