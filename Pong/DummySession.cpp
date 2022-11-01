@@ -16,7 +16,6 @@ DummySession::DummySession()
  */
 void DummySession::OnConnected()
 {
-	cout << "ClientOnConnect" << endl;
 
 	Protocol::C_LOGIN pkt;
 	pkt.set_usercode(_owner->_key);

@@ -39,7 +39,7 @@
 	  Profile
 ---------------*/
 
-#define _USEPROIFILER 0;
+#define _USEPROIFILER ;
 
 #ifdef _USEPROIFILER
 

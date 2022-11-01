@@ -2,7 +2,7 @@
 #include "pch.h"
 
 
-class Room
+class Room : public JobQueue
 {
 
 
@@ -24,15 +24,18 @@ public:
 	bool isReady();
 	state GetState() { READ_LOCK; return roomState; }
 
-	void AddBroadcast(string key, bool dir, bool onOff);
-	void Broadcast();
-	void Broadcast(Protocol::S_MOVE data);
+	void AddData(string key, bool dir, bool onOff);
+	void BroadcastData();
+	//void BroadcastData(Protocol::S_MOVE data);
 	void Broadcast(SendBufferRef buffer);
 	void Send(SendBufferRef buffer, GameSessionRef session);
 	int Players() { READ_LOCK; return playerCount; }
 	bool isPlay() {return (roomState == state::START ||roomState ==  state::READY); }
 	void WaitPlayer();
 	void PlayStart();
+
+	void RoomCheck();
+
 
 	//unordered_set<GameSessionRef> _sessions;
 	unordered_map <string, GameSessionRef> _sessions;

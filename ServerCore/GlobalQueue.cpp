@@ -17,6 +17,7 @@ GlobalQueue::~GlobalQueue()
 
 void GlobalQueue::Push(JobQueueRef jobQueue)
 {
+	P_Event()
 	_jobQueues.Push(jobQueue);
 }
 

@@ -11,25 +11,25 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 	const int32 prevCount = _jobCount.fetch_add(1);
 	_jobs.Push(job); // WRITE_LOCK
 
-	// ??? Job? ?? ???? ???? ??
+	// 처음 Job 넣은 스레드가 실행
 	if (prevCount == 0)
 	{
-		// ?? ???? JobQueue? ??? ??
+		// 실행중이 아니면 실행
 		if (LCurrentJobQueue == nullptr && pushOnly == false)
 		{
 			Execute();
 		}
 		else
 		{
-			// ?? ?? ?? ???? ????? GlobalQueue? ???
+			// 실행중이면 전역 큐에 올려서 남이 실행하게
 			GGlobalQueue->Push(shared_from_this());
 		}
 	}
 }
 
-// 1) ??? ?~? ????
 void JobQueue::Execute()
 {
+	P_Event()
 	LCurrentJobQueue = this;
 
 	while (true)
@@ -37,11 +37,12 @@ void JobQueue::Execute()
 		Vector<JobRef> jobs;
 		_jobs.PopAll(OUT jobs);
 
+		//해당 잡큐에 있는 작업들 실행
 		const int32 jobCount = static_cast<int32>(jobs.size());
 		for (int32 i = 0; i < jobCount; i++)
 			jobs[i]->Execute();
 
-		// ?? ??? 0??? ??
+		// 일감 없으면 종료
 		if (_jobCount.fetch_sub(jobCount) == jobCount)
 		{
 			LCurrentJobQueue = nullptr;
@@ -51,8 +52,9 @@ void JobQueue::Execute()
 		const uint64 now = ::GetTickCount64();
 		if (now >= LEndTickCount)
 		{
+			
 			LCurrentJobQueue = nullptr;
-			// ?? ?? ?? ???? ????? GlobalQueue? ???
+			// 남이 나중에 하도록
 			GGlobalQueue->Push(shared_from_this());
 			break;
 		}			

@@ -44,13 +44,105 @@ void ArgParseInit(int argc, char** argv)
 	
 }
 
+void MakeWorker(ServerServiceRef service)
+{
+	//TODO:dispatch 일정 시간 돌려보고 아니면 딴 일 하게 변경
+	GThreadManager->Launch([=]()
+		{
+			P_THREAD("IOCPThread 1");
+			while (run)
+			{
+				P_Event("Worker")
+				service->GetIocpCore()->Dispatch(10);
+
+				ThreadManager::DistributeReservedJobs();
+
+				ThreadManager::DoGlobalQueueWork();
+			}
+		});
+
+	GThreadManager->Launch([=]()
+		{
+			P_THREAD("IOCPThread 2");
+			while (run)
+			{
+				P_Event("Worker")
+				service->GetIocpCore()->Dispatch(3);
+
+				ThreadManager::DistributeReservedJobs();
+
+				ThreadManager::DoGlobalQueueWork();
+			}
+		});
+	GThreadManager->Launch([=]()
+		{
+			P_THREAD("IOCPThread 3");
+			while (run)
+			{
+				P_Event("Worker")
+				service->GetIocpCore()->Dispatch(3);
+
+				ThreadManager::DistributeReservedJobs();
+
+				ThreadManager::DoGlobalQueueWork();
+			}
+		});
+	GThreadManager->Launch([=]()
+		{
+			P_THREAD("IOCPThread 4");
+			while (run)
+			{
+				P_Event("Worker")
+				service->GetIocpCore()->Dispatch(3);
+
+				ThreadManager::DistributeReservedJobs();
+
+				ThreadManager::DoGlobalQueueWork();
+			}
+		});
+	GThreadManager->Launch([=]()
+		{
+			P_THREAD("IOCPThread 5");
+			while (run)
+			{
+				P_Event("Worker")
+				service->GetIocpCore()->Dispatch(3);
+
+				ThreadManager::DistributeReservedJobs();
+
+				ThreadManager::DoGlobalQueueWork();
+			}
+		});
+}
+
+enum
+{
+	WORKER_TICK = 64
+};
+
+void WorkerJob(ServerServiceRef& service)
+{
+
+	while (true)
+	{
+		P_Event("Worker")
+		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
+
+		service->GetIocpCore()->Dispatch(3);
+
+		ThreadManager::DistributeReservedJobs();
+
+		ThreadManager::DoGlobalQueueWork();
+
+
+	}
+}
 
 int main(int argc, char** argv)
 {
 	OPTICK_APP("ConsoleApp");
 	ArgParseInit(argc, argv);
 	
-
 
 	ServerServiceRef service = MakeShared<ServerService>(
 		NetAddress(ip, port),
@@ -61,33 +153,30 @@ int main(int argc, char** argv)
 	cout << "server Start IP: " << std::string().assign(ip.begin(), ip.end()) << " Port : " << port << endl;
 	service->Start();
 
-	for (int32 i = 0; i < 6; i++)
-	{
-		GThreadManager->Launch([=]()
-			{
-				const char* s = "IOCPThread " + i;
-				P_THREAD(s);
-				while (run)
-				{
-					service->GetIocpCore()->Dispatch();
-				}
-			});
-	}
-	int32 Lcout = 0;
-	while (run)
-	{
-		uint32 start = GetTickCount();
-		P_START;
-		
-		GRoomManager.Loop();
-		uint32 lap = GetTickCount() - start;
-		P_Event("sleep")
+	MakeWorker(service);
 
-		if (50 >= lap) 
-		{
-			this_thread::sleep_for(chrono::milliseconds(50 - lap));
-		}
-		
+	for(auto& i :GRoomManager._rooms)
+	{
+		i->DoAsync(&Room::RoomCheck);
+	}
+
+
+	int32 Lcout = 0;
+	while (true)
+	{
+		int32 now = GetTickCount();
+		OPTICK_FRAME("MainThread");
+		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
+
+		P_Event("Worker")
+		service->GetIocpCore()->Dispatch(10);
+
+		ThreadManager::DistributeReservedJobs();
+
+		ThreadManager::DoGlobalQueueWork();
+
+		P_Event("Sleep")
+		this_thread::sleep_for(std::chrono::milliseconds(50 -(GetTickCount() - now)));
 	}
 
 

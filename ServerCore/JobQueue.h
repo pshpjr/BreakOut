@@ -1,4 +1,5 @@
 #pragma once
+#include "pch.h"
 #include "Job.h"
 #include "LockQueue.h"
 #include "JobTimer.h"
@@ -46,4 +47,5 @@ protected:
 	LockQueue<JobRef>		_jobs;
 	Atomic<int32>			_jobCount = 0;
 };
+
 

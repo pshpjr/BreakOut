@@ -99,7 +99,5 @@ void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, in
 		bool dir = input.direction();
 		bool onOff = input.onoff();
 
-		GRoomManager._rooms[roomN]->AddBroadcast(session->_key,dir, onOff );
-
-		//GRoomManager._rooms[roomN]->Broadcast(pkt2);
+		GRoomManager._rooms[roomN]->AddData(session->_key,dir, onOff );
 }

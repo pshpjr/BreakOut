@@ -78,7 +78,9 @@ bool SocketUtils::SetUpdateAcceptSocket(SOCKET socket, SOCKET listenSocket)
 bool SocketUtils::Bind(SOCKET socket, NetAddress netAddr)
 {
 	const SOCKADDR* add = reinterpret_cast<const SOCKADDR*>(&netAddr.GetSockAddr());
-	return SOCKET_ERROR != bind(socket, add, sizeof(SOCKADDR_IN));
+
+
+	return SOCKET_ERROR != ::bind(socket, add, sizeof(SOCKADDR_IN));
 }
 
 bool SocketUtils::BindAnyAddress(SOCKET socket, uint16 port)

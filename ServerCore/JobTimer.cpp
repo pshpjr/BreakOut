@@ -18,7 +18,7 @@ void JobTimer::Reserve(uint64 tickAfter, weak_ptr<JobQueue> owner, JobRef job)
 
 void JobTimer::Distribute(uint64 now)
 {
-	// ? ?? 1 ???? ??
+	// 한 번에 1 스레드만
 	if (_distributing.exchange(true) == true)
 		return;
 
@@ -35,8 +35,11 @@ void JobTimer::Distribute(uint64 now)
 
 			items.push_back(timerItem);
 			_items.pop();
+
 		}
 	}
+	// 종료 알림
+	_distributing.store(false);
 
 	for (TimerItem& item : items)
 	{
@@ -46,8 +49,8 @@ void JobTimer::Distribute(uint64 now)
 		ObjectPool<JobData>::Push(item.jobData);
 	}
 
-	// ???? ????
-	_distributing.store(false);
+
+	
 }
 
 void JobTimer::Clear()

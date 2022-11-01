@@ -334,7 +334,7 @@ void Session::ProcessSend(int32 numOfBytes)
 		}
 	}
 	P_Event("Resend")
-	RegisterSend();
+	//RegisterSend();
 }
 
 

@@ -7,7 +7,7 @@
 
 class ServerSession;
 
-class RoomManager
+class RoomManager : public JobQueue
 {
 public:
 	RoomManager() { for (int i = 0; i < 100; i++) { _rooms[i] = make_shared<Room>(i); } }

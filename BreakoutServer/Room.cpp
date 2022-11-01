@@ -58,7 +58,7 @@ bool Room::isReady()
 }
 
 
-void Room::AddBroadcast(string key, bool dir, bool onOff)
+void Room::AddData(string key, bool dir, bool onOff)
 {
 	P_Event();
 	WRITE_LOCK_IDX(1);
@@ -69,38 +69,38 @@ void Room::AddBroadcast(string key, bool dir, bool onOff)
 	input->set_onoff(onOff);
 }
 
-void Room::Broadcast(Protocol::S_MOVE data)
-{
-	const uint16 dataSize = static_cast<uint16> (data.ByteSizeLong());
-	const uint16 PacketSize = dataSize + sizeof(PacketHeader);
-
-	auto sendBuffer = new char[PacketSize];
-
-
-
-	DWORD sendLen = 0;
-	DWORD flags = 0;
-	PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer);
-	header->size = PacketSize;
-	header->id = PACKET_TYPE::S_MOVE;
-
-	data.SerializeToArray(&header[1], dataSize);
-	WSABUF wsaBuf;
-	wsaBuf.buf = sendBuffer;
-	wsaBuf.len = PacketSize;
-
-
-	for (auto& session : _sessions)
-	{
-		SessionRef _session = session.second;
-		if(WSASend(_session->GetSocket(), &wsaBuf, 1, &sendLen, flags, nullptr, nullptr) == SOCKET_ERROR)
-		{
-			int32 error = WSAGetLastError();
-			if (error != WSA_IO_PENDING)
-				ASSERT_CRASH("boo");
-		}
-	}
-}
+//void Room::BroadcastData(Protocol::S_MOVE data)
+//{
+//	const uint16 dataSize = static_cast<uint16> (data.ByteSizeLong());
+//	const uint16 PacketSize = dataSize + sizeof(PacketHeader);
+//
+//	auto sendBuffer = new char[PacketSize];
+//
+//
+//
+//	DWORD sendLen = 0;
+//	DWORD flags = 0;
+//	PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer);
+//	header->size = PacketSize;
+//	header->id = PACKET_TYPE::S_MOVE;
+//
+//	data.SerializeToArray(&header[1], dataSize);
+//	WSABUF wsaBuf;
+//	wsaBuf.buf = sendBuffer;
+//	wsaBuf.len = PacketSize;
+//
+//
+//	for (auto& session : _sessions)
+//	{
+//		SessionRef _session = session.second;
+//		if(WSASend(_session->GetSocket(), &wsaBuf, 1, &sendLen, flags, nullptr, nullptr) == SOCKET_ERROR)
+//		{
+//			int32 error = WSAGetLastError();
+//			if (error != WSA_IO_PENDING)
+//				ASSERT_CRASH("boo");
+//		}
+//	}
+//}
 
 void Room::Broadcast(SendBufferRef buffer)
 {
@@ -110,17 +110,22 @@ void Room::Broadcast(SendBufferRef buffer)
 		session.second->Send(buffer);
 	}
 }
-/*HACK: Broadcast는 중첩 실행되지 않는다고 가정함(한 방의 Broadcast는 충분한 간격을 두고 실행)*/
-void Room::Broadcast()
+/*HACK: Broadcast는 중첩 실행되지 않는다고 가정함(한 방의 Broadcast는 충분한 간격을 두고 실행)
+ * 잡 방식 변경시 생각해봐야 함
+ *
+ */
+void Room::BroadcastData()
 {
 	P_Event();
 	int32 oldIndex = -1;
 	{
+		P_Event("SWAP Data");
 		WRITE_LOCK_IDX(1);
 		oldIndex = pktIdx;
 		pktIdx = pktIdx == 0 ? 1 : 0;
 	}
 	{
+		P_Event("BroadcastSendLock");
 		WRITE_LOCK_IDX(0);
 		for (auto& session : _sessions)
 		{
@@ -128,6 +133,8 @@ void Room::Broadcast()
 		}
 		movePkt[oldIndex].Clear();
 	}
+	if(GetState() == START)
+		DoTimer(50, &Room::BroadcastData);
 }
 
 
@@ -168,4 +175,35 @@ void Room::PlayStart()
 
 	Protocol::S_START pkt;
 	Broadcast(ServerPacketHandler::MakeSendBuffer(pkt));
+
+	DoTimer(50, &Room::BroadcastData);
+}
+
+void Room::RoomCheck()
+{
+	P_Event();
+	if (isFull() == false) {
+		DoTimer(200, &Room::RoomCheck);
+		return;
+	}
+
+	switch (GetState())
+	{
+	case Room::MATCHING:
+		cout << "room Ready" << endl;
+		WaitPlayer();
+		break;
+	case Room::READY:
+		if (isReady())
+		{
+			PlayStart();
+		}
+		break;
+	case Room::START:
+		break;
+	default:
+		break;
+	}
+
+	DoTimer(200, &Room::RoomCheck);
 }
