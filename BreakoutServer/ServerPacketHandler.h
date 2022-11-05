@@ -45,11 +45,11 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::S_START& pkt) { return _MakeSendBuffer(pkt, S_START); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MOVE& pkt) { return _MakeSendBuffer(pkt, S_MOVE); }
 
-	static void Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_C_MACHING_GAME(GameSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_C_CANCLE_GAME(GameSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_C_READY(GameSessionRef session, BYTE* buffer, int32 len);
-	static void Handle_C_MOVE(GameSessionRef session, BYTE* buffer, int32 len);
+	static void Handle_C_LOGIN(ServerSessionRef session, BYTE* buffer, int32 len);
+	static void Handle_C_MACHING_GAME(ServerSessionRef session, BYTE* buffer, int32 len);
+	static void Handle_C_CANCLE_GAME(ServerSessionRef session, BYTE* buffer, int32 len);
+	static void Handle_C_READY(ServerSessionRef session, BYTE* buffer, int32 len);
+	static void Handle_C_MOVE(ServerSessionRef session, BYTE* buffer, int32 len);
 
 private:
 

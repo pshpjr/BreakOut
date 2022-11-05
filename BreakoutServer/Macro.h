@@ -1,19 +1,11 @@
 #pragma once
+#include "pch.h"
 
+class ServerSession;
 class Player;
 class Breakout;
 class Client;
 
-enum GameState
-{
-	PLAYING,
-	INIT,
-	MATCHING,
-	GAMEREADY,
-	LOBBY,
-	WIN,
-	DEAD,
-};
 
 enum Direction {
 	UP,
@@ -23,6 +15,8 @@ enum Direction {
 };
 using pt = glm::vec2;
 using PlayerRef = shared_ptr<Player>;
+using ServerSessionRef = shared_ptr<ServerSession>;
+
 
 template <typename T>
 void wrap(T& OUT data, T low, T high)

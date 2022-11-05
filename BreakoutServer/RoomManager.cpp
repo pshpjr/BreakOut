@@ -7,7 +7,7 @@
 
 RoomManager GRoomManager;
 
-int RoomManager::AddPlayer(GameSessionRef session)
+int RoomManager::AddPlayer(PlayerRef p)
 {
 	WRITE_LOCK;
 	for(int i = 0; i<100;i++)
@@ -16,7 +16,7 @@ int RoomManager::AddPlayer(GameSessionRef session)
 			continue;
 		if (_rooms[i]->isFull() == false)
 		{
-			_rooms[i]->AddSession(session);
+			_rooms[i]->AddPlayer(p);
 			return i;
 		}
 
@@ -26,11 +26,10 @@ int RoomManager::AddPlayer(GameSessionRef session)
 	return -1;
 }
 
-bool RoomManager::RemovePlayer(GameSessionRef session,int roomNumber)
+bool RoomManager::RemovePlayer(PlayerRef p,int roomNumber)
 {
 	WRITE_LOCK;
-	return _rooms[roomNumber]->RemoveSession(session);
-	return true;
+	return _rooms[roomNumber]->RemovePlayer(p);
 }
 
 

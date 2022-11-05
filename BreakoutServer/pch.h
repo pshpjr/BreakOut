@@ -14,25 +14,31 @@
 #pragma comment(lib, "ws2_32.lib")
 
 
-#include <iostream>
 #include "CorePch.h"
+#include "glm/glm.hpp"
+#include "glm/ext.hpp"
+#include "ThreadManager.h"
+#include "Memory.h"
+#include "Macro.h"
+#include "Protocol.pb.h"
+#include "Player.h"
+
+#include <iostream>
+
 #include <atomic>
 #include <mutex>
 #include <windows.h>
 #include <future>
-#include "ThreadManager.h"
+
 
 #include <winsock2.h>
 #include <mswsock.h>
 #include <ws2tcpip.h>
 
 #include "ServerSession.h"
-#include "glm/glm.hpp"
-#include "glm/ext.hpp"
-#include "SocketUtils.h"
-#include "Memory.h"
-#include "Macro.h"
-#include "Protocol.pb.h"
 
-using GameSessionRef = shared_ptr<ServerSession>;
+#include "SocketUtils.h"
+
+
+
 

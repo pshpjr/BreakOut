@@ -5,33 +5,37 @@
 
 #include "ServerPacketHandler.h"
 
-int Room::AddSession(GameSessionRef session)
+int Room::AddPlayer(PlayerRef player)
 {
 	WRITE_LOCK_IDX(0);
 	if (playerCount == MAXPLAYER)
 		return false;
 	ASSERT_CRASH(playerCount <= MAXPLAYER);
-	_sessions.insert({ session->_key,session });
 	playerCount++;
+	_players.insert (player);
+	player->_roomNumber = roomNumber;
+
 	return true;
 }
 
-bool Room::RemoveSession(GameSessionRef session)
+bool Room::RemovePlayer(PlayerRef player)
 {
 	WRITE_LOCK_IDX(0);
 	ASSERT_CRASH(playerCount >0);
-	_sessions.erase(session->_key);
 	playerCount--;
+	_players.erase(player);
+	player->_roomNumber = -1;
 	return true;
 }
 
 void Room::Clear()
 {
-	for (auto session : _sessions)
+	roomState = ENDs;
+	for (auto& p : _players)
 	{
-		session.second->_ready = false;
+		p->LeaveRoom();
 	}
-	_sessions.clear();
+	_players.clear();
 	roomState = state::MATCHING;
 }
 
@@ -43,15 +47,14 @@ bool Room::isFull()
 
 bool Room::isReady()
 {
-	if (playerCount == 0)
+
+	if (roomState != state::WAIT_PLAYER)
 		return false;
 
-	if (roomState == state::START)
-		return false;
-
-	for (auto& session : _sessions)
+	
+	for (auto& session : _players)
 	{
-		if (session.second->_ready == false)
+		if (session->_ready == false)
 			return false;
 	}
 	return true;
@@ -63,6 +66,7 @@ void Room::AddData(string key, bool dir, bool onOff)
 	P_Event();
 	WRITE_LOCK_IDX(1);
 	auto input = movePkt[pktIdx].add_inputs();
+
 
 	input->set_code(key);
 	input->set_direction(dir);
@@ -105,9 +109,9 @@ void Room::AddData(string key, bool dir, bool onOff)
 void Room::Broadcast(SendBufferRef buffer)
 {
 	P_Event();
-	for(auto& session : _sessions)
+	for(auto& session : _players)
 	{
-		session.second->Send(buffer);
+		session->Send(buffer);
 	}
 }
 /*HACK: Broadcast는 중첩 실행되지 않는다고 가정함(한 방의 Broadcast는 충분한 간격을 두고 실행)
@@ -127,35 +131,35 @@ void Room::BroadcastData()
 	{
 		WRITE_LOCK_IDX(0);
 		auto buffer = ServerPacketHandler::MakeSendBuffer(movePkt[oldIndex]);
-		for (auto& session : _sessions)
+		for (auto& player : _players)
 		{
-			session.second->Send(buffer);
+			player->Send(buffer);
 		}
 		movePkt[oldIndex].Clear();
 	}
-	if(GetState() == START)
+	if(GetState() == PLAYING)
 		DoTimer(50, &Room::BroadcastData);
 }
 
 
-void Room::Send(SendBufferRef buffer, GameSessionRef session)
+void Room::Send(SendBufferRef buffer, PlayerRef player)
 {
-	session->Send(buffer);
+	player->Send(buffer);
 }
 
 void Room::WaitPlayer()
 {
 
-	{ WRITE_LOCK_IDX(0); roomState = READY; }
+	{ WRITE_LOCK_IDX(0); roomState = WAIT_PLAYER; }
 
 	Protocol::S_ENTER_GAME pkt;
 
 	std::mt19937 gen(GRoomManager.rd());
 	std::uniform_real_distribution<float> dis(-1, 1);
-	for (auto& session : _sessions)
+	for (auto& player : _players)
 	{
 		auto a = pkt.add_players();
-		a->set_code(session.second->_key);
+		a->set_code(player->_key);
 		a->set_name("Test");
 		float data = dis(gen);
 		a->set_startvector(data);
@@ -169,7 +173,7 @@ void Room::WaitPlayer()
 
 void Room::PlayStart()
 {
-	{ WRITE_LOCK_IDX(0); roomState = state::START; }
+	{ WRITE_LOCK_IDX(0); roomState = state::PLAYING; }
 
 	cout << "Room " + std::to_string(roomNumber) + " start" << endl;
 
@@ -194,13 +198,13 @@ void Room::RoomCheck()
 		cout << "room Ready" << endl;
 		WaitPlayer();
 		break;
-	case Room::READY:
+	case Room::WAIT_PLAYER:
 		if (isReady())
 		{
 			PlayStart();
 		}
 		break;
-	case Room::START:  // NOLINT(bugprone-branch-clone)
+	case Room::PLAYING:  // NOLINT(bugprone-branch-clone)
 		break;
 	default:
 		break;

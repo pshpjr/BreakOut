@@ -14,6 +14,5 @@ public:
 	virtual void OnDisconnected() sealed;
 	virtual void OnRecvPacket(BYTE* buffer, int32 len) sealed;
 
-	string _key;
-	bool _ready = false;
+	PlayerRef _owner = nullptr;
 };
