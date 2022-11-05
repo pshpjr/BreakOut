@@ -8,6 +8,7 @@
 
 void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, int32 len)
 {
+	P_Event()
 	GameSessionRef gameSession = static_pointer_cast<ServerSession>(session);
 
 	BufferReader br(buffer, len);
@@ -99,5 +100,5 @@ void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, in
 		bool dir = input.direction();
 		bool onOff = input.onoff();
 
-		GRoomManager._rooms[roomN]->AddData(session->_key,dir, onOff );
+		GRoomManager._rooms[roomN]->DoAsync(&Room::AddData, session->_key, dir, onOff);
 }

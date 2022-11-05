@@ -8,6 +8,7 @@
 
 void JobQueue::Push(JobRef job, bool pushOnly)
 {
+
 	const int32 prevCount = _jobCount.fetch_add(1);
 	_jobs.Push(job); // WRITE_LOCK
 
@@ -17,6 +18,7 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 		// 실행중이 아니면 실행
 		if (LCurrentJobQueue == nullptr && pushOnly == false)
 		{
+
 			Execute();
 		}
 		else
@@ -29,15 +31,17 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 
 void JobQueue::Execute()
 {
-	P_Event()
 	LCurrentJobQueue = this;
 
 	while (true)
 	{
 		Vector<JobRef> jobs;
+		
 		_jobs.PopAll(OUT jobs);
-
+		
 		//해당 잡큐에 있는 작업들 실행
+
+
 		const int32 jobCount = static_cast<int32>(jobs.size());
 		for (int32 i = 0; i < jobCount; i++)
 			jobs[i]->Execute();
@@ -48,6 +52,7 @@ void JobQueue::Execute()
 			LCurrentJobQueue = nullptr;
 			return;
 		}
+		
 
 		const uint64 now = ::GetTickCount64();
 		if (now >= LEndTickCount)

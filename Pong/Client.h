@@ -39,8 +39,6 @@ public:
 	const int32 baseWidth = 640;
 	const int32 baseHeight = 1080;
 
-	//서버 데이터
-	char recvBuf[1000];
 
 
 	int _remainPlayer = 99;

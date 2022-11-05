@@ -24,7 +24,7 @@ void Session::Send(SendBufferRef sendBuffer)
 	bool registerSend = false;
 
 	{
-		P_Event("QPush");
+		//여기가 자주 딜레이 됨 : 이 세션 접근이 여러곳에서 이뤄지고 있음. 불가능하게 만들었다 생각하는데 어디서 되는지 알아보기
 		WRITE_LOCK;
 		_sendQueue[QueueNumber].push(sendBuffer);
 
@@ -69,6 +69,7 @@ HANDLE Session::GetHandle()
 }
 void Session::Dispatch(IocpEvent* iocpEvent, int32 numOfBytes)
 {
+	P_Event()
 	//뭔가 등록한 Event가 완료되었다!!
 
 	switch (iocpEvent->_eventType)
@@ -189,12 +190,12 @@ void Session::RegisterRecv()
 	
 }
 
-void Session::RegisterSend()
+void Session:: RegisterSend()
 {
 	//send를 단계별로 이해할 수 있게 임시 코드가 많음.
 //그래도 문제점을 쉽게 이해할 수 있다.
 	P_Event();
-	{
+
 	if (IsConnected() == false)
 		return;
 
@@ -202,14 +203,14 @@ void Session::RegisterSend()
 	_sendEvent._owner = shared_from_this();
 
 	//나중에 외부에서 락 안잡고 호출할수도 있으니 안에서 락 잡음
-	}
+	
 	
 	int32 writeSize = 0;
 	Queue<SendBufferRef>* data;
 	{
 		WRITE_LOCK;
 		data = &_sendQueue[QueueNumber];
-		QueueNumber = QueueNumber == 0 ? 1 : 0;
+		QueueNumber ^= 1;
 	}
 
 
@@ -222,24 +223,18 @@ void Session::RegisterSend()
 		data->pop();
 		_sendEvent.sendBuffers.push_back(sendBuffer);
 	}
-	
-	
 	Vector<WSABUF> wsabufs;
 	//scatter gather : 흩어진 데이터를 한 번에 보낸다.
 	
-
 	wsabufs.reserve(_sendEvent.sendBuffers.size());
-	for(const SendBufferRef& sendBuffer : _sendEvent.sendBuffers)
+	for (const SendBufferRef& sendBuffer : _sendEvent.sendBuffers)
 	{
 		WSABUF wsaBuf;
 		wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
 		wsaBuf.len = static_cast<LONG>(sendBuffer->WriteSize());
 		wsabufs.push_back(wsaBuf);
 	}
-	
 
-
-	
 	DWORD numOfBytes = 0;
 	if (SOCKET_ERROR == ::WSASend(_socket, wsabufs.data(), static_cast<DWORD>(wsabufs.size()), OUT & numOfBytes, 0, &_sendEvent, nullptr))
 	{
@@ -249,10 +244,13 @@ void Session::RegisterSend()
 			HandleError(errorCode);
 			_sendEvent._owner = nullptr;
 			_sendEvent.sendBuffers.clear();
-			_sendRegisterd.store(false); 
+			_sendRegisterd.store(false);
 		}
 	}
+
+
 	
+
 }
 
 
@@ -288,6 +286,7 @@ void Session::ProcessRecv(int32 numOfBytes)
 	if(numOfBytes == 0)
 	{
 		Disconnect(L"Recv 0");
+		_connected.store(false);
 		return;
 	}
 	//읽은거 처리 후
@@ -314,27 +313,33 @@ void Session::ProcessRecv(int32 numOfBytes)
 
 void Session::ProcessSend(int32 numOfBytes)
 {
-	P_Event();
 	_sendEvent._owner = nullptr;
 	_sendEvent.sendBuffers.clear();
-
+		_sendRegisterd.store(false);
 	if (numOfBytes == 0)
 	{
 		Disconnect(L"send 0");
 		return;
 	}
+
 	OnSend(numOfBytes);
 
+
+	//resend에서 문제 발생
+
 	{
-		P_Event("ProcessSendLock");
+		P_Event("SwapSendQueue")
 		WRITE_LOCK;
 		if (_sendQueue[QueueNumber].empty()) {
 			_sendRegisterd.store(false);
 			return;
 		}
+
 	}
-	P_Event("Resend")
-	//RegisterSend();
+	{
+		P_Event("Resend")
+		RegisterSend();
+	}
 }
 
 

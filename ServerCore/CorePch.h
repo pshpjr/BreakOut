@@ -1,5 +1,6 @@
 #pragma once
 
+#include "optick.h"
 #include "Types.h"
 #include "CoreMacro.h"
 #include "CoreTLS.h"
@@ -23,5 +24,5 @@ using namespace std;
 
 #include "Session.h"
 
-#include "optick.h"
+
 

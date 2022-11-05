@@ -47,7 +47,8 @@ void tick()
 	uint32 start = GetTickCount();
 	DM->Loop();
 	uint32 lap = GetTickCount() - start;
-	this_thread::sleep_for(chrono::milliseconds(200 - lap));
+	if(200-lap > 0)
+		this_thread::sleep_for(chrono::milliseconds(200 - lap));
 }
 
 

@@ -8,6 +8,7 @@
 
 void JobTimer::Reserve(uint64 tickAfter, weak_ptr<JobQueue> owner, JobRef job)
 {
+	P_Event()
 	const uint64 executeTick = ::GetTickCount64() + tickAfter;
 	JobData* jobData = ObjectPool<JobData>::Pop(owner, job);
 
@@ -35,21 +36,20 @@ void JobTimer::Distribute(uint64 now)
 
 			items.push_back(timerItem);
 			_items.pop();
-
 		}
 	}
-	// 종료 알림
-	_distributing.store(false);
+
 
 	for (TimerItem& item : items)
 	{
 		if (JobQueueRef owner = item.jobData->owner.lock())
-			owner->Push(item.jobData->job);
+			owner->Push(item.jobData->job, true);
 
 		ObjectPool<JobData>::Push(item.jobData);
 	}
+	// 종료 알림
 
-
+	_distributing.store(false);
 	
 }
 

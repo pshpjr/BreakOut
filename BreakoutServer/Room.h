@@ -40,11 +40,11 @@ public:
 	//unordered_set<GameSessionRef> _sessions;
 	unordered_map <string, GameSessionRef> _sessions;
 private:
-	int32 MAXPLAYER = 99;
+	int32 MAXPLAYER = 2;
 	uint32 playerCount = 0;
 	int32 roomNumber = 0;
 
-	USE_MANY_LOCKS(2); //1 : sessions 건드림, 2: movePkt, pktIdx 건드림
+	USE_MANY_LOCKS(2); //0 : sessions 건드림, 1: movePkt, pktIdx 건드림
 	state roomState = MATCHING;
 	Protocol::S_MOVE movePkt[2] = {};
 	int32 pktIdx = 0;

@@ -39,15 +39,20 @@
 	  Profile
 ---------------*/
 
-#define _USEPROIFILER ;
+#define USE_PROFILER ;
 
-#ifdef _USEPROIFILER
+#ifdef USE_PROFILER
 
 #define P_START OPTICK_FRAME("MainThread");
 #define P_THREAD(NAME) OPTICK_THREAD(##NAME);
 #define P_Event(NAME) OPTICK_EVENT(##NAME);
+#define P_TEST_START int32 tick = GetTickCount();
+#define P_TEST_END(time,string) if (GetTickCount() - tick > (time)) cout << (string) << endl;
+
 #else
 #define P_START 
 #define P_THREAD(NAME) 
-#define P_Event() 
+#define P_Event(NAME)
+#define P_TEST_START 
+#define P_TEST_END
 #endif

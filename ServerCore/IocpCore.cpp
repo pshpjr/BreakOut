@@ -29,7 +29,6 @@ bool IocpCore::Register(IocpObjectRef iocpObject)
 
 bool IocpCore::Dispatch(uint32 timeoutMs)
 {
-	P_Event()
 	DWORD numOfBytes = 0;
 	ULONG_PTR key = 0;
 
@@ -38,7 +37,6 @@ bool IocpCore::Dispatch(uint32 timeoutMs)
 	//key를 사용하지 않고, IocpEvent가 호출한곳의 SharedPtr을 가지고 있게 함. 
 	IocpEvent* iocpEvent = nullptr;
 
-	P_Event("IOCPWait")
 	if(::GetQueuedCompletionStatus(_iocpHandle, OUT & numOfBytes, OUT &key,OUT reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), timeoutMs))
 	{
 		IocpObjectRef iocpObject = iocpEvent->_owner;

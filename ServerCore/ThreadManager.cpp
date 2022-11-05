@@ -54,7 +54,6 @@ void ThreadManager::DestroyTLS()
 
 void ThreadManager::DoGlobalQueueWork()
 {
-	P_Event()
 	while (true)
 	{
 		uint64 now = GetTickCount64();

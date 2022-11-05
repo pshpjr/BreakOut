@@ -116,7 +116,7 @@ void Room::Broadcast(SendBufferRef buffer)
  */
 void Room::BroadcastData()
 {
-	P_Event();
+
 	int32 oldIndex = -1;
 	{
 		P_Event("SWAP Data");
@@ -125,11 +125,11 @@ void Room::BroadcastData()
 		pktIdx = pktIdx == 0 ? 1 : 0;
 	}
 	{
-		P_Event("BroadcastSendLock");
 		WRITE_LOCK_IDX(0);
+		auto buffer = ServerPacketHandler::MakeSendBuffer(movePkt[oldIndex]);
 		for (auto& session : _sessions)
 		{
-			session.second->Send(ServerPacketHandler::MakeSendBuffer(movePkt[oldIndex]));
+			session.second->Send(buffer);
 		}
 		movePkt[oldIndex].Clear();
 	}
@@ -182,6 +182,7 @@ void Room::PlayStart()
 void Room::RoomCheck()
 {
 	P_Event();
+	int32 tick = GetTickCount();
 	if (isFull() == false) {
 		DoTimer(200, &Room::RoomCheck);
 		return;
@@ -199,11 +200,12 @@ void Room::RoomCheck()
 			PlayStart();
 		}
 		break;
-	case Room::START:
+	case Room::START:  // NOLINT(bugprone-branch-clone)
 		break;
 	default:
 		break;
 	}
 
 	DoTimer(200, &Room::RoomCheck);
+	
 }

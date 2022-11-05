@@ -20,9 +20,3 @@ void ServerSession::OnRecvPacket(BYTE* buffer, int32 len)
 	ServerPacketHandler::HandlePacket(session, buffer, len);
 	return;
 }
-
-void ServerSession::OnSend(int32 len)
-{
-
-
-}

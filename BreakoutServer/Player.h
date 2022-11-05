@@ -8,3 +8,4 @@ class Player : public ServerSession
 public:
 	bool _ready = false;
 };
+ 
