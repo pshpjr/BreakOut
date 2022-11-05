@@ -110,16 +110,15 @@ void BreakoutPacketHandler::Handle_S_MOVE(ClientSessionRef session, BYTE* buffer
 	for(auto& i : tmp)
 	{
 		int32 index = GM->index[i.code()];
-		cout << index << endl;
-		if (i.onoff())
-			GM->_pongs[index]->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
-		else
-			GM->_pongs[index]->_control_block->setSpeed(0);
 
-		if (i.direction())
-			GM->_pongs[index]->_control_block->setVector({ -1,0 });
-		else
-			GM->_pongs[index]->_control_block->setVector({ 1,0 });
+		float speed = i.onoff() ? GM->CONTROLBLOCKSPEED : 0;
+		GM->_pongs[index]->_control_block->setSpeed(speed);
+
+
+		int XVecDirection = i.direction() ? -1 : 1;
+		GM->_pongs[index]->_control_block->setVector({ XVecDirection,0 });
+
+
 	}
 
 

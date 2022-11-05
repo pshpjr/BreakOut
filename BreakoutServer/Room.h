@@ -40,7 +40,7 @@ public:
 	//unordered_set<ServerSessionRef> _sessions;
 	unordered_set <PlayerRef> _players;
 private:
-	int32 MAXPLAYER = 99;
+	int32 MAXPLAYER = 1;
 	uint32 playerCount = 0;
 	int32 roomNumber = 0;
 

@@ -73,39 +73,6 @@ void Room::AddData(string key, bool dir, bool onOff)
 	input->set_onoff(onOff);
 }
 
-//void Room::BroadcastData(Protocol::S_MOVE data)
-//{
-//	const uint16 dataSize = static_cast<uint16> (data.ByteSizeLong());
-//	const uint16 PacketSize = dataSize + sizeof(PacketHeader);
-//
-//	auto sendBuffer = new char[PacketSize];
-//
-//
-//
-//	DWORD sendLen = 0;
-//	DWORD flags = 0;
-//	PacketHeader* header = reinterpret_cast<PacketHeader*>(sendBuffer);
-//	header->size = PacketSize;
-//	header->id = PACKET_TYPE::S_MOVE;
-//
-//	data.SerializeToArray(&header[1], dataSize);
-//	WSABUF wsaBuf;
-//	wsaBuf.buf = sendBuffer;
-//	wsaBuf.len = PacketSize;
-//
-//
-//	for (auto& session : _sessions)
-//	{
-//		SessionRef _session = session.second;
-//		if(WSASend(_session->GetSocket(), &wsaBuf, 1, &sendLen, flags, nullptr, nullptr) == SOCKET_ERROR)
-//		{
-//			int32 error = WSAGetLastError();
-//			if (error != WSA_IO_PENDING)
-//				ASSERT_CRASH("boo");
-//		}
-//	}
-//}
-
 void Room::Broadcast(SendBufferRef buffer)
 {
 	P_Event();
@@ -120,7 +87,9 @@ void Room::Broadcast(SendBufferRef buffer)
  */
 void Room::BroadcastData()
 {
+	unsigned int now = GetTickCount();
 
+	P_Event()
 	int32 oldIndex = -1;
 	{
 		P_Event("SWAP Data");
@@ -136,9 +105,12 @@ void Room::BroadcastData()
 			player->Send(buffer);
 		}
 		movePkt[oldIndex].Clear();
+
 	}
+	unsigned int gap = GetTickCount() - now;
+
 	if(GetState() == PLAYING)
-		DoTimer(50, &Room::BroadcastData);
+		DoTimer(45 - gap, &Room::BroadcastData);
 }
 
 
