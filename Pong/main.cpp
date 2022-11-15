@@ -1,23 +1,38 @@
 #include "pch.h"
 #include "functional"
+#include "Service.h"
+#include "Session.h"
+#include "ThreadManager.h"
+#include "fstream"
+#include <random>
+#include <string>
+#include "BreakoutPacketHandler.h"
+#include "DummyClient.h"
+class ServerSession;
+DummyClient* DM;
 
-
-
-/*TODO: 좌표 처리 정수로 변환*/
-
-
+bool noGUI = false;
+bool Exit = false;
+string key;
+ClientServiceRef _service;
+wstring ip = L"127.0.0.1";
+uint16 port = 12321;
 
 int WINDOWSIZE = 100;
-
 
 int32 SCREEN_WIDTH = 800;
 int32 SCREEN_HEIGHT = 600;
 
-GameManager GM;
+char sendData[] = "Hello World";
 
-bool noGUI = false;
+int tmp = 0;
 
-//박스는 항상 좌하단 좌표를 start로 넣을 것
+void HideCMD(bool isHide)
+{
+	HWND hWnd = GetForegroundWindow();
+	isHide ? ShowWindow(hWnd, SW_SHOW) : ShowWindow(hWnd, SW_HIDE);
+}
+
 
 void my_reshape(int w, int h) {
 	glViewport(0, 0, w, h);
@@ -29,64 +44,117 @@ void my_reshape(int w, int h) {
 	glLoadIdentity();
 }
 
-void GameInit()
+
+bool GameInit()
 {
-	int width = SCREEN_WIDTH / 3;
-	int mWidth = width / 7;
-	int mHeight = SCREEN_HEIGHT / 7;
+	GM = make_shared<Client>(SCREEN_WIDTH, SCREEN_HEIGHT,ip,port);
+
+	GM->noGUI(noGUI);
 
 
-	GM.AddPong(width, SCREEN_HEIGHT, width, 0);
-	GM._pongs[0]._isMyPlay = true;
+	return true;
+}
+void idle()
+{
+	glutPostRedisplay();
+}
 
-	for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			GM.AddPong(mWidth, mHeight, j * mWidth, i * mHeight);
-		}
-	}
-	for (int i = 0; i < 7; i++)
-	{
-		for (int j = 0; j < 7; j++)
-		{
-			GM.AddPong(mWidth, mHeight, j * mWidth + width * 2, i * mHeight, 'j', 'l');
-		}
-	}
-
-
-
-	for (auto& i : GM._pongs)
-	{
-		i.changeState(Pong::GAME_ACTIVE);
-	}
+void tick()
+{
+	GM->Tick();
+	this_thread::sleep_for(16.6ms);
 }
 
 void GLInit() {
-	SCREEN_HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
-	SCREEN_WIDTH = glutGet(GLUT_SCREEN_WIDTH);
+	SCREEN_HEIGHT = glutGet(GLUT_SCREEN_HEIGHT)/2;
+	SCREEN_WIDTH = glutGet(GLUT_SCREEN_WIDTH)/2;
+
+
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	glutCreateWindow("Pong Loader");
-	glutFullScreen();
+	glutInitWindowPosition(0, 0);
+	glutIdleFunc(idle);
+
 	glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, -1, 1);
 
 	glDisable(GL_LIGHTING);
+
+	glutCreateWindow("Breakout 99");
+	//glutFullScreen();
+	glutDisplayFunc(tick);
+	glutSetCursor(GLUT_CURSOR_NONE);
+
+}
+
+void ArgParseInit(int argc, char** argv)
+{
+	argparse::ArgumentParser program("Breakout");
+
+	program.add_argument("-noGUI")
+		.help("GUI Setting")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument("-d")
+		.help("Dummy client enable")
+		.default_value(false)
+		.implicit_value(true);
+
+	program.add_argument("-i")
+		.help("IP")
+		.default_value<std::string>(std::string{ "127.0.0.1" })
+		.required()
+		.nargs(1);
+
+	program.add_argument("-p")
+		.help("Port")
+		.default_value<string>(std::string{ "12321" })
+		.required()
+		.nargs(1);
+
+	try {
+		program.parse_args(argc, argv);
+	}
+	catch (const std::runtime_error& err) {
+		std::cerr << err.what() << std::endl;
+		std::cerr << program;
+		std::exit(1);
+	}
+
+	if(program["-noGUI"] == true)
+	{
+		noGUI = true;
+		cout << "noGUI Enabled" << endl;
+	}
+
+	string p = program.get("-p");
+	port = stoi(p);
+
+	string tmp = program.get<std::string>("-i");
+	ip.assign(tmp.begin(), tmp.end());
 }
 
 int main(int argc, char** argv) {
+	ArgParseInit(argc, argv);
+	//HideCMD(noGUI);
+
 	if (noGUI == false) {
 		glutInit(&argc, argv);
 		GLInit();
 	}
-	GameInit();
+	if (GameInit() == false)
+		return 0;
 
-	GM.noGUI(noGUI);
 
-	GM.Start();
 
+	glutMainLoop();
+
+
+
+
+	GThreadManager->Join();
 	return 0;
 }
 

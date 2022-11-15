@@ -1,0 +1,27 @@
+syntax = "proto3";
+package Protocol;
+
+message Player
+{
+	string code = 1;
+	string name = 2;
+	float startVector = 3;
+}
+
+message KeyInput
+{
+	bool onOff = 1;
+	bool direction = 2;
+}
+
+message KeyInputU
+{
+	string code =1;
+	bool onOff = 2;
+	bool direction = 3;
+}
+
+message GameState
+{
+	string code = 1;
+}

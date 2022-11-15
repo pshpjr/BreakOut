@@ -4,25 +4,58 @@
     <ClCompile Include="pch.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="Pong.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="Objects.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="GameManager.cpp">
+    <ClCompile Include="UiState.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Enum.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="Protocol.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="Struct.pb.cc">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="BreakoutPacketHandler.cpp">
+      <Filter>Main\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSession.cpp">
+      <Filter>Main\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Breakout.cpp">
+      <Filter>Main\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Main\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Main\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="DummySession.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyPacketHandler.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyClient.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyMain.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyPlayer.cpp">
+      <Filter>Dummy</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyService.cpp">
+      <Filter>Dummy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Pong.h">
-      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="Objects.h">
       <Filter>Main</Filter>
@@ -30,8 +63,44 @@
     <ClInclude Include="Macro.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="GameManager.h">
+    <ClInclude Include="UiState.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Enum.pb.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol.pb.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="Struct.pb.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="BreakoutPacketHandler.h">
+      <Filter>Main\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSession.h">
+      <Filter>Main\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Breakout.h">
+      <Filter>Main\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>Main\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="DummySession.h">
+      <Filter>Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyPacketHandler.h">
+      <Filter>Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyClient.h">
+      <Filter>Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyPlayer.h">
+      <Filter>Dummy</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyService.h">
+      <Filter>Dummy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -41,10 +110,30 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{eeaecc44-d1be-4164-94ea-06706754dc1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Protocol">
+      <UniqueIdentifier>{4b759e73-d0ee-4930-bf1d-016fa3ff4bbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main\Network">
+      <UniqueIdentifier>{74f5d48b-71a7-429e-b67e-96d8548c62ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main\Game">
+      <UniqueIdentifier>{6b8aa7ef-7ced-492f-95ce-699e5289206f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dummy">
+      <UniqueIdentifier>{32015c11-bb3a-4640-b4e6-d3828a47906c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt">
       <Filter>Utils</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Common\Protocol\Protocol.proto">
+      <Filter>Protocol</Filter>
+    </None>
+    <None Include="..\Common\Protocol\Struct.proto">
+      <Filter>Protocol</Filter>
+    </None>
   </ItemGroup>
 </Project>

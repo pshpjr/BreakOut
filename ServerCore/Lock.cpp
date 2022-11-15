@@ -41,6 +41,7 @@ void Lock::WriteLock(const char* name)
 
 void Lock::WriteUnlock(const char* name)
 {
+
 #if _DEBUG
 	GDeadLockProfiler->PopLock(name);
 #endif
@@ -56,6 +57,7 @@ void Lock::WriteUnlock(const char* name)
 
 void Lock::ReadLock(const char* name)
 {
+
 #if _DEBUG
 	GDeadLockProfiler->PushLock(name);
 #endif
@@ -88,6 +90,7 @@ void Lock::ReadLock(const char* name)
 
 void Lock::ReadUnlock(const char* name)
 {
+
 #if _DEBUG
 	GDeadLockProfiler->PopLock(name);
 #endif

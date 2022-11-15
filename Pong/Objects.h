@@ -180,8 +180,6 @@ private:
 	float _radius = 2;
 };
 
-//TODO: mapsize 변수 외부로 빼기
-//클래스 좀 이상함
 class ControlBlock : public Block, public Moveable { //컨트롤 박스는 로케이션이 좌하단. 위치는 start 사용
 public:
 	ControlBlock() :Block({},{},true), Moveable({0, 0}, {0, 0}, 0) {}
@@ -189,11 +187,6 @@ public:
 	void update() override
 	{
 		_start += _vector * _speed * _ratio;
-
-		if (_speed <= 0.1f)
-			_speed = 0;
-		else
-			_speed *= 0.85f;
 	}
 
 private:
