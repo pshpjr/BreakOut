@@ -1,6 +1,5 @@
 ﻿#include "pch.h"
 #include "ServerPacketHandler.h"
- 
 
 #include "BufferReader.h"
 #include "BufferWriter.h"
@@ -10,7 +9,7 @@
 void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, int32 len)
 {
 	P_Event()
-	ServerSessionRef gameSession = static_pointer_cast<ServerSession>(session);
+	GameSessionRef gameSession = static_pointer_cast<ServerSession>(session);
 
 	BufferReader br(buffer, len);
 
@@ -40,14 +39,14 @@ void ServerPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, i
 	}
 }
 
-void ServerPacketHandler::Handle_C_LOGIN(ServerSessionRef session, BYTE* buffer, int32 len)
+void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, int32 len)
 {
 	P_Event();
 	BYTE data = *buffer;
 	Protocol::C_LOGIN pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
-	session->_owner->_key = pkt.usercode();
+	session->_key = pkt.usercode();
 
 	Protocol::S_LOGIN loginOk;
 	loginOk.set_success(true);
@@ -55,21 +54,13 @@ void ServerPacketHandler::Handle_C_LOGIN(ServerSessionRef session, BYTE* buffer,
 	session->Send(buff);
 }
 
-void ServerPacketHandler::Handle_C_MACHING_GAME(ServerSessionRef session, BYTE* buffer, int32 len)
+void ServerPacketHandler::Handle_C_MACHING_GAME(GameSessionRef session, BYTE* buffer, int32 len)
 {
 	P_Event();
-	int roomNumber = GRoomManager.AddPlayer(session->_owner);
-
-	if (roomNumber < 0)
-		cout << "Server is full" << endl;
-
-	Protocol::S_MACHING_GAME pkt;
-	pkt.set_roomnumber(roomNumber);
-	session->Send(MakeSendBuffer(pkt));
-
+	GRoomManager->AddPlayer(session);
 }
 
-void ServerPacketHandler::Handle_C_CANCLE_GAME(ServerSessionRef session, BYTE* buffer, int32 len)
+void ServerPacketHandler::Handle_C_CANCLE_GAME(GameSessionRef session, BYTE* buffer, int32 len)
 {
 	P_Event();
 	Protocol::C_CANCLE_GAME pkt;
@@ -77,29 +68,28 @@ void ServerPacketHandler::Handle_C_CANCLE_GAME(ServerSessionRef session, BYTE* b
 
 	int32 roomNumber = pkt.roomnumber();
 
-	GRoomManager.RemovePlayer(session->_owner, roomNumber);
+	GRoomManager->RemovePlayer(session, roomNumber);
 }
 
-void ServerPacketHandler::Handle_C_READY(ServerSessionRef session, BYTE* buffer, int32 len)
+void ServerPacketHandler::Handle_C_READY(GameSessionRef session, BYTE* buffer, int32 len)
 {
-	P_Event();
 	Protocol::C_READY pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
-	session->_owner->_ready = true;
+	
+	GRoomManager->HandleReady(session, session->_roomNumber);
 }
 
-void ServerPacketHandler::Handle_C_MOVE(ServerSessionRef session, BYTE* buffer, int32 len)
+void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, int32 len)
 {
-		P_Event();
-		Protocol::C_MOVE pkt;
-		pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+	P_Event();
+	Protocol::C_MOVE pkt;
+	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
-		int32 roomN = pkt.roomnumber();
+	int32 roomN = pkt.roomnumber();
 
-		auto input = pkt.input();
-		bool dir = input.direction();
-		bool onOff = input.onoff();
+	auto input = pkt.input();
 
-		GRoomManager._rooms[roomN]->DoAsync(&Room::AddData, session->_owner->_key, dir, onOff);
+
+	GRoomManager->HandleInput(session, session->_roomNumber,input);
 }

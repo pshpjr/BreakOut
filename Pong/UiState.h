@@ -101,6 +101,20 @@ private:
 
 };
 
+class Dead : public UIState
+{
+public:
+	static Dead* instance()
+	{
+		static Dead* instance = new Dead();
+		return instance;
+	}
+	int32 rank;
+
+	void Render(Client* GM) override;
+	void HandleInput(Client* GM) override;
+};
+
 class Win : public UIState
 {
 public:

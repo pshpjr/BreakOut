@@ -7,7 +7,6 @@ class Breakout;
 class Client;
 
 
-
 const int KEY_LENGTH = 5;
 
 enum GameState
@@ -112,4 +111,3 @@ inline string GetKey()
 
 	return key;
 }
-

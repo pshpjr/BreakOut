@@ -3,135 +3,195 @@
 
 #include <random>
 
+#include "Player.h"
 #include "ServerPacketHandler.h"
 
-int Room::AddPlayer(PlayerRef player)
+void Room::AddSession(GameSessionRef session)
 {
-	WRITE_LOCK_IDX(0);
 	if (playerCount == MAXPLAYER)
-		return false;
+	{
+		if (roomNumber == 99)
+		{
+			cout << "server Is Full" << endl;
+			return;
+		}
+		GRoomManager->DoAsync(&RoomManager::AddPlayer, session, roomNumber+1);
+		return;
+	}
+
 	ASSERT_CRASH(playerCount <= MAXPLAYER);
-	playerCount++;
-	_players.insert (player);
-	player->_roomNumber = roomNumber;
+	_players[playerCount].SetSession(session);
+	session->_roomNumber = roomNumber;
+	++playerCount;
+
+	Protocol::S_MACHING_GAME pkt;
+	pkt.set_roomnumber(roomNumber);
+	session->Send(ServerPacketHandler::MakeSendBuffer(pkt));
+}
+
+bool Room::RemoveSession(GameSessionRef session)
+{
+
+	auto player = FindPlayer(session);
+	if (player == nullptr)
+		return false;
+
+	player->ClearSession();
+
+	if (isPlay() == true)
+	{
+		player->setDead();
+	}
+	else
+	{
+		playerCount--;
+	}
 
 	return true;
 }
 
-bool Room::RemovePlayer(PlayerRef player)
+Player* Room::FindPlayer(GameSessionRef session)
 {
-	WRITE_LOCK_IDX(0);
-	ASSERT_CRASH(playerCount >0);
-	playerCount--;
-	_players.erase(player);
-	player->_roomNumber = -1;
-	return true;
+	Player* p = nullptr;
+	for (auto& player : _players)
+	{
+		if (player.isEqualSession(session)) {
+			p = &player;
+		}
+	}
+	return p;
 }
 
 void Room::Clear()
 {
-	roomState = ENDs;
 	for (auto& p : _players)
 	{
-		p->LeaveRoom();
+		p.ResetBreakout();
+		p.ClearSession();
+		p.ClearReady();
 	}
-	_players.clear();
+
+	playerCount = 0;
 	roomState = state::MATCHING;
+
+	DoTimer(200, &Room::RoomCheck);
 }
 
 bool Room::isFull()
 {
-	READ_LOCK_IDX(0);
 	return playerCount == MAXPLAYER;
 }
 
 bool Room::isReady()
 {
-
-	if (roomState != state::WAIT_PLAYER)
+	if (isFull() == false)
 		return false;
 
-	
-	for (auto& session : _players)
+	if (roomState == state::START)
+		return false;
+
+	for (auto& p : _players)
 	{
-		if (session->_ready == false)
+		if (p.isReady() == false)
 			return false;
 	}
 	return true;
 }
 
-
-void Room::AddData(string key, bool dir, bool onOff)
+void Room::Send(SendBufferRef buffer, GameSessionRef session)
 {
-	P_Event();
-	WRITE_LOCK_IDX(1);
-	auto input = movePkt[pktIdx].add_inputs();
+	session->Send(buffer);
+}
 
+void Room::HandleReady(GameSessionRef session)
+{
+	if (isPlay() == false)
+		session->Disconnect(L"Wrong Room");
 
-	input->set_code(key);
-	input->set_direction(dir);
-	input->set_onoff(onOff);
+	auto player = FindPlayer(session);
+	if (player == nullptr)
+		return;
+
+	player->SetReadyTrue();
+}
+
+void Room::HandleInput(GameSessionRef session, Protocol::KeyInput input)
+{
+	if (isPlay() == false)
+		session->Disconnect(L"Wrong Room");
+	auto player = FindPlayer(session);
+	if (player == nullptr)
+		return;
+
+	player->HandleInput(input);
 }
 
 void Room::Broadcast(SendBufferRef buffer)
 {
 	P_Event();
-	for(auto& session : _players)
+	for(auto& p : _players)
 	{
-		session->Send(buffer);
+		p.Send(buffer);
 	}
 }
-/*HACK: Broadcast는 중첩 실행되지 않는다고 가정함(한 방의 Broadcast는 충분한 간격을 두고 실행)
- * 잡 방식 변경시 생각해봐야 함
- *
- */
-void Room::BroadcastData()
-{
-	unsigned int now = GetTickCount();
 
-	P_Event()
-	int32 oldIndex = -1;
-	{
-		P_Event("SWAP Data");
-		WRITE_LOCK_IDX(1);
-		oldIndex = pktIdx;
-		pktIdx = pktIdx == 0 ? 1 : 0;
+void Room::BroadcastState()
+{
+	//for (auto& p : _players)
+	//{
+	//	movePkt.ad
+	//}
+	DoTimer(200, &Room::BroadcastState);
+}
+
+void Room::RoomCheck()
+{
+	P_Event();
+
+	if (isFull() == false) {
+		DoTimer(200, &Room::RoomCheck);
+		return;
 	}
+
+	switch (GetState())
 	{
-		WRITE_LOCK_IDX(0);
-		auto buffer = ServerPacketHandler::MakeSendBuffer(movePkt[oldIndex]);
-		for (auto& player : _players)
+	case Room::MATCHING:
+
+		WaitPlayer();
+		break;
+	case Room::READY:
+		if (isReady())
 		{
-			player->Send(buffer);
+			PlayStart();
+			return;
 		}
-		movePkt[oldIndex].Clear();
-
+		break;
+	case Room::START:  // NOLINT(bugprone-branch-clone)
+		break;
+	case Room::ENDs:
+		CRASH("가능함?")
+		break;
+	default:
+		break;
 	}
-	unsigned int gap = GetTickCount() - now;
 
-	if(GetState() == PLAYING)
-		DoTimer(45 - gap, &Room::BroadcastData);
+	DoTimer(200, &Room::RoomCheck);
+
 }
-
-
-void Room::Send(SendBufferRef buffer, PlayerRef player)
-{
-	player->Send(buffer);
-}
-
 void Room::WaitPlayer()
 {
-
-	{ WRITE_LOCK_IDX(0); roomState = WAIT_PLAYER; }
+	cout << "room Ready : "<<roomNumber  << endl;
+	roomState = READY;
 
 	Protocol::S_ENTER_GAME pkt;
 
-	std::mt19937 gen(GRoomManager.rd());
+	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> dis(-1, 1);
-	for (auto& player : _players)
+
+	for (auto& session : _players)
 	{
 		auto a = pkt.add_players();
-		a->set_code(player->_key);
+		a->set_code(session.GetKey());
 		a->set_name("Test");
 		float data = dis(gen);
 		a->set_startvector(data);
@@ -145,43 +205,70 @@ void Room::WaitPlayer()
 
 void Room::PlayStart()
 {
-	{ WRITE_LOCK_IDX(0); roomState = state::PLAYING; }
-
-	cout << "Room " + std::to_string(roomNumber) + " start" << endl;
+	roomState = state::START;
+	std::cout << "Room " + std::to_string(roomNumber) + " start" << endl;
 
 	Protocol::S_START pkt;
 	Broadcast(ServerPacketHandler::MakeSendBuffer(pkt));
 
-	DoTimer(50, &Room::BroadcastData);
+	DoTimer(50, &Room::Update);
+	DoTimer(200, &Room::BroadcastState);
+}
+void Room::PlayEnd()
+{
+	cout << "PlayEnd : "<<roomNumber << endl;
+	roomState = state::ENDs;
+
+	Clear();
 }
 
-void Room::RoomCheck()
+void Room::Update()
 {
-	P_Event();
-	int32 tick = GetTickCount();
-	if (isFull() == false) {
-		DoTimer(200, &Room::RoomCheck);
+	if (isPlay() == false)
+		return;
+
+	//소멸자 호출 막으려고 포인터 사용함
+	vector<Player*> dead;
+	for (auto& p : _players)
+	{
+		p.Update();
+
+		if (p.isDead())
+			dead.push_back(&p); // 여기서 깊은 복사 안 일어나서 그런 것 같기도
+	}
+
+	for (auto& p : dead)
+	{
+		p->SendDead(playerCount+1);
+	}
+
+	playerCount -= dead.size();
+
+	if (playerCount <= 1) {
+		cout << "MakeWinner" << endl;
+		roomState = ENDs;
+		MakeWinner();
 		return;
 	}
 
-	switch (GetState())
+	DoTimer(50, &Room::Update);
+}
+
+void Room::MakeWinner()
+{
+	Player* winner = nullptr;
+	for (auto& p : _players)
 	{
-	case Room::MATCHING:
-		cout << "room Ready" << endl;
-		WaitPlayer();
-		break;
-	case Room::WAIT_PLAYER:
-		if (isReady())
-		{
-			PlayStart();
-		}
-		break;
-	case Room::PLAYING:  // NOLINT(bugprone-branch-clone)
-		break;
-	default:
-		break;
+		if (p.isDead() == false)
+			winner = &p;
 	}
 
-	DoTimer(200, &Room::RoomCheck);
-	
+	if (winner != nullptr)
+		winner->SendWin();
+
+	PlayEnd();
 }
+
+
+
+

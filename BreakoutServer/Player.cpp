@@ -1,12 +1,31 @@
 ﻿#include "pch.h"
 #include "Player.h"
-
-#include <utility>
-
-void Player::Send(SendBufferRef buffer) const
+#include "ServerPacketHandler.h"
+void Player::Update()
 {
-	if(_connected == false)
-		return;
+	_breakout.Update();
+}
 
-	_session->Send(std::move(buffer));
+void Player::ResetBreakout()
+{
+	_breakout.Reset();
+}
+
+void Player::HandleInput(Protocol::KeyInput input)
+{
+	
+}
+
+void Player::SendDead(int32 rank)
+{
+	Protocol::S_END pkt;
+
+	pkt.set_rank(rank);
+
+	Send(ServerPacketHandler::MakeSendBuffer(pkt));
+}
+
+void Player::SendWin()
+{
+	SendDead(1);
 }

@@ -10,7 +10,6 @@ void DummyPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, in
 	BufferReader br(buffer, len);
 
 	PacketHeader header;
-
 	br >> header;
 
 	switch (header.id)
@@ -33,6 +32,9 @@ void DummyPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer, in
 	case S_MOVE:
 		Handle_S_MOVE(_session, buffer, len);
 		break;
+	case S_END:
+		Handle_S_END(_session, buffer, len);
+		break;
 	default:
 		CRASH("invalid header id")
 	}
@@ -46,9 +48,6 @@ void DummyPacketHandler::Handle_S_LOGIN(DummySessionRef session, BYTE* buffer, i
 		ASSERT_CRASH("cannot login");
 
 	session->_owner->_state = LOBBY;
-	Protocol::C_MACHING_GAME pkt;
-	SendBufferRef sb = MakeSendBuffer(pkt);
-	session->Send(sb);
 }
 
 void DummyPacketHandler::Handle_S_MACHING_GAME(DummySessionRef session, BYTE* buffer, int32 len)
@@ -73,6 +72,8 @@ void DummyPacketHandler::Handle_S_ENTER_GAME(DummySessionRef session, BYTE* buff
 	session->_owner->_state = GAMEREADY;
 
 	Protocol::C_READY pkt;
+	pkt.set_roomnumber(Rpkt.roomnumber());
+
 	SendBufferRef sb = MakeSendBuffer(pkt);
 	session->Send(sb);
 }
@@ -86,4 +87,11 @@ void DummyPacketHandler::Handle_S_MOVE(DummySessionRef session, BYTE* buffer, in
 {
 
 }
+
+void DummyPacketHandler::Handle_S_END(DummySessionRef session, BYTE* buffer, int32 len)
+{
+	session->_owner->_state = LOBBY;
+}
+
+
 

@@ -20,3 +20,8 @@ message KeyInputU
 	bool onOff = 2;
 	bool direction = 3;
 }
+
+message GameState
+{
+	string code = 1;
+}

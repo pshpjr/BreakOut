@@ -34,6 +34,9 @@ void BreakoutPacketHandler::HandlePacket(PacketSessionRef session, BYTE* buffer,
 	case S_MOVE:
 		Handle_S_MOVE(_session, buffer, len);
 		break;
+	case S_END:
+		Handle_S_END(_session, buffer, len);
+		break;
 	default:
 		CRASH("invalid header id")
 	}
@@ -110,17 +113,28 @@ void BreakoutPacketHandler::Handle_S_MOVE(ClientSessionRef session, BYTE* buffer
 	for(auto& i : tmp)
 	{
 		int32 index = GM->index[i.code()];
+		cout << index << endl;
+		if (i.onoff())
+			GM->_pongs[index]->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
+		else
+			GM->_pongs[index]->_control_block->setSpeed(0);
 
-		float speed = i.onoff() ? GM->CONTROLBLOCKSPEED : 0;
-		GM->_pongs[index]->_control_block->setSpeed(speed);
-
-
-		int XVecDirection = i.direction() ? -1 : 1;
-		GM->_pongs[index]->_control_block->setVector({ XVecDirection,0 });
-
-
+		if (i.direction())
+			GM->_pongs[index]->_control_block->setVector({ -1,0 });
+		else
+			GM->_pongs[index]->_control_block->setVector({ 1,0 });
 	}
 
 
+}
+
+void BreakoutPacketHandler::Handle_S_END(ClientSessionRef session, BYTE* buffer, int32 len)
+{
+	Protocol::S_END pkt;
+	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+
+	Dead::instance()->rank = pkt.rank();
+	cout << Dead::instance()->rank << endl;
+	GM->ChangeState(Dead::instance());
 }
 

@@ -39,7 +39,7 @@
 	  Profile
 ---------------*/
 
-#
+#define USE_PROFILER ;
 
 #ifdef USE_PROFILER
 
@@ -56,3 +56,6 @@
 #define P_TEST_START 
 #define P_TEST_END
 #endif
+
+
+#define SAFE_DELETE(var)    { delete (var); (var) = nullptr; }

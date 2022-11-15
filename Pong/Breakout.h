@@ -1,5 +1,6 @@
 #pragma once
 #include "Macro.h"
+#include "Objects.h"
 class Moveable;
 class ControlBlock;
 class Ball;

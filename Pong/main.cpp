@@ -66,8 +66,10 @@ void tick()
 }
 
 void GLInit() {
-	SCREEN_HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
-	SCREEN_WIDTH = glutGet(GLUT_SCREEN_WIDTH);
+	SCREEN_HEIGHT = glutGet(GLUT_SCREEN_HEIGHT)/2;
+	SCREEN_WIDTH = glutGet(GLUT_SCREEN_WIDTH)/2;
+
+
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -80,7 +82,7 @@ void GLInit() {
 	glDisable(GL_LIGHTING);
 
 	glutCreateWindow("Breakout 99");
-	glutFullScreen();
+	//glutFullScreen();
 	glutDisplayFunc(tick);
 	glutSetCursor(GLUT_CURSOR_NONE);
 

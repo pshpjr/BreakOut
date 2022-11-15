@@ -14,5 +14,9 @@ public:
 	virtual void OnDisconnected() sealed;
 	virtual void OnRecvPacket(BYTE* buffer, int32 len) sealed;
 
-	PlayerRef _owner = nullptr;
+	void LeaveRoom() { _roomNumber = -1; }
+	void Clear() { _key = ""; _roomNumber = -1; }
+
+	string _key;
+	int32 _roomNumber = -1;
 };

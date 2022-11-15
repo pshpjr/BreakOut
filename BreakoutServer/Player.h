@@ -1,43 +1,34 @@
 ﻿#pragma once
-#include "Macro.h"
-#include "ServerSession.h"
-
-struct vec
-{
-	float x;
-	float y;
-};
-
-struct PlayerState
-{
-	int life = 0;
-	vec ballVec = {};
-	vec ballLoc = {};
-	vec CBLoc = {};
-
-};
-
-class Player : public ServerSession
+#include "pch.h"
+#include "Breakout.h"
+class Player
 {
 public:
-	Player(IocpObjectRef ref) { _session = static_pointer_cast<ServerSession>(ref); _connected = true; }
-	~Player() { cout << "~player" << endl; }
 
-	void LeaveRoom() { _ready = false; _roomNumber = -1; _state = {}; }
-	void clear() { _ready = false; _state = {}; _session = nullptr; _connected = false; }
-	void Send(SendBufferRef buffer) const;
+	void SetSession(ServerSessionRef session) { _session = session; }
+	void ClearSession() { if (_session == nullptr) return ;  _session->LeaveRoom();  _session = nullptr; }
+	void ClearReady() { _ready = false; }
+	void SetReadyTrue() { if (_ready) std::cout << "already True" << endl; _ready = true; }
 	bool isReady() { return _ready; }
-	bool isAlive() { return _state.life > 0;}
-
-public:
-	bool _connected = false;
-	PlayerState _state = {};
+	string GetKey() { return _session->_key; }
+	bool isDead() { return _breakout.isDead(); }
+	void setDead() { _breakout.SetDead(); }
 
 
-	string _key;
-	ServerSessionRef _session = nullptr;
+	void Send(SendBufferRef buffer) { if (_session == nullptr) return;  _session->Send(buffer); }
+	void Update();
+	void ResetBreakout();
+	void HandleInput(Protocol::KeyInput input);
+
+	void SendDead(int32 rank);
+	void SendWin();
+	
+
+
+	bool isEqualSession(ServerSessionRef other) { return other == _session; }
+private:
+	Breakout _breakout;
+	ServerSessionRef _session;
 
 	bool _ready = false;
-	int _roomNumber = -1;
 };
- 

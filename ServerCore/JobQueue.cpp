@@ -43,8 +43,10 @@ void JobQueue::Execute()
 
 
 		const int32 jobCount = static_cast<int32>(jobs.size());
-		for (int32 i = 0; i < jobCount; i++)
-			jobs[i]->Execute();
+		for(auto& job : jobs)
+		{
+			job->Execute();
+		}
 
 		// 일감 없으면 종료
 		if (_jobCount.fetch_sub(jobCount) == jobCount)

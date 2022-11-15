@@ -5,31 +5,36 @@
 #include "Protocol.pb.h"
 #include "ServerPacketHandler.h"
 
-RoomManager GRoomManager;
+shared_ptr<RoomManager> GRoomManager = MakeShared<RoomManager>();
 
-int RoomManager::AddPlayer(PlayerRef p)
+void RoomManager::Init()
 {
-	WRITE_LOCK;
-	for(int i = 0; i<100;i++)
+	int t = 0;
+	for (auto& i :_rooms)
 	{
-		if(_rooms[i]->isPlay())
-			continue;
-		if (_rooms[i]->isFull() == false)
-		{
-			_rooms[i]->AddPlayer(p);
-			return i;
-		}
-
-
+		i->DoTimer(t, &Room::RoomCheck);
+		t += 15;
 	}
-	
-	return -1;
 }
 
-bool RoomManager::RemovePlayer(PlayerRef p,int roomNumber)
+void RoomManager::AddPlayer(GameSessionRef session, int roomNumber)
 {
-	WRITE_LOCK;
-	return _rooms[roomNumber]->RemovePlayer(p);
+	_rooms[roomNumber]->DoAsync(&Room::AddSession, session);
+}
+
+void RoomManager::RemovePlayer(GameSessionRef session,int roomNumber)
+{
+	_rooms[roomNumber]->DoAsync(&Room::RemoveSession, session);
+}
+
+void RoomManager::HandleReady(GameSessionRef session, int roomNumber)
+{
+	_rooms[roomNumber]->DoAsync(&Room::HandleReady, session);
+}
+
+void RoomManager::HandleInput(GameSessionRef session, int roomNumber, Protocol::KeyInput input)
+{
+	_rooms[roomNumber]->DoAsync(&Room::HandleInput, session,input);
 }
 
 

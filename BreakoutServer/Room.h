@@ -1,52 +1,61 @@
 ﻿#pragma once
 #include "pch.h"
+#include "Player.h"
 
-
+#include <random>
 class Room : public JobQueue
 {
-	//TODO: 승자 판정 후 나간 Player들은 소멸자 호출되는지 확인
-
-public:
-	Room(int32 roomNumber):roomNumber(roomNumber) {  }
 	enum state
 	{
 		MATCHING,
-		WAIT_PLAYER,
-		PLAYING,
+		READY,
+		START,
 		ENDs
 	};
 
-	int AddPlayer(PlayerRef player);
-	bool RemovePlayer(PlayerRef player);
-	
+	enum { MAXPLAYER = 99 };
+
+public:
+
+	Room(int32 roomNumber) :roomNumber(roomNumber) { _players.resize(MAXPLAYER); }
+
+	void AddSession(GameSessionRef session);
+	bool RemoveSession(GameSessionRef session);
+	void LeaveRoom(GameSessionRef session);
 	void Clear();
 	bool isFull();
 	bool isReady();
-	state GetState() { READ_LOCK; return roomState; }
+	state GetState() { return roomState; }
+	bool isPlay() { return (roomState == state::START || roomState == state::READY); }
 
-	void AddData(string key, bool dir, bool onOff);
-	void BroadcastData();
-	//void BroadcastData(Protocol::S_MOVE data);
+	void BroadcastState();
 	void Broadcast(SendBufferRef buffer);
-	void Send(SendBufferRef buffer, PlayerRef session);
-	int PlayersCount() { READ_LOCK; return playerCount; }
-	bool isPlay() {return (roomState == state::PLAYING ||roomState ==  state::WAIT_PLAYER); }
-	void WaitPlayer();
-	void PlayStart();
+	void Send(SendBufferRef buffer, GameSessionRef session);
+
+	void HandleReady(GameSessionRef session);
+	void HandleInput(GameSessionRef session,Protocol::KeyInput input);
 
 	void RoomCheck();
+	void WaitPlayer();
+	void PlayStart();
+	void PlayEnd();
+	void Update();
 
+	void MakeWinner();
 
-	//unordered_set<ServerSessionRef> _sessions;
-	unordered_set <PlayerRef> _players;
 private:
-	int32 MAXPLAYER = 1;
-	uint32 playerCount = 0;
-	int32 roomNumber = 0;
+	std::random_device rd;
+	Player* FindPlayer(GameSessionRef session);
 
-	USE_MANY_LOCKS(2); //0 : sessions 건드림, 1: movePkt, pktIdx 건드림
-	state roomState = state::MATCHING;
-	Protocol::S_MOVE movePkt[2] = {};
-	int32 pktIdx = 0;
+	int32 roomNumber = 0;
+	uint32 playerCount = 0;
+
+	unordered_map<string, int> _keyToIndex;
+
+	Vector<Player> _players;
+
+	state roomState = MATCHING;
+	Protocol::S_MOVE movePkt;
+
 };
 using RoomRef = shared_ptr<Room>;

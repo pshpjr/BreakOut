@@ -30,7 +30,6 @@ DummyClient::DummyClient(wstring ip, int port,int count = 98) : _ip(ip), _port(p
 
 void DummyClient::Loop()
 {
-
 	Set<SessionRef>& s = _service->getSessions();
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 3);
@@ -40,24 +39,42 @@ void DummyClient::Loop()
 		int data = dis(gen);
 		if(!data)
 			continue;
+		if(ses->IsConnected() ==false)
+			continue;
 		DummySessionRef session = static_pointer_cast<DummySession>(ses);
 
-		if(session->_owner->_state == PLAYING)
+		switch(session->_owner->_state)
 		{
-			Protocol::KeyInput* key = new Protocol::KeyInput;
-			Protocol::C_MOVE pkt;
+			case LOBBY:
+			{
+				Protocol::C_MACHING_GAME pkt;
+				SendBufferRef sb = DummyPacketHandler::MakeSendBuffer(pkt);
+				session->Send(sb);
 
-			key->set_direction(rand() % 2);
-			key->set_onoff(session->_owner->onOff);
+				break;
+			}
+			case PLAYING:
+			{
+				Protocol::KeyInput* key = new Protocol::KeyInput;
+				Protocol::C_MOVE pkt;
 
-			session->_owner->onOff = !session->_owner->onOff;
+				key->set_direction(rand() % 2);
+				key->set_onoff(session->_owner->onOff);
 
-			pkt.set_allocated_input(key);
-			pkt.set_roomnumber(session->_owner->roomNumber);
-			SendBufferRef buffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
+				session->_owner->onOff = !session->_owner->onOff;
 
-			session->Send(buffer);
+				pkt.set_allocated_input(key);
+				pkt.set_roomnumber(session->_owner->roomNumber);
+				SendBufferRef buffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
+
+				session->Send(buffer);
+
+				break;
+			}
+
 		}
+
+
 	}
 }
 

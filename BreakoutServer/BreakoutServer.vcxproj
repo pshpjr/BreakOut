@@ -187,6 +187,7 @@
     </ClCompile>
     <ClCompile Include="Breakout.cpp" />
     <ClCompile Include="BreakoutServer.cpp" />
+    <ClCompile Include="Objects.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="ServerSession.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="..\Pong\Protocol.pb.h" />
     <ClInclude Include="..\Pong\Struct.pb.h" />
     <ClInclude Include="Breakout.h" />
+    <ClInclude Include="Objects.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="ServerSession.h" />

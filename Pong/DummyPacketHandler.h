@@ -17,6 +17,7 @@ public:
 	static void Handle_S_ENTER_GAME(DummySessionRef session, BYTE* buffer, int32 len);
 	static void Handle_S_START(DummySessionRef session, BYTE* buffer, int32 len);
 	static void Handle_S_MOVE(DummySessionRef session, BYTE* buffer, int32 len);
+	static void Handle_S_END(DummySessionRef session, BYTE* buffer, int32 len);
 
 private:
 

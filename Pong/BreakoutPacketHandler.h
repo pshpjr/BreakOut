@@ -14,7 +14,8 @@ enum : uint16
 	C_READY,
 	S_START,
 	C_MOVE,
-	S_MOVE
+	S_MOVE,
+	S_END
 };
 
 class BreakoutPacketHandler
@@ -34,6 +35,7 @@ public:
 	static void Handle_S_ENTER_GAMET(ClientSessionRef session, BYTE* buffer, int32 len);
 	static void Handle_S_START(ClientSessionRef session, BYTE* buffer, int32 len);
 	static void Handle_S_MOVE(ClientSessionRef session, BYTE* buffer, int32 len);
+	static void Handle_S_END(ClientSessionRef session, BYTE* buffer, int32 len);
 
 private:
 	  

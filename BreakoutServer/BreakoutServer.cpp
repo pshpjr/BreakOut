@@ -97,12 +97,7 @@ int main(int argc, char** argv)
 	int time = 0;
 
 	//GRoomManager._rooms[0]->DoTimer(15, &Room::RoomCheck);
-	for(auto& i :GRoomManager._rooms)
-	{
-		i->DoTimer(time,&Room::RoomCheck);
-		time+=15;
-	}
-
+	GRoomManager->Init();
 
 	int32 Lcout = 0;
 	while (true)

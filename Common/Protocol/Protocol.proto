@@ -49,7 +49,7 @@ message S_ENTER_GAME
 //정보 수신 후 초기화 완료했음을 알림
 message C_READY
 {
-
+	int32 roomNumber = 1;
 }
 //게임 동시에 시작하기 위한 패킷
 message S_START
@@ -68,4 +68,9 @@ message C_MOVE
 message S_MOVE
 {
 	repeated KeyInputU inputs = 2;
+}
+
+message S_END
+{
+	int32 rank = 1;
 }

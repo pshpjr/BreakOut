@@ -1,20 +1,20 @@
 #include "pch.h"
 #include "ServerSession.h"
-
-#include "Player.h"
 #include "RoomManager.h"
 #include "ServerPacketHandler.h"
 
 
 void ServerSession::OnConnected()
 {
-	_owner = make_shared<Player>(shared_from_this());
+	
 }
 
 void ServerSession::OnDisconnected()
 {
-	_owner->clear();
-	_owner = nullptr;
+	if(_roomNumber == -1)
+		return;
+
+	GRoomManager->DoAsync(&RoomManager::RemovePlayer, static_pointer_cast<ServerSession>(shared_from_this()), _roomNumber);
 }
 
 void ServerSession::OnRecvPacket(BYTE* buffer, int32 len)

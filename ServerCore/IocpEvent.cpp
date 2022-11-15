@@ -1,9 +1,13 @@
 #include "pch.h"
 #include "IocpEvent.h"
 
-IocpEvent::IocpEvent(EventType type): _eventType(type)
+/*--------------
+	IocpEvent
+---------------*/
+
+IocpEvent::IocpEvent(EventType type) : _eventType(type)
 {
-	IocpEvent::Init();
+	Init();
 }
 
 void IocpEvent::Init()
@@ -14,4 +18,3 @@ void IocpEvent::Init()
 	OVERLAPPED::Offset = 0;
 	OVERLAPPED::OffsetHigh = 0;
 }
-

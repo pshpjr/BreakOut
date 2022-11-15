@@ -85,6 +85,11 @@ void Matching::HandleInput(Client* GM)
 {
 	if (isKeyPressing('S'))
 	{
+		Protocol::C_CANCLE_GAME pkt;
+		pkt.set_roomnumber(GM->_roomNumber);
+		GM->_service->Broadcast(BreakoutPacketHandler::MakeSendBuffer(pkt));
+
+
 		GM->ChangeState(Lobby::instance());
 	}
 
@@ -221,6 +226,32 @@ void Playing::HandleInput(Client* GM)
 	{
 		cout << "Win!!" << endl;
 		GM->ChangeState(Win::instance());
+	}
+}
+
+void Dead::Render(Client* GM)
+{
+	UIState::Render(GM);
+	drawText(std::to_string(rank) + " / 99!!", GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	
+
+	for (auto& i : GM->_pongs)
+	{
+		i->Render();
+	}
+}
+
+void Dead::HandleInput(Client* GM)
+{
+	if (isKeyPressing(VK_SPACE))
+	{
+		for (auto i : GM->_pongs)
+		{
+			i->Reset();
+		}
+		cout << "Goto Lobby" << endl;
+		GM->ChangeState(Lobby::instance());
+		Sleep(300);
 	}
 }
 
