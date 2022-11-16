@@ -67,7 +67,7 @@ message C_MOVE
 //여기서 id는 서버쪽 배열 인덱스번호
 message S_MOVE
 {
-	repeated KeyInputU inputs = 2;
+	repeated StateU inputs = 1;
 }
 
 message S_END

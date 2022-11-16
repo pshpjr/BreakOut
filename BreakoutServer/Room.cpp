@@ -3,6 +3,7 @@
 
 #include <random>
 
+#include "GlobalQueue.h"
 #include "Player.h"
 #include "ServerPacketHandler.h"
 
@@ -131,16 +132,17 @@ void Room::Broadcast(SendBufferRef buffer)
 	P_Event();
 	for(auto& p : _players)
 	{
+
 		p.Send(buffer);
 	}
 }
 
 void Room::BroadcastState()
 {
-	//for (auto& p : _players)
-	//{
-	//	movePkt.ad
-	//}
+	for (auto& p : _players)
+	{
+		auto input = movePkt.add_inputs();
+	}
 	DoTimer(200, &Room::BroadcastState);
 }
 

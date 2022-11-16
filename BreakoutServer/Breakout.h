@@ -1,5 +1,6 @@
 #pragma once
 #include "Macro.h"
+#include "Objects.h"
 
 class Moveable;
 class ControlBlock;
@@ -68,10 +69,10 @@ public:
 
 	void Clear();
 
-
 	void changeState(PlayerState state);
 	void SetDead() { _state = DEAD; }
-
+	void SetControlBlockMovable(bool state)  { int speed = state ? CONTROLBLOCKSPEED : 0; _control_block->setSpeed(speed); }
+	void SetControlBlockVector(bool direction) { int dir = direction ? -1 : 1; }//todo: 방향 상수로 변경 
 	bool isDead() const;
 
 private:
@@ -107,7 +108,7 @@ private:
 	int32 _height;
 	int32 _viewportX = 0, _viewportY = 0;
 
-	const int32 baseWidth = 640;
+	constexpr  int32 baseWidth = 640;
 	const int32 baseHeight = 1080;
 
 	const float MAPLEFT, MAPRIGHT, MAPBOTTOM, MAPTOP;

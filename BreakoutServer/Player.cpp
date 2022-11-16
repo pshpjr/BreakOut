@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 #include "Player.h"
+
+#include "Objects.h"
 #include "ServerPacketHandler.h"
 void Player::Update()
 {
@@ -13,7 +15,12 @@ void Player::ResetBreakout()
 
 void Player::HandleInput(Protocol::KeyInput input)
 {
-	
+	bool direction = input.direction();
+	bool onOff = input.onoff();
+
+	_breakout.SetControlBlockMovable(onOff);
+
+	_breakout.SetControlBlockVector(direction);
 }
 
 void Player::SendDead(int32 rank)
