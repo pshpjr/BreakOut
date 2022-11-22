@@ -14,6 +14,7 @@ enum GameState
 	PLAYING,
 	INIT,
 	MATCHING,
+	INROOM,
 	GAMEREADY,
 	LOBBY,
 	WIN,

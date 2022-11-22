@@ -76,8 +76,13 @@ void ServerPacketHandler::Handle_C_READY(GameSessionRef session, BYTE* buffer, i
 	Protocol::C_READY pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
-	
-	GRoomManager->HandleReady(session, session->_roomNumber);
+	int32 roomN = pkt.roomnumber();
+	if ( roomN == -1)
+	{
+		cout << "WRONG_ROOM_READY | session : "<<session->_roomNumber<<"packet : "<< roomN << endl;
+		return;
+	}
+	GRoomManager->HandleReady(session, roomN);
 }
 
 void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, int32 len)
@@ -87,6 +92,10 @@ void ServerPacketHandler::Handle_C_MOVE(GameSessionRef session, BYTE* buffer, in
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
 	int32 roomN = pkt.roomnumber();
+	if(session->_roomNumber != roomN || roomN == -1)
+	{
+		return;
+	}
 
 	auto input = pkt.input();
 

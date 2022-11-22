@@ -46,8 +46,8 @@
 #define P_START OPTICK_FRAME("MainThread");
 #define P_THREAD(NAME) OPTICK_THREAD(##NAME);
 #define P_Event(NAME) OPTICK_EVENT(##NAME);
-#define P_TEST_START int32 tick = GetTickCount();
-#define P_TEST_END(time,string) if (GetTickCount() - tick > (time)) cout << (string) << endl;
+#define P_TEST_START int32 tick = psh::GetTickCount();
+#define P_TEST_END(time,string) if (psh::GetTickCount() - tick > (time)) cout << (string) << endl;
 
 #else
 #define P_START 

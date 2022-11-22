@@ -56,7 +56,7 @@ void ThreadManager::DoGlobalQueueWork()
 {
 	while (true)
 	{
-		uint64 now = GetTickCount64();
+		uint64 now = psh::GetTickCount();
 		if (now > LEndTickCount)
 			break;
 
@@ -71,7 +71,7 @@ void ThreadManager::DoGlobalQueueWork()
 void ThreadManager::DistributeReservedJobs()
 {
 	P_Event()
-	const uint64 now = ::GetTickCount64();
+	const uint64 now = psh::GetTickCount();
 
 	GJobTimer->Distribute(now);
 }

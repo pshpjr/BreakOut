@@ -8,6 +8,7 @@ public:
 	string _key;
 	volatile GameState _state = INIT;
 	int32 roomNumber = -1;
+	int32 endCount = 0;
 
 	bool onOff = true;
 };

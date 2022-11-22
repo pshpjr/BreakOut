@@ -13,7 +13,7 @@ class Room : public JobQueue
 		ENDs
 	};
 
-	enum { MAXPLAYER = 2 };
+	enum { MAXPLAYER =99};
 
 public:
 
@@ -25,7 +25,7 @@ public:
 	void HandleReady(GameSessionRef session);
 	void HandleInput(GameSessionRef session,Protocol::KeyInput input);
 
-	
+	void RoomCheck();
 private:
 	void Clear();
 	bool isFull();
@@ -37,16 +37,17 @@ private:
 	void Broadcast(SendBufferRef buffer);
 	void Send(SendBufferRef buffer, GameSessionRef session);
 
-	void RoomCheck();
+	
 	void WaitPlayer();
 	void PlayStart();
 	void PlayEnd();
 	void Update();
 	void MakeWinner();
 
+	Player* FindPlayer(GameSessionRef session);
+
 private:
 	std::random_device rd;
-	Player* FindPlayer(GameSessionRef session);
 
 	int32 roomNumber = 0;
 	uint32 playerCount = 0;

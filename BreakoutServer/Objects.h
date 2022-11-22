@@ -2,7 +2,7 @@
 #include "pch.h"
 
 
-
+//todo: location, start 통합
 class StaticObject {
 public:
 	StaticObject() = default;

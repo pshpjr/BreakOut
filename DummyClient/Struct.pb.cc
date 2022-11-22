@@ -51,7 +51,9 @@ constexpr StateU::StateU(
   , bvecy_(0)
   , blocx_(0)
   , blocy_(0)
-  , clocx_(0){}
+  , clocx_(0)
+  , life_(0)
+  , boardstate_(uint64_t{0u}){}
 struct StateUDefaultTypeInternal {
   constexpr StateUDefaultTypeInternal()
     : _instance(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized{}) {}
@@ -93,6 +95,8 @@ const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_Struct_2eproto::offsets[] PROT
   PROTOBUF_FIELD_OFFSET(::Protocol::StateU, blocx_),
   PROTOBUF_FIELD_OFFSET(::Protocol::StateU, blocy_),
   PROTOBUF_FIELD_OFFSET(::Protocol::StateU, clocx_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::StateU, life_),
+  PROTOBUF_FIELD_OFFSET(::Protocol::StateU, boardstate_),
 };
 static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::Protocol::Player)},
@@ -110,13 +114,14 @@ const char descriptor_table_protodef_Struct_2eproto[] PROTOBUF_SECTION_VARIABLE(
   "\n\014Struct.proto\022\010Protocol\"9\n\006Player\022\014\n\004co"
   "de\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\022\023\n\013startVector\030\003 "
   "\001(\002\",\n\010KeyInput\022\r\n\005onOff\030\001 \001(\010\022\021\n\tdirect"
-  "ion\030\002 \001(\010\"a\n\006StateU\022\014\n\004code\030\001 \001(\t\022\r\n\005bVe"
-  "cX\030\002 \001(\002\022\r\n\005bVecY\030\003 \001(\002\022\r\n\005bLocX\030\004 \001(\002\022\r"
-  "\n\005bLocY\030\005 \001(\002\022\r\n\005cLocX\030\006 \001(\002b\006proto3"
+  "ion\030\002 \001(\010\"\203\001\n\006StateU\022\014\n\004code\030\001 \001(\t\022\r\n\005bV"
+  "ecX\030\002 \001(\002\022\r\n\005bVecY\030\003 \001(\002\022\r\n\005bLocX\030\004 \001(\002\022"
+  "\r\n\005bLocY\030\005 \001(\002\022\r\n\005cLocX\030\006 \001(\002\022\014\n\004life\030\007 "
+  "\001(\005\022\022\n\nboardState\030\010 \001(\004b\006proto3"
   ;
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Struct_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Struct_2eproto = {
-  false, false, 236, descriptor_table_protodef_Struct_2eproto, "Struct.proto", 
+  false, false, 271, descriptor_table_protodef_Struct_2eproto, "Struct.proto", 
   &descriptor_table_Struct_2eproto_once, nullptr, 0, 3,
   schemas, file_default_instances, TableStruct_Struct_2eproto::offsets,
   file_level_metadata_Struct_2eproto, file_level_enum_descriptors_Struct_2eproto, file_level_service_descriptors_Struct_2eproto,
@@ -643,8 +648,8 @@ StateU::StateU(const StateU& from)
       GetArenaForAllocation());
   }
   ::memcpy(&bvecx_, &from.bvecx_,
-    static_cast<size_t>(reinterpret_cast<char*>(&clocx_) -
-    reinterpret_cast<char*>(&bvecx_)) + sizeof(clocx_));
+    static_cast<size_t>(reinterpret_cast<char*>(&boardstate_) -
+    reinterpret_cast<char*>(&bvecx_)) + sizeof(boardstate_));
   // @@protoc_insertion_point(copy_constructor:Protocol.StateU)
 }
 
@@ -652,8 +657,8 @@ void StateU::SharedCtor() {
 code_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 ::memset(reinterpret_cast<char*>(this) + static_cast<size_t>(
     reinterpret_cast<char*>(&bvecx_) - reinterpret_cast<char*>(this)),
-    0, static_cast<size_t>(reinterpret_cast<char*>(&clocx_) -
-    reinterpret_cast<char*>(&bvecx_)) + sizeof(clocx_));
+    0, static_cast<size_t>(reinterpret_cast<char*>(&boardstate_) -
+    reinterpret_cast<char*>(&bvecx_)) + sizeof(boardstate_));
 }
 
 StateU::~StateU() {
@@ -685,8 +690,8 @@ void StateU::Clear() {
 
   code_.ClearToEmpty();
   ::memset(&bvecx_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&clocx_) -
-      reinterpret_cast<char*>(&bvecx_)) + sizeof(clocx_));
+      reinterpret_cast<char*>(&boardstate_) -
+      reinterpret_cast<char*>(&bvecx_)) + sizeof(boardstate_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -738,6 +743,20 @@ const char* StateU::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
         if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 53)) {
           clocx_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
           ptr += sizeof(float);
+        } else goto handle_unusual;
+        continue;
+      // int32 life = 7;
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 56)) {
+          life_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
+      // uint64 boardState = 8;
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 64)) {
+          boardstate_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
         } else goto handle_unusual;
         continue;
       default: {
@@ -809,6 +828,18 @@ failure:
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteFloatToArray(6, this->_internal_clocx(), target);
   }
 
+  // int32 life = 7;
+  if (this->life() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteInt32ToArray(7, this->_internal_life(), target);
+  }
+
+  // uint64 boardState = 8;
+  if (this->boardstate() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(8, this->_internal_boardstate(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -855,6 +886,20 @@ size_t StateU::ByteSizeLong() const {
   // float cLocX = 6;
   if (!(this->clocx() <= 0 && this->clocx() >= 0)) {
     total_size += 1 + 4;
+  }
+
+  // int32 life = 7;
+  if (this->life() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::Int32Size(
+        this->_internal_life());
+  }
+
+  // uint64 boardState = 8;
+  if (this->boardstate() != 0) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
+        this->_internal_boardstate());
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -906,6 +951,12 @@ void StateU::MergeFrom(const StateU& from) {
   if (!(from.clocx() <= 0 && from.clocx() >= 0)) {
     _internal_set_clocx(from._internal_clocx());
   }
+  if (from.life() != 0) {
+    _internal_set_life(from._internal_life());
+  }
+  if (from.boardstate() != 0) {
+    _internal_set_boardstate(from._internal_boardstate());
+  }
 }
 
 void StateU::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
@@ -935,8 +986,8 @@ void StateU::InternalSwap(StateU* other) {
       &other->code_, other->GetArenaForAllocation()
   );
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(StateU, clocx_)
-      + sizeof(StateU::clocx_)
+      PROTOBUF_FIELD_OFFSET(StateU, boardstate_)
+      + sizeof(StateU::boardstate_)
       - PROTOBUF_FIELD_OFFSET(StateU, bvecx_)>(
           reinterpret_cast<char*>(&bvecx_),
           reinterpret_cast<char*>(&other->bvecx_));

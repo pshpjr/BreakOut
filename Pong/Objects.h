@@ -14,6 +14,14 @@ public:
 	void swapVisibility() {
 		this->_visible = !this->_visible;
 	}
+	void setInvisible()
+	{
+		_visible = false;
+	}
+	void setVisible()
+	{
+		_visible = true;
+	}
 	bool isVisible() const {
 		return this->_visible;
 	}
@@ -33,6 +41,7 @@ public:
 	void setXVectorInverse() { _vector.x *= -1; }
 	void setYVectorInverse() { _vector.y *= -1; }
 	void setVectorInverse() { _vector.x *= -1; _vector.y *= -1; }
+	void setLocation(pt loc) { _location = loc; }
 	pt getVector() const { return _vector; }
 	pt getLocation() const { return _location; }
 	void setRatio(float r) { _ratio = r; }
@@ -61,6 +70,7 @@ public:
 	pt getSize() const { return _size; }
 	void setStart(const pt& start) { _start = start; }
 	void setSize(const pt& size) { _size = size; }
+	void setDead() { _life = 0; setInvisible(); }
 
 	void draw() const override
 	{
@@ -164,9 +174,19 @@ public:
 
 	void draw() const override
 	{
-		glColor3f(1.0f, 0.0f, 1.0f);
+		glColor3f(1.0f,0.0f, 1.0f);
 
 		glBegin(GL_POLYGON);
+		for (int i = 0; i < 360; i++) {
+			const float angle = (float)i * 3.14f / 180;
+			const float x = _location.x + _radius * cos(angle);
+			const float y = _location.y + _radius * sin(angle);
+			glVertex2f(x, y);
+		}
+		glEnd();
+
+		glColor3f(0.0f, 0.0f, 0.0f);
+		glBegin(GL_LINE_LOOP);
 		for (int i = 0; i < 360; i++) {
 			const float angle = (float)i * 3.14f / 180;
 			const float x = _location.x + _radius * cos(angle);

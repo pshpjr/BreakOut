@@ -19,7 +19,8 @@ void RoomManager::Init()
 
 void RoomManager::AddPlayer(GameSessionRef session, int roomNumber)
 {
-	_rooms[roomNumber]->DoAsync(&Room::AddSession, session);
+	lastRoom = roomNumber;
+	_rooms[lastRoom]->DoAsync(&Room::AddSession, session);
 }
 
 void RoomManager::RemovePlayer(GameSessionRef session,int roomNumber)
@@ -29,6 +30,7 @@ void RoomManager::RemovePlayer(GameSessionRef session,int roomNumber)
 
 void RoomManager::HandleReady(GameSessionRef session, int roomNumber)
 {
+
 	_rooms[roomNumber]->DoAsync(&Room::HandleReady, session);
 }
 

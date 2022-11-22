@@ -494,6 +494,8 @@ class StateU final :
     kBLocXFieldNumber = 4,
     kBLocYFieldNumber = 5,
     kCLocXFieldNumber = 6,
+    kLifeFieldNumber = 7,
+    kBoardStateFieldNumber = 8,
   };
   // string code = 1;
   void clear_code();
@@ -554,6 +556,24 @@ class StateU final :
   void _internal_set_clocx(float value);
   public:
 
+  // int32 life = 7;
+  void clear_life();
+  ::PROTOBUF_NAMESPACE_ID::int32 life() const;
+  void set_life(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_life() const;
+  void _internal_set_life(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // uint64 boardState = 8;
+  void clear_boardstate();
+  ::PROTOBUF_NAMESPACE_ID::uint64 boardstate() const;
+  void set_boardstate(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_boardstate() const;
+  void _internal_set_boardstate(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.StateU)
  private:
   class _Internal;
@@ -567,6 +587,8 @@ class StateU final :
   float blocx_;
   float blocy_;
   float clocx_;
+  ::PROTOBUF_NAMESPACE_ID::int32 life_;
+  ::PROTOBUF_NAMESPACE_ID::uint64 boardstate_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -882,6 +904,46 @@ inline void StateU::_internal_set_clocx(float value) {
 inline void StateU::set_clocx(float value) {
   _internal_set_clocx(value);
   // @@protoc_insertion_point(field_set:Protocol.StateU.cLocX)
+}
+
+// int32 life = 7;
+inline void StateU::clear_life() {
+  life_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 StateU::_internal_life() const {
+  return life_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 StateU::life() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.life)
+  return _internal_life();
+}
+inline void StateU::_internal_set_life(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  life_ = value;
+}
+inline void StateU::set_life(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_life(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.life)
+}
+
+// uint64 boardState = 8;
+inline void StateU::clear_boardstate() {
+  boardstate_ = uint64_t{0u};
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 StateU::_internal_boardstate() const {
+  return boardstate_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 StateU::boardstate() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.boardState)
+  return _internal_boardstate();
+}
+inline void StateU::_internal_set_boardstate(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  
+  boardstate_ = value;
+}
+inline void StateU::set_boardstate(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _internal_set_boardstate(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.boardState)
 }
 
 #ifdef __GNUC__

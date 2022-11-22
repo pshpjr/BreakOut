@@ -19,7 +19,7 @@ public:
 protected:
 	float center = 0.47;
 	float bottomHRate = 0.15;
-	float topHRate = 0.8;
+	float topHRate = 0.85;
 };
 class Init : public UIState
 {

@@ -9,7 +9,7 @@ class ServerSession;
 class RoomManager : public JobQueue
 {
 public:
-	RoomManager() { for (int i = 0; i < 100; i++) { _rooms[i] = make_shared<Room>(i); } }
+	RoomManager() { for (int i = 0; i < 401; i++) { _rooms[i] = make_shared<Room>(i); } }
 
 	void Init();
 
@@ -21,7 +21,8 @@ public:
 
 
 private:
-	RoomRef _rooms[100];
+	RoomRef _rooms[401];
+	int32 lastRoom = 0;
 };
 
 extern shared_ptr<RoomManager> GRoomManager;

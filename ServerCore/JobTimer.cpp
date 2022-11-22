@@ -9,7 +9,7 @@
 void JobTimer::Reserve(uint64 tickAfter, weak_ptr<JobQueue> owner, JobRef job)
 {
 	P_Event()
-	const uint64 executeTick = ::GetTickCount64() + tickAfter;
+	const uint64 executeTick = psh::GetTickCount() + tickAfter;
 	JobData* jobData = ObjectPool<JobData>::Pop(owner, job);
 
 	WRITE_LOCK;

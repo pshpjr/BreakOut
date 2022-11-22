@@ -22,4 +22,6 @@ message StateU
 	float bLocX = 4;
 	float bLocY = 5;
 	float cLocX = 6;
+	int32 life = 7;
+	uint64 boardState =8;
 }

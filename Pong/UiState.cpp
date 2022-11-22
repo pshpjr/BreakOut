@@ -12,7 +12,7 @@ void UIState::Render(Client* GM)
 	glLoadIdentity();
 
 	glOrtho(0, GM->SCREENWIDTH, 0, GM->SCREENHEIGHT, -2, 2);
-	drawText("Breakout 99", GM->SCREENWIDTH * center , GM->baseHeight * topHRate);
+	drawText("Breakout 99", GM->SCREENWIDTH * center , GM->SCREENHEIGHT * topHRate);
 }
 
 string UIState::Loading(int& count)
@@ -39,7 +39,9 @@ void Init::Render(Client* GM)
 {
 	UIState::Render(GM);
 	drawText("Connect to Server... " + Loading(_count), GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
-	
+
+
+
 	GM->_mainPlay->Render();
 }
 
@@ -114,27 +116,6 @@ void GameReady::HandleInput(Client* GM)
 
 void Playing::Update(Client* GM)
 {
-	//_count++;
-	//wrap(_count, 0, 12);
-
-	//if (_count == 11) {
-	//	for (int j = 0; j < 11; j++)
-	//	{
-	//		for (auto& i : GM->_pongs)
-	//		{
-	//			if (i->isDead())
-	//				continue;
-	//			if (i == GM->_mainPlay)
-	//				continue;
-	//			i->Update();
-
-	//		}
-	//	}
-	//}
-
-	//GM->_mainPlay->Update();
-
-
 	for (auto& i : GM->_pongs)
 	{
 		if (i->isDead())
@@ -154,16 +135,14 @@ void Playing::Render(Client* GM)
 			players++;
 	}
 
-	if (players == 1)
-		GM->ChangeState(Win::instance());
 
 	glViewport(0, 0, GM->SCREENWIDTH, GM->SCREENHEIGHT);
 	glLoadIdentity();
 
 	glOrtho(0, GM->SCREENWIDTH, 0, GM->SCREENHEIGHT, -2, 2);
 
-	drawText("Life: " + std::to_string(GM->_mainPlay->_life), GM->SCREENWIDTH * 0.4, GM->baseHeight * topHRate - 24);
-	drawText(std::to_string(players) + "/99", GM->SCREENWIDTH * 0.6, GM->baseHeight * topHRate);
+	drawText("Life: " + std::to_string(GM->_mainPlay->_life), GM->SCREENWIDTH * 0.4, GM->SCREENHEIGHT * topHRate - 24);
+	drawText(std::to_string(players) + "/99", GM->SCREENWIDTH * 0.6, GM->SCREENHEIGHT * topHRate);
 
 }
 
@@ -173,14 +152,14 @@ void Playing::HandleInput(Client* GM)
 	
 	if (isKeyStateChanged('A',_lState))
 	{
-		//auto i = GM->_mainPlay;
-		//i->_control_block->setVector({ -1,0 });
+		auto i = GM->_mainPlay;
+		i->_control_block->setVector({ -1,0 });
 
 
-		//i->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
-		//if (_lState == false) {
-		//	i->_control_block->setSpeed(0);
-		//}
+		i->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
+		if (_lState == false) {
+			i->_control_block->setSpeed(0);
+		}
 
 		Protocol::KeyInput* key = new Protocol::KeyInput;
 		Protocol::C_MOVE pkt;
@@ -200,12 +179,12 @@ void Playing::HandleInput(Client* GM)
 	}
 	if (isKeyStateChanged('D',_rState))
 	{
-		//auto i = GM->_mainPlay;
-		//i->_control_block->setVector({ 1,0 });
+		auto i = GM->_mainPlay;
+		i->_control_block->setVector({ 1,0 });
 
-		//i->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
-		//if (_rState == false)
-		//	i->_control_block->setSpeed(0);
+		i->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
+		if (_rState == false)
+			i->_control_block->setSpeed(0);
 
 		Protocol::KeyInput* key = new Protocol::KeyInput;
 		Protocol::C_MOVE pkt;
@@ -249,6 +228,9 @@ void Dead::HandleInput(Client* GM)
 		{
 			i->Reset();
 		}
+		GM->_mainPlay->_life = 3;
+		GM->_mainPlay->_state = Breakout::ALIVE;
+		GM->_roomNumber = -1;
 		cout << "Goto Lobby" << endl;
 		GM->ChangeState(Lobby::instance());
 		Sleep(300);
@@ -276,8 +258,9 @@ void Win::HandleInput(Client* GM)
 		{
 			i->Reset();
 		}
+
 		cout << "Goto Lobby" << endl;
 		GM->ChangeState(Lobby::instance());
-		Sleep(300);
+		Sleep(500);
 	}
 }
