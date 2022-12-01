@@ -9,8 +9,6 @@
 #include "BreakoutPacketHandler.h"
 #include "DummyClient.h"
 
-DummyClient* DM;
-
 bool noGUI = false;
 bool Exit = false;
 string key;
@@ -28,12 +26,10 @@ void HideCMD(bool isHide)
 	isHide ? ShowWindow(hWnd, SW_SHOW) : ShowWindow(hWnd, SW_HIDE);
 }
 
-
-
 bool GameInit()
 {
 	cout << "Dummy Start IP: " << std::string().assign(ip.begin(), ip.end()) << " Port : " << port << endl;
-	DM = new DummyClient(ip, port,playerCount);
+	DM = MakeShared<DummyClient>(ip, port, playerCount);
 	return true;
 }
 void idle()
@@ -41,15 +37,6 @@ void idle()
 	glutPostRedisplay();
 }
 
-void tick()
-{
-	P_START;
-	uint32 start = GetTickCount();
-	DM->Loop();
-	uint32 lap = GetTickCount() - start;
-	if(200-lap > 0)
-		this_thread::sleep_for(chrono::milliseconds(200 - lap));
-}
 
 
 void ArgParseInit(int argc, char** argv)
@@ -116,10 +103,8 @@ int main(int argc, char** argv) {
 	if (GameInit() == false)
 		return 0;
 
-	while (true)
-	{
-		tick();
-	}
+	DM->Loop();
+	
 
 
 	GThreadManager->Join();

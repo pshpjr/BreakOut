@@ -1,8 +1,11 @@
 ﻿#pragma once
 #include "pch.h"
+class DummyClient;
 class DummyService;
 
-class DummyClient
+extern shared_ptr <DummyClient> DM;
+
+class DummyClient : public JobQueue 
 {
 public:
 	DummyClient(wstring ip, int port,int count);

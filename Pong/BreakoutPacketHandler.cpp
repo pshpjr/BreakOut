@@ -59,7 +59,6 @@ void BreakoutPacketHandler::Handle_S_MACHING_GAME(ClientSessionRef session, BYTE
 
 void BreakoutPacketHandler::Handle_S_CANCLE_GAME(ClientSessionRef session, BYTE* buffer, int32 len)
 {
-
 	GM->ChangeState(Lobby::instance());
 }
 
@@ -73,6 +72,10 @@ void BreakoutPacketHandler::Handle_S_ENTER_GAMET(ClientSessionRef session, BYTE*
 	}
 
 	int index = 1;
+	if(pkt.players_size() !=99)
+	{
+		cout << "SOMETHINGWRONG" << endl;
+	}
 	for(auto& i: pkt.players())
 	{
 		string key = i.code();
@@ -89,11 +92,14 @@ void BreakoutPacketHandler::Handle_S_ENTER_GAMET(ClientSessionRef session, BYTE*
 		int target = GM->index[key];
 
 		GM->_pongs[target]->_b->setVector(startVector);
-
+		GM->_pongs[target]->_state = Breakout::ALIVE;
 		index++;
 	}
 
+
 	Protocol::C_READY pkt2;
+	
+	pkt2.set_roomnumber(GM->_roomNumber);
 	SendBufferRef sendBuffer = MakeSendBuffer(pkt2);
 	session->Send(sendBuffer);
 
@@ -105,33 +111,52 @@ void BreakoutPacketHandler::Handle_S_START(ClientSessionRef session, BYTE* buffe
 	GM->ChangeState(Playing::instance());
 }
 
+static uint64 last = 0;
 void BreakoutPacketHandler::Handle_S_MOVE(ClientSessionRef session, BYTE* buffer, int32 len)
 {
-	Protocol::S_MOVE pkt;
+ 	Protocol::S_MOVE pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
-	auto tmp = pkt.inputs();
-	for(auto& i : tmp)
+
+
+	auto input = pkt.inputs();
+	for (Protocol::StateU& i : input)
 	{
+		if(i.code().empty())
+			continue;
 		int32 index = GM->index[i.code()];
-		cout << index << endl;
-		if (i.onoff())
-			GM->_pongs[index]->_control_block->setSpeed(GM->CONTROLBLOCKSPEED);
-		else
-			GM->_pongs[index]->_control_block->setSpeed(0);
 
-		if (i.direction())
-			GM->_pongs[index]->_control_block->setVector({ -1,0 });
-		else
-			GM->_pongs[index]->_control_block->setVector({ 1,0 });
+		pt bVec = { i.bvecx(), i.bvecy() };
+		GM->_pongs[index]->_b->setVector(bVec);
+
+		pt bLoc = { i.blocx(), i.blocy() };
+		GM->_pongs[index]->_b->setLocation(bLoc);
+
+		pt cLoc = { i.clocx(),GM->_pongs[index]->_control_block->getStart().y };
+		GM->_pongs[index]->_control_block->setStart(cLoc);
+
+		GM->_pongs[index]->_life = i.life();
+
+		uint64 board = i.boardstate();
+		uint64 MSB = static_cast<uint64>(1) << 63;
+		for (auto block : GM->_pongs[index]->_blocks)
+		{
+			bool visible = board & MSB;
+			board <<= 1;
+			if (visible == 0)
+				block->setDead();
+			else
+				block->setVisible();
+		}
 	}
-
-
 }
 
 void BreakoutPacketHandler::Handle_S_END(ClientSessionRef session, BYTE* buffer, int32 len)
 {
+	cout << "Dead" << endl;
 	Protocol::S_END pkt;
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
+
+	GM->index.clear();
 
 	Dead::instance()->rank = pkt.rank();
 	cout << Dead::instance()->rank << endl;

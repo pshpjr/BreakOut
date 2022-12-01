@@ -1569,24 +1569,24 @@ class S_MOVE final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kInputsFieldNumber = 2,
+    kInputsFieldNumber = 1,
   };
-  // repeated .Protocol.KeyInputU inputs = 2;
+  // repeated .Protocol.StateU inputs = 1;
   int inputs_size() const;
   private:
   int _internal_inputs_size() const;
   public:
   void clear_inputs();
-  ::Protocol::KeyInputU* mutable_inputs(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::KeyInputU >*
+  ::Protocol::StateU* mutable_inputs(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::StateU >*
       mutable_inputs();
   private:
-  const ::Protocol::KeyInputU& _internal_inputs(int index) const;
-  ::Protocol::KeyInputU* _internal_add_inputs();
+  const ::Protocol::StateU& _internal_inputs(int index) const;
+  ::Protocol::StateU* _internal_add_inputs();
   public:
-  const ::Protocol::KeyInputU& inputs(int index) const;
-  ::Protocol::KeyInputU* add_inputs();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::KeyInputU >&
+  const ::Protocol::StateU& inputs(int index) const;
+  ::Protocol::StateU* add_inputs();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::StateU >&
       inputs() const;
 
   // @@protoc_insertion_point(class_scope:Protocol.S_MOVE)
@@ -1596,7 +1596,7 @@ class S_MOVE final :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::KeyInputU > inputs_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::StateU > inputs_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Protocol_2eproto;
 };
@@ -2103,37 +2103,37 @@ inline void C_MOVE::set_roomnumber(::PROTOBUF_NAMESPACE_ID::int32 value) {
 
 // S_MOVE
 
-// repeated .Protocol.KeyInputU inputs = 2;
+// repeated .Protocol.StateU inputs = 1;
 inline int S_MOVE::_internal_inputs_size() const {
   return inputs_.size();
 }
 inline int S_MOVE::inputs_size() const {
   return _internal_inputs_size();
 }
-inline ::Protocol::KeyInputU* S_MOVE::mutable_inputs(int index) {
+inline ::Protocol::StateU* S_MOVE::mutable_inputs(int index) {
   // @@protoc_insertion_point(field_mutable:Protocol.S_MOVE.inputs)
   return inputs_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::KeyInputU >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::StateU >*
 S_MOVE::mutable_inputs() {
   // @@protoc_insertion_point(field_mutable_list:Protocol.S_MOVE.inputs)
   return &inputs_;
 }
-inline const ::Protocol::KeyInputU& S_MOVE::_internal_inputs(int index) const {
+inline const ::Protocol::StateU& S_MOVE::_internal_inputs(int index) const {
   return inputs_.Get(index);
 }
-inline const ::Protocol::KeyInputU& S_MOVE::inputs(int index) const {
+inline const ::Protocol::StateU& S_MOVE::inputs(int index) const {
   // @@protoc_insertion_point(field_get:Protocol.S_MOVE.inputs)
   return _internal_inputs(index);
 }
-inline ::Protocol::KeyInputU* S_MOVE::_internal_add_inputs() {
+inline ::Protocol::StateU* S_MOVE::_internal_add_inputs() {
   return inputs_.Add();
 }
-inline ::Protocol::KeyInputU* S_MOVE::add_inputs() {
+inline ::Protocol::StateU* S_MOVE::add_inputs() {
   // @@protoc_insertion_point(field_add:Protocol.S_MOVE.inputs)
   return _internal_add_inputs();
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::KeyInputU >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Protocol::StateU >&
 S_MOVE::inputs() const {
   // @@protoc_insertion_point(field_list:Protocol.S_MOVE.inputs)
   return inputs_;

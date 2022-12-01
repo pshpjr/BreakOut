@@ -13,8 +13,8 @@ Breakout::~Breakout()
 void Breakout::Init()
 {
 	//변수 초기화 및 임의의 공 방향 정하기
-	_state = ALIVE;
-	_life = 3;
+	_state = DEAD;
+	_life = 0;
 	
 	//객체에 들어가는 변수들 초기화
 	float mapHeight = MAPTOP - MAPBOTTOM;
@@ -81,7 +81,7 @@ void Breakout::Update()
 	ball_out_test();
 
 	control_block_out_test_and_modify();
-
+	
 }
 
 void Breakout::block_collision_test() const
@@ -97,8 +97,8 @@ void Breakout::block_collision_test() const
 			continue;
 
 		//아래 코드들은 충돌한 경우 실행
-		if (!i->_isSolid)
-			i->swapVisibility();
+		//if (!i->_isSolid)
+		//	i->swapVisibility();
 
 		Direction dir = collision.collisionDirection();
 		glm::vec2 diff_vector = collision.diffVector();
@@ -121,7 +121,6 @@ void Breakout::block_collision_test() const
 				_b->move(0, -penetration);
 			else
 				_b->move(0, penetration);
-			
 		}
 		break;
 	}

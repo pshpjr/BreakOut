@@ -96,9 +96,10 @@ public:
 	bool _isMyPlay = false;
 
 	bool noGUI = false;
-	int _life = 3;
-private:
+	int _life = 0;
 	PlayerState _state;
+private:
+
 
 	//뷰포트 설정 
 	int32 _width;
@@ -116,8 +117,8 @@ private:
 	const int BLOCKHEIGHT = 23;
 	const int BLOCKGAP = 57;
 
-	const float BALLSPEED = 4;
-	const int CONTROLBLOCKSPEED = 8;
+	//const float BALLSPEED = 1.85;
+	const float BALLSPEED = 2.65;
 	const int CONTROLBLOCKWIDTH = 200;
 
 

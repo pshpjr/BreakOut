@@ -57,17 +57,17 @@ namespace Protocol {
 class KeyInput;
 struct KeyInputDefaultTypeInternal;
 extern KeyInputDefaultTypeInternal _KeyInput_default_instance_;
-class KeyInputU;
-struct KeyInputUDefaultTypeInternal;
-extern KeyInputUDefaultTypeInternal _KeyInputU_default_instance_;
 class Player;
 struct PlayerDefaultTypeInternal;
 extern PlayerDefaultTypeInternal _Player_default_instance_;
+class StateU;
+struct StateUDefaultTypeInternal;
+extern StateUDefaultTypeInternal _StateU_default_instance_;
 }  // namespace Protocol
 PROTOBUF_NAMESPACE_OPEN
 template<> ::Protocol::KeyInput* Arena::CreateMaybeMessage<::Protocol::KeyInput>(Arena*);
-template<> ::Protocol::KeyInputU* Arena::CreateMaybeMessage<::Protocol::KeyInputU>(Arena*);
 template<> ::Protocol::Player* Arena::CreateMaybeMessage<::Protocol::Player>(Arena*);
+template<> ::Protocol::StateU* Arena::CreateMaybeMessage<::Protocol::StateU>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Protocol {
 
@@ -380,24 +380,24 @@ class KeyInput final :
 };
 // -------------------------------------------------------------------
 
-class KeyInputU final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.KeyInputU) */ {
+class StateU final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Protocol.StateU) */ {
  public:
-  inline KeyInputU() : KeyInputU(nullptr) {}
-  ~KeyInputU() override;
-  explicit constexpr KeyInputU(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline StateU() : StateU(nullptr) {}
+  ~StateU() override;
+  explicit constexpr StateU(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  KeyInputU(const KeyInputU& from);
-  KeyInputU(KeyInputU&& from) noexcept
-    : KeyInputU() {
+  StateU(const StateU& from);
+  StateU(StateU&& from) noexcept
+    : StateU() {
     *this = ::std::move(from);
   }
 
-  inline KeyInputU& operator=(const KeyInputU& from) {
+  inline StateU& operator=(const StateU& from) {
     CopyFrom(from);
     return *this;
   }
-  inline KeyInputU& operator=(KeyInputU&& from) noexcept {
+  inline StateU& operator=(StateU&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()) {
       InternalSwap(&from);
@@ -416,20 +416,20 @@ class KeyInputU final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const KeyInputU& default_instance() {
+  static const StateU& default_instance() {
     return *internal_default_instance();
   }
-  static inline const KeyInputU* internal_default_instance() {
-    return reinterpret_cast<const KeyInputU*>(
-               &_KeyInputU_default_instance_);
+  static inline const StateU* internal_default_instance() {
+    return reinterpret_cast<const StateU*>(
+               &_StateU_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     2;
 
-  friend void swap(KeyInputU& a, KeyInputU& b) {
+  friend void swap(StateU& a, StateU& b) {
     a.Swap(&b);
   }
-  inline void Swap(KeyInputU* other) {
+  inline void Swap(StateU* other) {
     if (other == this) return;
     if (GetOwningArena() == other->GetOwningArena()) {
       InternalSwap(other);
@@ -437,7 +437,7 @@ class KeyInputU final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(KeyInputU* other) {
+  void UnsafeArenaSwap(StateU* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -445,17 +445,17 @@ class KeyInputU final :
 
   // implements Message ----------------------------------------------
 
-  inline KeyInputU* New() const final {
-    return new KeyInputU();
+  inline StateU* New() const final {
+    return new StateU();
   }
 
-  KeyInputU* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<KeyInputU>(arena);
+  StateU* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<StateU>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const KeyInputU& from);
-  void MergeFrom(const KeyInputU& from);
+  void CopyFrom(const StateU& from);
+  void MergeFrom(const StateU& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -469,13 +469,13 @@ class KeyInputU final :
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(KeyInputU* other);
+  void InternalSwap(StateU* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "Protocol.KeyInputU";
+    return "Protocol.StateU";
   }
   protected:
-  explicit KeyInputU(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit StateU(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   private:
   static void ArenaDtor(void* object);
   inline void RegisterArenaDtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
@@ -489,8 +489,13 @@ class KeyInputU final :
 
   enum : int {
     kCodeFieldNumber = 1,
-    kOnOffFieldNumber = 2,
-    kDirectionFieldNumber = 3,
+    kBVecXFieldNumber = 2,
+    kBVecYFieldNumber = 3,
+    kBLocXFieldNumber = 4,
+    kBLocYFieldNumber = 5,
+    kCLocXFieldNumber = 6,
+    kLifeFieldNumber = 7,
+    kBoardStateFieldNumber = 8,
   };
   // string code = 1;
   void clear_code();
@@ -506,25 +511,70 @@ class KeyInputU final :
   std::string* _internal_mutable_code();
   public:
 
-  // bool onOff = 2;
-  void clear_onoff();
-  bool onoff() const;
-  void set_onoff(bool value);
+  // float bVecX = 2;
+  void clear_bvecx();
+  float bvecx() const;
+  void set_bvecx(float value);
   private:
-  bool _internal_onoff() const;
-  void _internal_set_onoff(bool value);
+  float _internal_bvecx() const;
+  void _internal_set_bvecx(float value);
   public:
 
-  // bool direction = 3;
-  void clear_direction();
-  bool direction() const;
-  void set_direction(bool value);
+  // float bVecY = 3;
+  void clear_bvecy();
+  float bvecy() const;
+  void set_bvecy(float value);
   private:
-  bool _internal_direction() const;
-  void _internal_set_direction(bool value);
+  float _internal_bvecy() const;
+  void _internal_set_bvecy(float value);
   public:
 
-  // @@protoc_insertion_point(class_scope:Protocol.KeyInputU)
+  // float bLocX = 4;
+  void clear_blocx();
+  float blocx() const;
+  void set_blocx(float value);
+  private:
+  float _internal_blocx() const;
+  void _internal_set_blocx(float value);
+  public:
+
+  // float bLocY = 5;
+  void clear_blocy();
+  float blocy() const;
+  void set_blocy(float value);
+  private:
+  float _internal_blocy() const;
+  void _internal_set_blocy(float value);
+  public:
+
+  // float cLocX = 6;
+  void clear_clocx();
+  float clocx() const;
+  void set_clocx(float value);
+  private:
+  float _internal_clocx() const;
+  void _internal_set_clocx(float value);
+  public:
+
+  // int32 life = 7;
+  void clear_life();
+  ::PROTOBUF_NAMESPACE_ID::int32 life() const;
+  void set_life(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_life() const;
+  void _internal_set_life(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // uint64 boardState = 8;
+  void clear_boardstate();
+  ::PROTOBUF_NAMESPACE_ID::uint64 boardstate() const;
+  void set_boardstate(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::uint64 _internal_boardstate() const;
+  void _internal_set_boardstate(::PROTOBUF_NAMESPACE_ID::uint64 value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:Protocol.StateU)
  private:
   class _Internal;
 
@@ -532,8 +582,13 @@ class KeyInputU final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr code_;
-  bool onoff_;
-  bool direction_;
+  float bvecx_;
+  float bvecy_;
+  float blocx_;
+  float blocy_;
+  float clocx_;
+  ::PROTOBUF_NAMESPACE_ID::int32 life_;
+  ::PROTOBUF_NAMESPACE_ID::uint64 boardstate_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_Struct_2eproto;
 };
@@ -704,43 +759,43 @@ inline void KeyInput::set_direction(bool value) {
 
 // -------------------------------------------------------------------
 
-// KeyInputU
+// StateU
 
 // string code = 1;
-inline void KeyInputU::clear_code() {
+inline void StateU::clear_code() {
   code_.ClearToEmpty();
 }
-inline const std::string& KeyInputU::code() const {
-  // @@protoc_insertion_point(field_get:Protocol.KeyInputU.code)
+inline const std::string& StateU::code() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.code)
   return _internal_code();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void KeyInputU::set_code(ArgT0&& arg0, ArgT... args) {
+void StateU::set_code(ArgT0&& arg0, ArgT... args) {
  
  code_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:Protocol.KeyInputU.code)
+  // @@protoc_insertion_point(field_set:Protocol.StateU.code)
 }
-inline std::string* KeyInputU::mutable_code() {
-  // @@protoc_insertion_point(field_mutable:Protocol.KeyInputU.code)
+inline std::string* StateU::mutable_code() {
+  // @@protoc_insertion_point(field_mutable:Protocol.StateU.code)
   return _internal_mutable_code();
 }
-inline const std::string& KeyInputU::_internal_code() const {
+inline const std::string& StateU::_internal_code() const {
   return code_.Get();
 }
-inline void KeyInputU::_internal_set_code(const std::string& value) {
+inline void StateU::_internal_set_code(const std::string& value) {
   
   code_.Set(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, value, GetArenaForAllocation());
 }
-inline std::string* KeyInputU::_internal_mutable_code() {
+inline std::string* StateU::_internal_mutable_code() {
   
   return code_.Mutable(::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::EmptyDefault{}, GetArenaForAllocation());
 }
-inline std::string* KeyInputU::release_code() {
-  // @@protoc_insertion_point(field_release:Protocol.KeyInputU.code)
+inline std::string* StateU::release_code() {
+  // @@protoc_insertion_point(field_release:Protocol.StateU.code)
   return code_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArenaForAllocation());
 }
-inline void KeyInputU::set_allocated_code(std::string* code) {
+inline void StateU::set_allocated_code(std::string* code) {
   if (code != nullptr) {
     
   } else {
@@ -748,47 +803,147 @@ inline void KeyInputU::set_allocated_code(std::string* code) {
   }
   code_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), code,
       GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set_allocated:Protocol.KeyInputU.code)
+  // @@protoc_insertion_point(field_set_allocated:Protocol.StateU.code)
 }
 
-// bool onOff = 2;
-inline void KeyInputU::clear_onoff() {
-  onoff_ = false;
+// float bVecX = 2;
+inline void StateU::clear_bvecx() {
+  bvecx_ = 0;
 }
-inline bool KeyInputU::_internal_onoff() const {
-  return onoff_;
+inline float StateU::_internal_bvecx() const {
+  return bvecx_;
 }
-inline bool KeyInputU::onoff() const {
-  // @@protoc_insertion_point(field_get:Protocol.KeyInputU.onOff)
-  return _internal_onoff();
+inline float StateU::bvecx() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.bVecX)
+  return _internal_bvecx();
 }
-inline void KeyInputU::_internal_set_onoff(bool value) {
+inline void StateU::_internal_set_bvecx(float value) {
   
-  onoff_ = value;
+  bvecx_ = value;
 }
-inline void KeyInputU::set_onoff(bool value) {
-  _internal_set_onoff(value);
-  // @@protoc_insertion_point(field_set:Protocol.KeyInputU.onOff)
+inline void StateU::set_bvecx(float value) {
+  _internal_set_bvecx(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.bVecX)
 }
 
-// bool direction = 3;
-inline void KeyInputU::clear_direction() {
-  direction_ = false;
+// float bVecY = 3;
+inline void StateU::clear_bvecy() {
+  bvecy_ = 0;
 }
-inline bool KeyInputU::_internal_direction() const {
-  return direction_;
+inline float StateU::_internal_bvecy() const {
+  return bvecy_;
 }
-inline bool KeyInputU::direction() const {
-  // @@protoc_insertion_point(field_get:Protocol.KeyInputU.direction)
-  return _internal_direction();
+inline float StateU::bvecy() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.bVecY)
+  return _internal_bvecy();
 }
-inline void KeyInputU::_internal_set_direction(bool value) {
+inline void StateU::_internal_set_bvecy(float value) {
   
-  direction_ = value;
+  bvecy_ = value;
 }
-inline void KeyInputU::set_direction(bool value) {
-  _internal_set_direction(value);
-  // @@protoc_insertion_point(field_set:Protocol.KeyInputU.direction)
+inline void StateU::set_bvecy(float value) {
+  _internal_set_bvecy(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.bVecY)
+}
+
+// float bLocX = 4;
+inline void StateU::clear_blocx() {
+  blocx_ = 0;
+}
+inline float StateU::_internal_blocx() const {
+  return blocx_;
+}
+inline float StateU::blocx() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.bLocX)
+  return _internal_blocx();
+}
+inline void StateU::_internal_set_blocx(float value) {
+  
+  blocx_ = value;
+}
+inline void StateU::set_blocx(float value) {
+  _internal_set_blocx(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.bLocX)
+}
+
+// float bLocY = 5;
+inline void StateU::clear_blocy() {
+  blocy_ = 0;
+}
+inline float StateU::_internal_blocy() const {
+  return blocy_;
+}
+inline float StateU::blocy() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.bLocY)
+  return _internal_blocy();
+}
+inline void StateU::_internal_set_blocy(float value) {
+  
+  blocy_ = value;
+}
+inline void StateU::set_blocy(float value) {
+  _internal_set_blocy(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.bLocY)
+}
+
+// float cLocX = 6;
+inline void StateU::clear_clocx() {
+  clocx_ = 0;
+}
+inline float StateU::_internal_clocx() const {
+  return clocx_;
+}
+inline float StateU::clocx() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.cLocX)
+  return _internal_clocx();
+}
+inline void StateU::_internal_set_clocx(float value) {
+  
+  clocx_ = value;
+}
+inline void StateU::set_clocx(float value) {
+  _internal_set_clocx(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.cLocX)
+}
+
+// int32 life = 7;
+inline void StateU::clear_life() {
+  life_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 StateU::_internal_life() const {
+  return life_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 StateU::life() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.life)
+  return _internal_life();
+}
+inline void StateU::_internal_set_life(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  life_ = value;
+}
+inline void StateU::set_life(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_life(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.life)
+}
+
+// uint64 boardState = 8;
+inline void StateU::clear_boardstate() {
+  boardstate_ = uint64_t{0u};
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 StateU::_internal_boardstate() const {
+  return boardstate_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::uint64 StateU::boardstate() const {
+  // @@protoc_insertion_point(field_get:Protocol.StateU.boardState)
+  return _internal_boardstate();
+}
+inline void StateU::_internal_set_boardstate(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  
+  boardstate_ = value;
+}
+inline void StateU::set_boardstate(::PROTOBUF_NAMESPACE_ID::uint64 value) {
+  _internal_set_boardstate(value);
+  // @@protoc_insertion_point(field_set:Protocol.StateU.boardState)
 }
 
 #ifdef __GNUC__

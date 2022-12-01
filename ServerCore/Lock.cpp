@@ -18,7 +18,7 @@ void Lock::WriteLock(const char* name)
 	}
 
 	// 아무도 소유 및 공유하고 있지 않을 때, 경합해서 소유권을 얻는다.
-	const int64 beginTick = ::GetTickCount64();
+	const int64 beginTick = psh::GetTickCount();
 	const uint32 desired = ((LThreadId << 16) & WRITE_THREAD_MASK);
 	while (true)
 	{
@@ -32,7 +32,7 @@ void Lock::WriteLock(const char* name)
 			}
 		}
 
-		if (::GetTickCount64() - beginTick >= ACQUIRE_TIMEOUT_TICK)
+		if (psh::GetTickCount() - beginTick >= ACQUIRE_TIMEOUT_TICK)
 			CRASH("LOCK_TIMEOUT");
 
 		this_thread::yield();
@@ -71,7 +71,7 @@ void Lock::ReadLock(const char* name)
 	}
 
 	// 아무도 소유하고 있지 않을 때 경합해서 공유 카운트를 올린다.
-	const int64 beginTick = ::GetTickCount64();
+	const int64 beginTick = psh::GetTickCount();
 	while (true)
 	{
 		for (uint32 spinCount = 0; spinCount < MAX_SPIN_COUNT; spinCount++)
@@ -81,7 +81,7 @@ void Lock::ReadLock(const char* name)
 				return;
 		}
 
-		if (::GetTickCount64() - beginTick >= ACQUIRE_TIMEOUT_TICK)
+		if (psh::GetTickCount() - beginTick >= ACQUIRE_TIMEOUT_TICK)
 			CRASH("LOCK_TIMEOUT");
 
 		this_thread::yield();

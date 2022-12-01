@@ -18,7 +18,7 @@ void Breakout::Init()
 
 	//객체에 들어가는 변수들 초기화
 	float mapHeight = MAPTOP - MAPBOTTOM;
-	pt controlSize = { CONTROLBLOCKWIDTH,3 };
+	pt controlSize = { CONTROLBLOCKWIDTH,5 };
 	pt controlStart = { baseWidth / 2 - controlSize.x / 2, MAPBOTTOM + baseHeight * 0.1 };
 	pt ballLocation = { _mapwidth / 2 + MAPLEFT,mapHeight * 0.3 + MAPBOTTOM };
 
@@ -69,28 +69,39 @@ bool Breakout::isDead() const
 	return _state == DEAD;
 }
 
-void Breakout::Update()
+bool Breakout::Update()
 {
 	if (isDead())
-		return;
+		return false;
 
 	for (const auto i : _update_requires) {
 		i->update();
 	}
-	block_collision_test();
+	bool isCollision = false;
 
-	control_block_collision_test();
+	isCollision |= block_collision_test();
 
-	ball_out_test();
+	isCollision |= control_block_collision_test();
+
+	isCollision |= ball_out_test();
 
 	control_block_out_test_and_modify();
 
+	if (_b->getLocation().y > MAPTOP)
+	{
+		_b->move(0, MAPTOP - _b->getLocation().y - 1);
+	}
+	if (_b->getLocation().y > MAPTOP)
+		cout << "BALL OUT" << endl;
+
+	return isCollision;
 }
 
-void Breakout::block_collision_test() const
+bool Breakout::block_collision_test() const
 {
 	Collision collision(false, UP, { 0,0 });
 
+	bool isCollision = false;
 	for (auto& i : _blocks) {
 		if (i->isVisible() == false)
 			continue;
@@ -99,6 +110,7 @@ void Breakout::block_collision_test() const
 		if (collision.isCollision() == false)
 			continue;
 
+		isCollision = true;
 		//아래 코드들은 충돌한 경우 실행
 		if (!i->_isSolid)
 			i->swapVisibility();
@@ -109,30 +121,34 @@ void Breakout::block_collision_test() const
 		{
 			_b->setXVectorInverse();
 
-			float penetration = _b->getRadius() - std::abs(diff_vector.x);
+			float penetration = _b->getRadius() - std::abs(diff_vector.x)+1;
 			if (dir == LEFT)
 				_b->move(penetration, 0);
 			else
 				_b->move(-penetration, 0);
+
 		}
 		else
 		{
 			_b->setYVectorInverse();
 
-			float penetration = _b->getRadius() - std::abs(diff_vector.y);
-			if (dir == UP)
+			float penetration = _b->getRadius() - std::abs(diff_vector.y)+1;
+
+			if (dir == UP) {
 				_b->move(0, -penetration);
+			}
 			else
 				_b->move(0, penetration);
-
 		}
+		
+
 		break;
 	}
+	return isCollision;
 }
 
-void Breakout::control_block_collision_test() const
+bool Breakout::control_block_collision_test() const
 {
-
 	Collision collision = CheckCollision(*_b, *_control_block);
 	if (collision.isCollision() == true)
 	{
@@ -145,8 +161,10 @@ void Breakout::control_block_collision_test() const
 		pt newVec = { percentage * 1 ,abs(oldVelocity.y) };
 
 		_b->setVector(glm::normalize(newVec) * glm::length(oldVelocity));
+		
+		return true;
 	}
-
+	return false;
 }
 
 void Breakout::control_block_out_test_and_modify() const
@@ -160,12 +178,12 @@ void Breakout::control_block_out_test_and_modify() const
 
 }
 
-void Breakout::ball_out_test()
+bool Breakout::ball_out_test()
 {
 	Collision collision = CheckCollision(*_b, *_deadline);
 
 	if (collision.isCollision() == false)
-		return;
+		return false;
 	glm::vec2 oldVelocity = _b->getVector();
 
 	_b->setVector({ oldVelocity.x, abs(oldVelocity.y) });
@@ -180,6 +198,7 @@ void Breakout::ball_out_test()
 
 	if (_life <= 0)
 		_state = DEAD;
+	return true;
 }
 
 void Breakout::Render()
@@ -210,6 +229,7 @@ void Breakout::Reset()
 
 Direction Breakout::VectorDirection(glm::vec2 target) const
 {
+	
 	glm::vec2 compass[] = {
 	glm::vec2(0.0f, 1.0f),	// up
 	glm::vec2(1.0f, 0.0f),	// right
@@ -228,6 +248,10 @@ Direction Breakout::VectorDirection(glm::vec2 target) const
 			best_match = i;
 		}
 	}
+
+	if (best_match == -1)
+		best_match = 0;
+
 	return (Direction)best_match;
 }
 
@@ -243,7 +267,16 @@ Collision Breakout::CheckCollision(const Ball& one, const Block& two) const
 	);
 	// get difference vector between both centers
 	glm::vec2 difference = center - aabb_center;
+
+	if (difference.x == 0 && difference.y == 0) {
+		difference.y = 1;
+		return Collision(true, UP, difference);
+	}
+
 	glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
+
+
+
 	// add clamped value to AABB_center and we get the value of box closest to circle
 	glm::vec2 closest = aabb_center + clamped;
 	// retrieve vector between center circle and closest point AABB and check if length <= radius

@@ -283,9 +283,9 @@ const char descriptor_table_protodef_Protocol_2eproto[] PROTOBUF_SECTION_VARIABL
   "ber\030\002 \001(\005\022!\n\007players\030\003 \003(\0132\020.Protocol.Pl"
   "ayer\"\035\n\007C_READY\022\022\n\nroomNumber\030\001 \001(\005\"\t\n\007S"
   "_START\"\?\n\006C_MOVE\022!\n\005input\030\001 \001(\0132\022.Protoc"
-  "ol.KeyInput\022\022\n\nroomNumber\030\002 \001(\005\"-\n\006S_MOV"
-  "E\022#\n\006inputs\030\002 \003(\0132\023.Protocol.KeyInputU\"\025"
-  "\n\005S_END\022\014\n\004rank\030\001 \001(\005b\006proto3"
+  "ol.KeyInput\022\022\n\nroomNumber\030\002 \001(\005\"*\n\006S_MOV"
+  "E\022 \n\006inputs\030\001 \003(\0132\020.Protocol.StateU\"\025\n\005S"
+  "_END\022\014\n\004rank\030\001 \001(\005b\006proto3"
   ;
 static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_Protocol_2eproto_deps[2] = {
   &::descriptor_table_Enum_2eproto,
@@ -293,7 +293,7 @@ static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor
 };
 static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_Protocol_2eproto_once;
 const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_Protocol_2eproto = {
-  false, false, 509, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
+  false, false, 506, descriptor_table_protodef_Protocol_2eproto, "Protocol.proto", 
   &descriptor_table_Protocol_2eproto_once, descriptor_table_Protocol_2eproto_deps, 2, 12,
   schemas, file_default_instances, TableStruct_Protocol_2eproto::offsets,
   file_level_metadata_Protocol_2eproto, file_level_enum_descriptors_Protocol_2eproto, file_level_service_descriptors_Protocol_2eproto,
@@ -2337,16 +2337,16 @@ const char* S_MOVE::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::int
     ::PROTOBUF_NAMESPACE_ID::uint32 tag;
     ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
     switch (tag >> 3) {
-      // repeated .Protocol.KeyInputU inputs = 2;
-      case 2:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+      // repeated .Protocol.StateU inputs = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
           ptr -= 1;
           do {
             ptr += 1;
             ptr = ctx->ParseMessage(_internal_add_inputs(), ptr);
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
-          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<10>(ptr));
         } else goto handle_unusual;
         continue;
       default: {
@@ -2378,12 +2378,12 @@ failure:
   ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated .Protocol.KeyInputU inputs = 2;
+  // repeated .Protocol.StateU inputs = 1;
   for (unsigned int i = 0,
       n = static_cast<unsigned int>(this->_internal_inputs_size()); i < n; i++) {
     target = stream->EnsureSpace(target);
     target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
-      InternalWriteMessage(2, this->_internal_inputs(i), target, stream);
+      InternalWriteMessage(1, this->_internal_inputs(i), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -2402,7 +2402,7 @@ size_t S_MOVE::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .Protocol.KeyInputU inputs = 2;
+  // repeated .Protocol.StateU inputs = 1;
   total_size += 1UL * this->_internal_inputs_size();
   for (const auto& msg : this->inputs_) {
     total_size +=

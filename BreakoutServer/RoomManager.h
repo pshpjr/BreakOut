@@ -4,16 +4,18 @@
 
 #include "Room.h"
 
+
+
 class ServerSession;
 
 class RoomManager : public JobQueue
 {
 public:
-	RoomManager() { for (int i = 0; i < 100; i++) { _rooms[i] = make_shared<Room>(i); } }
+	RoomManager() { for (int i = 0; i < maxRoom; i++) { _rooms[i] = make_shared<Room>(i); } }
 
 	void Init();
-
-	void AddPlayer(GameSessionRef session,int roomNumber = 0);
+	void AddPlayer(GameSessionRef session);
+	void AddPlayer(GameSessionRef session,int roomNumber);
 	void RemovePlayer(GameSessionRef session, int roomNumber);
 
 	void HandleReady(GameSessionRef session, int roomNumber);
@@ -21,7 +23,9 @@ public:
 
 
 private:
-	RoomRef _rooms[100];
+	static const int32 maxRoom = 401;
+	RoomRef _rooms[maxRoom];
+	int32 lastRoom = 0;
 };
 
 extern shared_ptr<RoomManager> GRoomManager;

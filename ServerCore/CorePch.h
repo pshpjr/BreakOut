@@ -26,3 +26,13 @@ using namespace std;
 
 
 
+
+namespace psh
+{
+	template <typename T = chrono::milliseconds>
+	inline unsigned long long GetTickCount()
+	{
+		using namespace std::chrono;
+		return duration_cast<T>(steady_clock::now().time_since_epoch()).count();
+	}
+}

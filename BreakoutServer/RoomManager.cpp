@@ -4,8 +4,8 @@
 #include "GlobalQueue.h"
 #include "Protocol.pb.h"
 #include "ServerPacketHandler.h"
-
 shared_ptr<RoomManager> GRoomManager = MakeShared<RoomManager>();
+
 
 void RoomManager::Init()
 {
@@ -17,9 +17,18 @@ void RoomManager::Init()
 	}
 }
 
+void RoomManager::AddPlayer(GameSessionRef session)
+{
+	_rooms[lastRoom]->DoAsync(&Room::AddSession, session);
+}
+
 void RoomManager::AddPlayer(GameSessionRef session, int roomNumber)
 {
-	_rooms[roomNumber]->DoAsync(&Room::AddSession, session);
+	int tmpRn = roomNumber;
+	wrap(tmpRn, 0, maxRoom);
+
+	lastRoom = tmpRn;
+	_rooms[lastRoom]->DoAsync(&Room::AddSession, session);
 }
 
 void RoomManager::RemovePlayer(GameSessionRef session,int roomNumber)
@@ -29,6 +38,7 @@ void RoomManager::RemovePlayer(GameSessionRef session,int roomNumber)
 
 void RoomManager::HandleReady(GameSessionRef session, int roomNumber)
 {
+
 	_rooms[roomNumber]->DoAsync(&Room::HandleReady, session);
 }
 

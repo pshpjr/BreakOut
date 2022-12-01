@@ -30,7 +30,7 @@ void DummySession::OnSend(int32 len)
 
 void DummySession::OnDisconnected()
 {
-	DummySession::OnDisconnected();
+		
 }
 
 void DummySession::OnRecvPacket(BYTE* buffer, int32 len)

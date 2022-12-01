@@ -21,6 +21,9 @@ Client::Client(int32 SCREEN_WIDTH, int32 SCREEN_HEIGHT, wstring ip, int port) :S
 	AddPong(width, SCREEN_HEIGHT, width, 0);
 	_mainPlay = _pongs[0];
 	_mainPlay->_isMyPlay = true;
+	_mainPlay->_life = 3;
+	_mainPlay->_state = Breakout::ALIVE;
+
 
 	for (int i = 0; i < 7; i++)
 	{

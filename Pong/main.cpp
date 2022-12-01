@@ -7,9 +7,7 @@
 #include <random>
 #include <string>
 #include "BreakoutPacketHandler.h"
-#include "DummyClient.h"
 class ServerSession;
-DummyClient* DM;
 
 bool noGUI = false;
 bool Exit = false;
@@ -59,10 +57,22 @@ void idle()
 	glutPostRedisplay();
 }
 
-void tick()
+
+
+static int tickCount = 0;
+void tick(int time)
 {
+	uint64 start = psh::GetTickCount();
 	GM->Tick();
-	this_thread::sleep_for(16.6ms);
+	tickCount++;
+
+	auto now = psh::GetTickCount();
+	auto dur = now - start;
+
+	if (dur < 10)
+		glutTimerFunc(10 - dur, tick, 0);
+	else
+		glutTimerFunc(0, tick, 0);
 }
 
 void GLInit() {
@@ -83,7 +93,9 @@ void GLInit() {
 
 	glutCreateWindow("Breakout 99");
 	//glutFullScreen();
-	glutDisplayFunc(tick);
+	glutDisplayFunc(idle);
+
+	glutTimerFunc(1, tick, 0);
 	glutSetCursor(GLUT_CURSOR_NONE);
 
 }

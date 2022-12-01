@@ -5,8 +5,17 @@
 #include "DummyService.h"
 #include "ThreadManager.h"
 
+shared_ptr <DummyClient> DM;
+
+enum
+{
+	WORKER_TICK = 16
+};
+
 DummyClient::DummyClient(wstring ip, int port,int count = 98) : _ip(ip), _port(port), dummyPlayers(count)
 {
+	JobQueue();
+
 	_service = MakeShared<DummyService>(
 		NetAddress(_ip, _port),
 		MakeShared<IocpCore>(),
@@ -21,20 +30,27 @@ DummyClient::DummyClient(wstring ip, int port,int count = 98) : _ip(ip), _port(p
 			{
 				while (true)
 				{
-					_service->GetIocpCore()->Dispatch();
+					LEndTickCount = psh::GetTickCount() + WORKER_TICK;
+
+					_service->GetIocpCore()->Dispatch(10);
+
+					ThreadManager::DistributeReservedJobs();
+
+					ThreadManager::DoGlobalQueueWork();
 				}
 			});
 	}
-
 }
 
 void DummyClient::Loop()
 {
-	Set<SessionRef>& s = _service->getSessions();
+	auto start = psh::GetTickCount();
+	
+	Set<SessionRef> s = _service->getSessions();
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<int> dis(0, 3);
 	P_Event("sessionRoof");
-	for(auto& ses : s)
+	for(auto ses : s)
 	{
 		int data = dis(gen);
 		if(!data)
@@ -45,14 +61,6 @@ void DummyClient::Loop()
 
 		switch(session->_owner->_state)
 		{
-			case LOBBY:
-			{
-				Protocol::C_MACHING_GAME pkt;
-				SendBufferRef sb = DummyPacketHandler::MakeSendBuffer(pkt);
-				session->Send(sb);
-
-				break;
-			}
 			case PLAYING:
 			{
 				Protocol::KeyInput* key = new Protocol::KeyInput;
@@ -68,13 +76,29 @@ void DummyClient::Loop()
 				SendBufferRef buffer = BreakoutPacketHandler::MakeSendBuffer(pkt);
 
 				session->Send(buffer);
-
 				break;
 			}
+			case LOBBY:
+			{
+				if (session->_owner->endCount !=10) {
+					++session->_owner->endCount;
+					break;
+				}
 
+				Protocol::C_MACHING_GAME pkt;
+				SendBufferRef sb = DummyPacketHandler::MakeSendBuffer(pkt);
+				session->Send(sb);
+				session->_owner->_state = MATCHING;
+				break;
+			}
 		}
-
-
 	}
+	auto end = psh::GetTickCount();
+
+
+	if (end - start < 200)
+		DoTimer(200 - (end - start), &DummyClient::Loop);
+	else
+		DoAsync(&DummyClient::Loop);
 }
 

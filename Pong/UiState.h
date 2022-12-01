@@ -19,7 +19,7 @@ public:
 protected:
 	float center = 0.47;
 	float bottomHRate = 0.15;
-	float topHRate = 0.8;
+	float topHRate = 0.85;
 };
 class Init : public UIState
 {
@@ -50,6 +50,21 @@ public:
 	void HandleInput(Client* GM) override;
 private:
 	bool _matchingState = false;
+};
+
+class WaitMatchingPacket : public UIState
+{
+public:
+	static WaitMatchingPacket* instance()
+	{
+		static WaitMatchingPacket* instance = new WaitMatchingPacket();
+		return instance;
+	}
+	void Render(Client* GM) override;
+	void HandleInput(Client* GM) override;
+
+private:
+	int _count = 0;
 };
 
 class Matching : public UIState

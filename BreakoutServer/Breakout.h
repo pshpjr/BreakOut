@@ -1,5 +1,6 @@
 #pragma once
 #include "Macro.h"
+#include "Objects.h"
 
 class Moveable;
 class ControlBlock;
@@ -61,16 +62,19 @@ public:
 	~Breakout();
 
 	void Init();
-	void Update();//서버
+	bool Update();//서버
 	void Render();
 	void Tick();
 	void Reset();
 
 	void Clear();
 
-
 	void changeState(PlayerState state);
 	void SetDead() { _state = DEAD; }
+	void SetControlBlockMovable(bool state)  { int speed = state ? CONTROLBLOCKSPEED : 0; _control_block->setSpeed(speed); }
+	void SetControlBlockVector(bool direction) { int dir = direction ? -1 : 1; _control_block->setVector({dir,0}); }//todo: 방향 상수로 변경
+	void CompensateCBNetDelay(bool direction){ int dir = direction ? -1 : 1;  _control_block->setStart({ _control_block->getStart().x -dir*6,_control_block->getStart().y }); }
+	void SetBallVector(float vec) { glm::vec2 beginVector(vec, 1); _b->setVector(glm::normalize(beginVector) ); }
 
 	bool isDead() const;
 
@@ -78,11 +82,11 @@ private:
 	Direction VectorDirection(glm::vec2 target) const;
 	Collision CheckCollision(const Ball& one, const Block& two) const;
 
-	void block_collision_test() const;
-	void ball_out_test();
-	void control_block_collision_test() const;
+	bool block_collision_test() const;
+	bool ball_out_test();
+	bool control_block_collision_test() const;
 	void control_block_out_test_and_modify() const;
-	
+
 public:
 	Ball* _b;// 플레이어의 공
 	ControlBlock* _control_block; // 공 튀기는 막대
@@ -107,21 +111,23 @@ private:
 	int32 _height;
 	int32 _viewportX = 0, _viewportY = 0;
 
-	const int32 baseWidth = 640;
+	const  int32 baseWidth = 640;
 	const int32 baseHeight = 1080;
 
 	const float MAPLEFT, MAPRIGHT, MAPBOTTOM, MAPTOP;
 
 	const float BALLSIZE = 10;
-	const int WALLTHICKNESS = 15;
+	const int WALLTHICKNESS = 100;
 	const int BLOCKWIDTH = 46;
 	const int BLOCKHEIGHT = 23;
 	const int BLOCKGAP = 57;
 
-	const float BALLSPEED = 4;
-	const int CONTROLBLOCKSPEED = 8;
-	const int CONTROLBLOCKWIDTH = 200;
+	const float BALLSPEED = 7.4;
+	//const int CONTROLBLOCKSPEED = 25;
+	//const int CONTROLBLOCKWIDTH = 200;
+	const int CONTROLBLOCKSPEED = 7.5;
 
+	const int CONTROLBLOCKWIDTH = 200;
 
 	float _deltaTime = 16.6;//60fps
 
@@ -133,7 +139,6 @@ private:
 
 
 	int _mapwidth;
-
 	//TEMP
 	char _keyL = 'a', _keyR = 'd';
 };

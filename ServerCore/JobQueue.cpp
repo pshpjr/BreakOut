@@ -56,7 +56,7 @@ void JobQueue::Execute()
 		}
 		
 
-		const uint64 now = ::GetTickCount64();
+		const uint64 now = psh::GetTickCount();
 		if (now >= LEndTickCount)
 		{
 			
