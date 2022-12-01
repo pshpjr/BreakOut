@@ -21,11 +21,6 @@ void Room::AddSession(GameSessionRef session)
 		return;
 	}
 
-	if (roomNumber == 400)
-	{
-		cout << "server Is Full" << endl;
-		return;
-	}
 	GRoomManager->DoAsync(&RoomManager::AddPlayer, session, roomNumber + 1);
 }
 
@@ -166,7 +161,6 @@ void Room::RoomCheck()
 	switch (GetState())
 	{
 	case Room::MATCHING:
-
 		WaitPlayer();
 		break;
 	case Room::READY:
@@ -216,6 +210,7 @@ void Room::WaitPlayer()
 
 void Room::PlayStart()
 {
+	cout << "Room "<<roomNumber<< " Start" << endl;
 	roomState = state::START;
 
 	Protocol::S_START pkt;
@@ -249,24 +244,6 @@ void Room::Update()
 	vector<Player*> toBroadcastPlayer;
 
 
-	for (auto& p : _players)
-	{
-		if (p.isReady() == false)
-			continue;
-
-		bool needBroadcast = false;
-		needBroadcast = p.Update();
-
-	}
-	for (auto& p : _players)
-	{
-		if (p.isReady() == false)
-			continue;
-
-		bool needBroadcast = false;
-		needBroadcast = p.Update();
-
-	}
 	for (auto& p : _players)
 	{
 		if (p.isReady() == false)
@@ -332,8 +309,8 @@ void Room::Update()
 	ASSERT_CRASH(playerCount > 0);
 	auto end = psh::GetTickCount();
 	auto gap = end - start;
-	wrap(gap, (uint64)0, (uint64)100);
-	DoTimer(100 - gap, &Room::Update);
+	wrap(gap, (uint64)0, (uint64)60);
+	DoTimer(60 - gap, &Room::Update);
 }
 
 void Room::MakeWinner()

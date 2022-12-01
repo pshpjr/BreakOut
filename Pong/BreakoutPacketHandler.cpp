@@ -59,7 +59,6 @@ void BreakoutPacketHandler::Handle_S_MACHING_GAME(ClientSessionRef session, BYTE
 
 void BreakoutPacketHandler::Handle_S_CANCLE_GAME(ClientSessionRef session, BYTE* buffer, int32 len)
 {
-
 	GM->ChangeState(Lobby::instance());
 }
 

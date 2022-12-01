@@ -57,6 +57,7 @@ void ServerPacketHandler::Handle_C_LOGIN(GameSessionRef session, BYTE* buffer, i
 void ServerPacketHandler::Handle_C_MACHING_GAME(GameSessionRef session, BYTE* buffer, int32 len)
 {
 	P_Event();
+
 	GRoomManager->AddPlayer(session);
 }
 
@@ -67,6 +68,8 @@ void ServerPacketHandler::Handle_C_CANCLE_GAME(GameSessionRef session, BYTE* buf
 	pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader));
 
 	int32 roomNumber = pkt.roomnumber();
+
+
 
 	GRoomManager->RemovePlayer(session, roomNumber);
 }

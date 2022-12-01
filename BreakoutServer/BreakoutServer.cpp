@@ -52,6 +52,7 @@ void WorkerJob(ServerServiceRef& service)
 
 	while (true)
 	{
+		
 		LEndTickCount = psh::GetTickCount() + WORKER_TICK;
 
 		service->GetIocpCore()->Dispatch(3);

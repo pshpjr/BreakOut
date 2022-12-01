@@ -69,15 +69,29 @@ void Lobby::HandleInput(Client* GM)
 
 		Protocol::C_MACHING_GAME pkt;
 		GM->_service->Broadcast(BreakoutPacketHandler::MakeSendBuffer(pkt));
-		cout << "matching Start" << endl;
+		GM->ChangeState(WaitMatchingPacket::instance());
 	}
 }
+
+void WaitMatchingPacket::Render(Client* GM)
+{
+	UIState::Render(GM);
+	drawText("Find room... " + Loading(_count), GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	
+	GM->_mainPlay->Render();
+}
+
+void WaitMatchingPacket::HandleInput(Client* GM)
+{
+	UIState::HandleInput(GM);
+}
+
 
 void Matching::Render(Client* GM)
 {
 	UIState::Render(GM);
 
-	drawText("Matching... " +Loading(_count), GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
+	drawText("Wait another Players... " +Loading(_count), GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate);
 	drawText("(press S to stop)", GM->SCREENWIDTH * center, GM->SCREENHEIGHT * bottomHRate-24);
 
 	GM->_mainPlay->Render();

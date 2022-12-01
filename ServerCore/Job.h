@@ -20,7 +20,7 @@ public:
 	{
 		_callback = [owner, memFunc, args...]()
 		{
-			//왜 get을 해야 하는가?
+			//this를 shared로 받은 후 맴버 함수 호출
 			(owner.get()->*memFunc)(args...);
 		};
 	}

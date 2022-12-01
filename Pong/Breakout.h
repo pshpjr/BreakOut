@@ -118,7 +118,7 @@ private:
 	const int BLOCKGAP = 57;
 
 	//const float BALLSPEED = 1.85;
-	const float BALLSPEED = 2.35;
+	const float BALLSPEED = 2.65;
 	const int CONTROLBLOCKWIDTH = 200;
 
 
