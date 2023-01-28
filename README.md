@@ -24,7 +24,9 @@ IOCP를 이용한 stateful 서버
 <details markdown="1">
 <summary><h3>클라이언트</h3></summary>
 * 더미 클라이언트(5000명까지 한 프로세스에서 딜레이 없이 처리 가능)
+* 
 * 클라이언트 FreeGLUT으로 구현. 간단한 게임 화면 제공
+* 
 * 공 위치 예측
 
 
@@ -34,14 +36,22 @@ IOCP를 이용한 stateful 서버
 <details markdown="2">
 <summary><h3>서버</h3></summary>
 <!-- 서버 내용 기입-->
-* 패킷 헤더 및 완전한 TCP 패킷이 전송되었는지 확
+* 패킷 헤더 및 완전한 TCP 패킷이 전송되었는지 확인
+  
 * 충돌 판정
+  
 * 플레이어 체력 및 사망 판정
+  
 * 세션 Connect, Disconnect 확인 및 처리
+  
 * 1Send
+  
 * JobQueue를 활용한 멀티스레딩
+  
 * JobTimer를 활용한 게임 루프
+  
 * 게임 종료 및 승패 처리, 방 초기화 후 재사용
+  
 * Protobuf를 활용한 객체 직렬화 전송
 
 </details>
